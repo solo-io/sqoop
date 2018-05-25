@@ -11,9 +11,10 @@ import (
 var _ = Describe("Resolver", func() {
 	It("gets the correct key from the schema", func() {
 		r := NewResolverMap(test.StarWarsSchema, inputResolvers)
-		Expect(r.Types).To(HaveKey("Query"))
-		Expect(r.Types["Query"]).NotTo(BeNil())
-		Expect(r.Types["Query"].Fields).To(HaveKey("hero"))
+		queryObject := test.StarWarsSchema.Types["Query"]
+		Expect(r.Types).To(HaveKey(queryObject))
+		Expect(r.Types[queryObject]).NotTo(BeNil())
+		Expect(r.Types[queryObject].Fields).To(HaveKey("hero"))
 	})
 })
 

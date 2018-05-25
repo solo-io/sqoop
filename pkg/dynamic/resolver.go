@@ -2,64 +2,66 @@ package dynamic
 
 import (
 	"github.com/vektah/gqlgen/neelance/schema"
+	"github.com/vektah/gqlgen/neelance/common"
 )
 
 // store all the user resolvers
 type ResolverMap struct {
-	// resolvers by type
-	Types map[string]*TypeResolver
+	// resolvers for all named types
+	Types map[schema.NamedType]TypeResolver
 }
 
 type TypeResolver struct {
 	// resolve each field of the type
-	Fields map[string]ResolverFunc
+	Fields map[string]FieldResolver
+}
+
+type FieldResolver struct {
+	// type the field resolves to
+	Type common.Type
+	// how to resolve this field. should return Type
+	ResolverFunc ResolverFunc
 }
 
 // todo
 type ResolverFunc func(args map[string]interface{}) (interface{}, error)
 
 func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) *ResolverMap {
-	typeMap := make(map[string]*TypeResolver)
+	typeMap := make(map[schema.NamedType]TypeResolver)
 	for _, t := range sch.Types {
 		if metaType(t.TypeName()) {
 			continue
 		}
-		fields := make(map[string]ResolverFunc)
+		fields := make(map[string]FieldResolver)
 		switch t := t.(type) {
 		case *schema.Object:
 			for _, f := range t.Fields {
-				res, ok := inputResolvers[t.Name+"."+f.Name]
-				if ok {
-					fields[f.Name] = res
-				}
+				res := inputResolvers[t.Name+"."+f.Name]
+				fields[f.Name] = FieldResolver{Type: f.Type, ResolverFunc: res}
 			}
 		case *schema.Interface:
 			for _, f := range t.Fields {
-				res, ok := inputResolvers[t.Name+"."+f.Name]
-				if ok {
-					fields[f.Name] = res
-				}
+				res := inputResolvers[t.Name+"."+f.Name]
+				fields[f.Name] = FieldResolver{Type: f.Type, ResolverFunc: res}
 			}
 		case *schema.Union:
 			for _, o := range t.PossibleTypes {
-				res, ok := inputResolvers[t.Name+"."+o.Name]
-				if ok {
-					fields[o.Name] = res
-				}
+				res := inputResolvers[t.Name+"."+o.Name]
+				fields[o.Name] = FieldResolver{Type: o, ResolverFunc: res}
 			}
 		}
 		if len(fields) == 0 {
 			continue
 		}
-		typeMap[t.TypeName()] = &TypeResolver{Fields: fields}
+		typeMap[t] = TypeResolver{Fields: fields}
 	}
 	return &ResolverMap{
 		Types: typeMap,
 	}
 }
 
-func (rm *ResolverMap) GetResolver(typeName, field string) ResolverFunc {
-	typeResolver, ok := rm.Types[typeName]
+func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) ResolverFunc {
+	typeResolver, ok := rm.Types[typ]
 	if !ok {
 		return emptyResolver
 	}
@@ -67,7 +69,7 @@ func (rm *ResolverMap) GetResolver(typeName, field string) ResolverFunc {
 	if !ok {
 		return emptyResolver
 	}
-	return fieldResolver
+	return fieldResolver.ResolverFunc
 }
 
 func emptyResolver(args map[string]interface{}) (interface{}, error) {
