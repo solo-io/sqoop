@@ -15,6 +15,9 @@ var _ = Describe("Resolver", func() {
 		Expect(r.Types).To(HaveKey(queryObject))
 		Expect(r.Types[queryObject]).NotTo(BeNil())
 		Expect(r.Types[queryObject].Fields).To(HaveKey("hero"))
+		Expect(r.Resolve(queryObject, "hero", nil)).To(Equal(map[string]string{"name": "Luke"}))
+		Expect(r.Resolve(nil, "nonexistent", nil)).To(BeNil())
+		Expect(r.Resolve(queryObject, "nonexistent", nil)).To(BeNil())
 	})
 })
 

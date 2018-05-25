@@ -60,6 +60,10 @@ func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) 
 	}
 }
 
+func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, args map[string]interface{}) (interface{}, error) {
+	return rm.getFieldResolver(typ, field)(args)
+}
+
 func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) ResolverFunc {
 	typeResolver, ok := rm.Types[typ]
 	if !ok {
