@@ -26,7 +26,7 @@ type FieldResolver struct {
 }
 
 // todo
-type ResolverFunc func(params *Params) (interface{}, error)
+type ResolverFunc func(params Params) (interface{}, error)
 
 func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) *ResolverMap {
 	typeMap := make(map[schema.NamedType]*TypeResolver)
@@ -78,7 +78,14 @@ type Params struct {
 	Args map[string]interface{}
 }
 
-func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params *Params) (interface{}, error) {
+func (p Params) Arg(name string) interface{} {
+	if len(p.Args) == 0 {
+		return nil
+	}
+	return p.Args[name]
+}
+
+func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params) (interface{}, error) {
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolver lookup")
@@ -102,7 +109,7 @@ func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) (*Fi
 	return fieldResolver, nil
 }
 
-func emptyResolver(params *Params) (interface{}, error) {
+func emptyResolver(params Params) (interface{}, error) {
 	return nil, nil
 }
 
