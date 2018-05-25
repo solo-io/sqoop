@@ -9,20 +9,32 @@ import (
 )
 
 var _ = Describe("Resolver", func() {
-	It("gets the correct key from the schema", func() {
-		r := NewResolverMap(test.StarWarsSchema, inputResolvers)
-		queryObject := test.StarWarsSchema.Types["Query"]
-		Expect(r.Types).To(HaveKey(queryObject))
-		Expect(r.Types[queryObject]).NotTo(BeNil())
-		Expect(r.Types[queryObject].Fields).To(HaveKey("hero"))
-		Expect(r.Resolve(queryObject, "hero", nil)).To(Equal(map[string]string{"name": "Luke"}))
-		Expect(r.Resolve(nil, "nonexistent", nil)).To(BeNil())
-		Expect(r.Resolve(queryObject, "nonexistent", nil)).To(BeNil())
+	r := NewResolverMap(test.StarWarsSchema, inputResolvers)
+	queryObject := test.StarWarsSchema.Types["Query"]
+	Context("Resolve", func() {
+		It("calls the provided resolver for the field on the type", func() {
+			Expect(r.Types).To(HaveKey(queryObject))
+			Expect(r.Types[queryObject]).NotTo(BeNil())
+			Expect(r.Types[queryObject].Fields).To(HaveKey("hero"))
+			Expect(r.Resolve(queryObject, "hero", nil)).To(Equal(map[string]string{"name": "Luke"}))
+		})
+		It("returns error for nonexistent type", func() {
+			result, err := r.Resolve(test.StarWarsSchema.Types["__Type"], "nonexistent", nil)
+			Expect(err).NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("type __Type unknown"))
+			Expect(result).To(BeNil())
+		})
+		It("returns error for nonexistent field on type", func() {
+			result, err := r.Resolve(queryObject, "nonexistent", nil)
+			Expect(err).NotTo(BeNil())
+			Expect(err.Error()).To(ContainSubstring("type Query does not contain field nonexistent"))
+			Expect(result).To(BeNil())
+		})
 	})
 })
 
 var inputResolvers = map[string]ResolverFunc{
-	"Query.hero": func(args map[string]interface{}) (interface{}, error) {
+	"Query.hero": func(params *Params) (interface{}, error) {
 		return map[string]string{"name": "Luke"}, nil
 	},
 }
