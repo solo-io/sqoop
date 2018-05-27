@@ -26,7 +26,7 @@ type FieldResolver struct {
 }
 
 // todo
-type ResolverFunc func(params Params) (interface{}, error)
+type ResolverFunc func(params Params) (Value, error)
 
 func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) *ResolverMap {
 	typeMap := make(map[schema.NamedType]*TypeResolver)
@@ -85,21 +85,53 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params) (*Result, error) {
+func (rm *ResolverMap) Resolve(typ common.Type, field string, params Params) (Value, error) {
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolver lookup")
 	}
 	data, err := fieldResolver.ResolverFunc(params)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed executing resolver for %v.%v", typ.TypeName(), field)
+		return nil, errors.Wrapf(err, "failed executing resolver for %v.%v", typ.String(), field)
 	}
-	return &Result{Data: data, Typ: typ}, nil
+	result, err := convertResult(typ, data)
+	if err != nil {
+		return nil, errors.Wrap(err, "converting interface{} to result")
+	}
+	return result, nil
 }
 
-type Result struct {
-	Data interface{}
-	Typ  common.Type
+func convertResult(typ common.Type, data interface{}) (Value , error) {
+	var result Value
+	switch typ := typ.(type) {
+	case *schema.Object:
+		obj, ok := data.(map[string]Value)
+		if !ok {
+			return nil, errors.Errorf("resolver did not return expected type map[string]interface{}: %v", data)
+		}
+		result = &Object{
+			Object: typ,
+			Data: obj,
+		}
+	case *common.List:
+		items, ok := data.([]interface{})
+		if !ok {
+			return nil, errors.Errorf("resolver did not return expected type map[string]interface{}: %v", data)
+		}
+		var list []Value
+		for _, item := range items {
+			val, err := convertResult(typ.OfType, item)
+			if err != nil {
+				return nil, errors.Wrap(err, "converting array element into result")
+			}
+			list = append(list, val)
+		}
+		result = &Array{
+			List: typ,
+			Data: list,
+		}
+	}
+	return result, nil
 }
 
 func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) (*FieldResolver, error) {
