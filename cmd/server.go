@@ -39,18 +39,18 @@ var starWarsResolvers = map[string]dynamic.ResolverFunc{
 		}
 		return fromJson(v), nil
 	},
-	"Human.friends": func(params dynamic.Params) (interface{}, error) {
-		var friends []map[string]interface{}
-		ids := params.Source["friendIds"].([]string)
-		for _, id := range ids {
-			f, err := baseResolvers.Query_character(context.TODO(), id)
-			if err != nil {
-				return nil, err
-			}
-			friends = append(friends, fromJson(f))
-		}
-		return friends, nil
-	},
+	//"Character.friends": func(params dynamic.Params) (interface{}, error) {
+	//	var friends []map[string]interface{}
+	//	ids := params.Source["FriendIds"].([]interface{})
+	//	for _, id := range ids {
+	//		f, err := baseResolvers.Query_character(context.TODO(), id.(string))
+	//		if err != nil {
+	//			return nil, err
+	//		}
+	//		friends = append(friends, fromJson(f))
+	//	}
+	//	return friends, nil
+	//},
 }
 
 // simulate parsing a json response

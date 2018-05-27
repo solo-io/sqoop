@@ -104,22 +104,22 @@ func (ec *executionContext) _Query(ctx context.Context, sel []query.Selection) g
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		default:
-			out.Values[i], _ = ec.execute(ctx, field, ec.EntryPoints["query"])
+			out.Values[i], _ = ec.execute(ctx, nil, field, ec.EntryPoints["query"])
 		}
 	}
 
 	return out
 }
 
-func (ec *executionContext) execute(ctx context.Context, field graphql.CollectedField, typ schema.NamedType) (graphql.Marshaler, bool) {
+func (ec *executionContext) execute(ctx context.Context, source map[string]interface{}, field graphql.CollectedField, typ schema.NamedType) (graphql.Marshaler, bool) {
 	// do the resolution here
-	res, err := ec.resolvers.Resolve(typ, field.Name, Params{Args: field.Args})
+	res, err := ec.resolvers.Resolve(typ, field.Name, Params{Source: source, Args: field.Args})
 	if err != nil {
 		ec.Errors = append(ec.Errors, err)
-		return graphql.Null, false
+		return graphql.Null, true
 	}
 	if res.Data == nil {
-		return graphql.Null, false
+		return graphql.Null, true
 	}
 
 	var fieldType *schema.Field
@@ -153,18 +153,45 @@ func (ec *executionContext) execute(ctx context.Context, field graphql.Collected
 		case "__typename":
 			out.Values[i] = graphql.MarshalString(fieldType.Type.String())
 		default:
-			fieldResult, nonNull := ec.execute(ctx, subField, fieldType.Type.(schema.NamedType))
-			// if fieldResult was null (no resolver defined) but the parent resolver worked,
-			// don't overwrite with null
-			// create the marshaller from the field in the parent object (might also be null)
-			if !nonNull {
-				fieldResult = createMarshaler(res.Data.(map[string]interface{})[subField.Name])
+			var (
+				// result for the nested field
+				fieldResult graphql.Marshaler
+				isNull      bool
+			)
+			switch parentType := fieldType.Type.(type) {
+			case schema.NamedType:
+				data := res.Data.(map[string]interface{})
+				fieldResult, isNull = ec.execute(ctx, data, subField, parentType)
+				if isNull {
+					// if fieldResult was null (no resolver defined) but the parent resolver worked,
+					// don't overwrite with null
+					// create the marshaller from the value for the
+					// field in the parent object (might also be null)
+					fieldResult = createMarshaler(res.Data.(map[string]interface{})[subField.Name])
+				}
+			default:
+				panic(parentType)
+
+			//case common.List:
+				//	//var fieldResult graphql.Array
+				//	data := res.Data.([]map[string]interface{})
+				//	for _, element := range data {
+				//		arrayType := parentType.OfType.(schema.NamedType)
+				//		elementResult, isNull := ec.execute(ctx, res.Data.(map[string]interface{}), subField, arrayType)
+				//		if isNull {
+				//			// if fieldResult was null (no resolver defined) but the parent resolver worked,
+				//			// don't overwrite with null
+				//			// create the marshaller from the field in the parent object (might also be null)
+				//			elementResult = createMarshaler(res.Data.(map[string]interface{})[subField.Name])
+				//		}
+				//
+				//	}
 			}
 			out.Values[i] = fieldResult
 		}
 	}
 
-	return out, true
+	return out, false
 }
 
 func createMarshaler(val interface{}) graphql.Marshaler {
@@ -236,7 +263,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel []query.Selection
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
 		default:
-			out.Values[i], _ = ec.execute(ctx, field, ec.EntryPoints["Mutation"])
+			out.Values[i], _ = ec.execute(ctx, nil, field, ec.EntryPoints["Mutation"])
 		}
 	}
 
