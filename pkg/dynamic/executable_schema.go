@@ -12,16 +12,19 @@ import (
 	"github.com/vektah/gqlgen/neelance/schema"
 	"fmt"
 	"time"
+	"github.com/solo-io/gloo/pkg/log"
 	"reflect"
-	"github.com/fatih/structs"
 )
 
-func MakeExecutableSchema(parsedSchema *schema.Schema) graphql.ExecutableSchema {
-	return &executableSchema{schema: parsedSchema}
+func MakeExecutableSchema(parsedSchema *schema.Schema, inputResolvers map[string]ResolverFunc) graphql.ExecutableSchema {
+	resolvers := NewResolverMap(parsedSchema, inputResolvers)
+	log.Printf("give me these resolvers:\n%v", resolvers.FieldsToResolve())
+	return &executableSchema{schema: parsedSchema, resolvers: resolvers}
 }
 
-type executableSchema struct{
-	schema *schema.Schema
+type executableSchema struct {
+	schema    *schema.Schema
+	resolvers *ResolverMap
 }
 
 func (e *executableSchema) Schema() *schema.Schema {
@@ -29,7 +32,11 @@ func (e *executableSchema) Schema() *schema.Schema {
 }
 
 func (e *executableSchema) Query(ctx context.Context, op *query.Operation) *graphql.Response {
-	ec := executionContext{graphql.GetRequestContext(ctx), e.Schema()}
+	ec := executionContext{
+		RequestContext: graphql.GetRequestContext(ctx),
+		Schema:         e.Schema(),
+		resolvers:      e.resolvers,
+	}
 
 	buf := ec.RequestMiddleware(ctx, func(ctx context.Context) []byte {
 		data := ec._Query(ctx, op.Selections)
@@ -45,7 +52,11 @@ func (e *executableSchema) Query(ctx context.Context, op *query.Operation) *grap
 }
 
 func (e *executableSchema) Mutation(ctx context.Context, op *query.Operation) *graphql.Response {
-	ec := executionContext{graphql.GetRequestContext(ctx), e.Schema()}
+	ec := executionContext{
+		RequestContext: graphql.GetRequestContext(ctx),
+		Schema:         e.Schema(),
+		resolvers:      e.resolvers,
+	}
 
 	buf := ec.RequestMiddleware(ctx, func(ctx context.Context) []byte {
 		data := ec._Mutation(ctx, op.Selections)
@@ -67,6 +78,8 @@ func (e *executableSchema) Subscription(ctx context.Context, op *query.Operation
 type executionContext struct {
 	*graphql.RequestContext
 	*schema.Schema
+
+	resolvers *ResolverMap
 }
 
 var queryImplementors = []string{"Query"}
@@ -91,60 +104,74 @@ func (ec *executionContext) _Query(ctx context.Context, sel []query.Selection) g
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		default:
-			out.Values[i] = ec.execute(ctx, field, ec.EntryPoints["query"])
+			out.Values[i], _ = ec.execute(ctx, field, ec.EntryPoints["query"])
 		}
 	}
 
 	return out
 }
 
-var resolvers = map[string]interface{}{
-	"id":   1234,
-	"name": "Luke",
-}
-
-func (ec *executionContext) execute(ctx context.Context, field graphql.CollectedField, typ schema.NamedType) graphql.Marshaler {
-	implementors := getImplementors(typ)
-	fields := graphql.CollectFields(ec.Doc, field.Selections, implementors, ec.Variables)
-
+func (ec *executionContext) execute(ctx context.Context, field graphql.CollectedField, typ schema.NamedType) (graphql.Marshaler, bool) {
 	// do the resolution here
-	if val, ok := resolvers[field.Name]; len(fields) == 0 && ok {
-		return createMarshaler(val)
+	res, err := ec.resolvers.Resolve(typ, field.Name, Params{Args: field.Args})
+	if err != nil {
+		ec.Errors = append(ec.Errors, err)
+		return graphql.Null, false
+	}
+	if res.Data == nil {
+		return graphql.Null, false
 	}
 
-	var schemaField *schema.Field
+	var fieldType *schema.Field
 	switch typ := typ.(type) {
 	case *schema.Object:
 		for _, f := range typ.Fields {
 			if f.Name == field.Name {
-				schemaField = f
+				fieldType = f
+				break
+			}
+		}
+	case *schema.Interface:
+		for _, f := range typ.Fields {
+			if f.Name == field.Name {
+				fieldType = f
 				break
 			}
 		}
 	}
-	if schemaField == nil {
-		panic(fmt.Errorf("%v not found in %v", field.Name, typ.TypeName()))
+	if fieldType == nil {
+		panic(fmt.Errorf("%v not found in %v", field, typ))
 	}
 
+	implementors := getImplementors(typ)
+	fields := graphql.CollectFields(ec.Doc, field.Selections, implementors, ec.Variables)
 	out := graphql.NewOrderedMap(len(fields))
 
 	for i, subField := range fields {
 		out.Keys[i] = subField.Alias
 		switch subField.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString(schemaField.Type.String())
+			out.Values[i] = graphql.MarshalString(fieldType.Type.String())
 		default:
-			out.Values[i] = ec.execute(ctx, subField, schemaField.Type.(schema.NamedType))
+			fieldResult, nonNull := ec.execute(ctx, subField, fieldType.Type.(schema.NamedType))
+			// if fieldResult was null (no resolver defined) but the parent resolver worked,
+			// don't overwrite with null
+			// create the marshaller from the field in the parent object (might also be null)
+			if !nonNull {
+				fieldResult = createMarshaler(res.Data.(map[string]interface{})[subField.Name])
+			}
+			out.Values[i] = fieldResult
 		}
 	}
 
-	return out
+	return out, true
 }
 
 func createMarshaler(val interface{}) graphql.Marshaler {
+	if val == nil {
+		return graphql.Null
+	}
 	switch val := val.(type) {
-	case map[string]interface{}:
-		return graphql.MarshalMap(val)
 	case bool:
 		return graphql.MarshalBoolean(val)
 	case float64:
@@ -155,14 +182,16 @@ func createMarshaler(val interface{}) graphql.Marshaler {
 		return graphql.MarshalInt(val)
 	case time.Time:
 		return graphql.MarshalTime(val)
-	default:
-		t := reflect.ValueOf(val)
-		switch t.Kind() {
-		case reflect.Struct:
-			return createMarshaler(structs.Map(val))
+	case []interface{}:
+		var array graphql.Array
+		for _, el := range val {
+			array = append(array, createMarshaler(el))
 		}
-		panic(fmt.Errorf("no marshaler implemented yet for type %q", t))
+		return array
+	case map[string]interface{}:
+		return graphql.MarshalMap(val)
 	}
+	panic(fmt.Errorf("no marshaler implemented yet for type %q", reflect.TypeOf(val)))
 }
 
 func getImplementors(typ schema.NamedType) []string {
@@ -207,64 +236,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel []query.Selection
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
 		default:
-			out.Values[i] = ec.execute(ctx, field, ec.EntryPoints["Mutation"])
+			out.Values[i], _ = ec.execute(ctx, field, ec.EntryPoints["Mutation"])
 		}
 	}
 
 	return out
 }
-
-//
-//func getImplementors(sma *schema.Schema, typ schema.NamedType) []string {
-//	typ, ok := sma.EntryPoints[fieldName]
-//	if !ok {
-//		return nil
-//	}
-//	switch schemaType := typ.(type) {
-//	case *schema.Interface:
-//		var names []string
-//		for _, o := range schemaType.PossibleTypes {
-//			names = append(names, o.Name)
-//		}
-//		return names
-//	}
-//	return []string{typ.TypeName()}
-//}
-//
-//type resolveFunc func(ctx context.Context, field graphql.CollectedField) (interface{}, error)
-//
-//func (ec *executionContext) invokeResolver(ctx context.Context, field graphql.CollectedField, resolveFunc resolveFunc) graphql.Marshaler {
-//	args := field.Args
-//	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
-//		Object: "Query",
-//		Args:   args,
-//		Field:  field,
-//	})
-//	return graphql.Defer(func() (ret graphql.Marshaler) {
-//		defer func() {
-//			if r := recover(); r != nil {
-//				userErr := ec.Recover(ctx, r)
-//				ec.Error(ctx, userErr)
-//				ret = graphql.Null
-//			}
-//		}()
-//
-//		res, err := ec.ResolverMiddleware(ctx, func(ctx context.Context) (interface{}, error) {
-//			return resolveFunc(ctx, field)
-//		})
-//		if err != nil {
-//			ec.Error(ctx, err)
-//			return graphql.Null
-//		}
-//		if res == nil {
-//			return graphql.Null
-//		}
-//		return createMarshaler(res)
-//	})
-//}
-//
-//// more magic here some day
-//// a man can dream
 
 func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	rctx := graphql.GetResolverContext(ctx)

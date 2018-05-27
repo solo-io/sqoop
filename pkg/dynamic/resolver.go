@@ -19,7 +19,7 @@ type TypeResolver struct {
 
 type FieldResolver struct {
 	// type the field resolves to
-	Type common.Type	"github.com/vektah/gqlgen/neelance/errors"
+	Type common.Type
 
 	// how to resolve this field. should return Type
 	ResolverFunc ResolverFunc
@@ -53,7 +53,7 @@ func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) 
 				fields[f.Name] = &FieldResolver{Type: f.Type, ResolverFunc: res}
 			}
 
-		// TODO: figure out union. should support all fields from all children. how to deal with name overlap?
+			// TODO: figure out union. should support all fields from all children. how to deal with name overlap?
 		case *schema.Union:
 			//for _, o := range t.PossibleTypes {
 			//	res := inputResolvers[t.Name+"."+o.Name]
@@ -74,8 +74,8 @@ func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) 
 }
 
 type Params struct {
-	Source interface{}
-	Args map[string]interface{}
+	Source map[string]interface{}
+	Args   map[string]interface{}
 }
 
 func (p Params) Arg(name string) interface{} {
@@ -85,16 +85,21 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params) (interface{}, error) {
+func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params) (*Result, error) {
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolver lookup")
 	}
-	result, err := fieldResolver.ResolverFunc(params)
+	data, err := fieldResolver.ResolverFunc(params)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed executing resolver for %v.%v", typ.TypeName(), field)
 	}
-	return result, nil
+	return &Result{Data: data, Typ: typ}, nil
+}
+
+type Result struct {
+	Data interface{}
+	Typ  common.Type
 }
 
 func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) (*FieldResolver, error) {
@@ -111,6 +116,16 @@ func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) (*Fi
 
 func emptyResolver(params Params) (interface{}, error) {
 	return nil, nil
+}
+
+func (rm *ResolverMap) FieldsToResolve() []string {
+	var allFields []string
+	for typ, fieldRes := range rm.Types {
+		for field := range fieldRes.Fields {
+			allFields = append(allFields, typ.TypeName()+"."+field)
+		}
+	}
+	return allFields
 }
 
 var metaTypes = []string{
