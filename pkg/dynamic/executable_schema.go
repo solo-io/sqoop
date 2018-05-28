@@ -11,15 +11,13 @@ import (
 	"github.com/vektah/gqlgen/neelance/query"
 	"github.com/vektah/gqlgen/neelance/schema"
 	"fmt"
-	"time"
-	"github.com/solo-io/gloo/pkg/log"
-	"reflect"
+	"github.com/vektah/gqlgen/neelance/common"
+	"github.com/pkg/errors"
 )
 
-func MakeExecutableSchema(parsedSchema *schema.Schema, inputResolvers map[string]ResolverFunc) graphql.ExecutableSchema {
-	resolvers := NewResolverMap(parsedSchema, inputResolvers)
-	log.Printf("give me these resolvers:\n%v", resolvers.FieldsToResolve())
-	return &executableSchema{schema: parsedSchema, resolvers: resolvers}
+func MakeExecutableSchema(parsedSchema *schema.Schema) (graphql.ExecutableSchema, *ResolverMap) {
+	resolvers := NewResolverMap(parsedSchema)
+	return &executableSchema{schema: parsedSchema, resolvers: resolvers}, resolvers
 }
 
 type executableSchema struct {
@@ -104,121 +102,150 @@ func (ec *executionContext) _Query(ctx context.Context, sel []query.Selection) g
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		default:
-			out.Values[i], _ = ec.execute(ctx, nil, field, ec.EntryPoints["query"])
+			val, err := ec.resolveField(ctx, nil, field, ec.EntryPoints["query"])
+			if err != nil {
+				ec.Errors = append(ec.Errors, err)
+				continue
+			}
+			out.Values[i] = val.Marshaller()
 		}
 	}
 
 	return out
 }
 
-func (ec *executionContext) execute(ctx context.Context, source map[string]interface{}, field graphql.CollectedField, typ schema.NamedType) (graphql.Marshaler, bool) {
-	// do the resolution here
-	res, err := ec.resolvers.Resolve(typ, field.Name, Params{Source: source, Args: field.Args})
-	if err != nil {
-		ec.Errors = append(ec.Errors, err)
-		return graphql.Null, true
+func (ec *executionContext) resolveField(ctx context.Context, parent *Object, field graphql.CollectedField, typ common.Type) (Value, error) {
+	switch typ := typ.(type) {
+	// TODO: add cases for interface and union
+	case *schema.Object:
+		return ec.resolveObject(ctx, parent, field, typ)
+	case *common.List:
+		return ec.resolveList(ctx, parent, field, typ)
+	case *schema.Scalar:
+		return ec.resolveScalar(ctx, parent, field, typ)
+	default:
+		return nil, errors.Errorf("unsupported field type %v", typ.TypeName())
 	}
-	if res.Data == nil {
-		return graphql.Null, true
+}
+
+func (ec *executionContext) resolveObject(ctx context.Context, parent *Object, field graphql.CollectedField, typ *schema.Object) (Value, error) {
+	result, err := ec.resolvers.Resolve(typ, field.Name, Params{
+		Source: parent,
+		Args:   field.Args,
+	})
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to resolve field %v", field.Name)
 	}
 
-	var fieldType *schema.Field
-	switch typ := typ.(type) {
-	case *schema.Object:
-		for _, f := range typ.Fields {
-			if f.Name == field.Name {
-				fieldType = f
-				break
-			}
-		}
-	case *schema.Interface:
-		for _, f := range typ.Fields {
-			if f.Name == field.Name {
-				fieldType = f
-				break
-			}
-		}
+	resultObject, ok := result.(*Object)
+	if !ok {
+		// TODO: sanitize
+		return nil, errors.Errorf("INTERNAL ERROR: resolver result %v was not *Object value", result)
 	}
-	if fieldType == nil {
-		panic(fmt.Errorf("%v not found in %v", field, typ))
-	}
+
+	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
+		Object: typ.TypeName(),
+	})
 
 	implementors := getImplementors(typ)
 	fields := graphql.CollectFields(ec.Doc, field.Selections, implementors, ec.Variables)
-	out := graphql.NewOrderedMap(len(fields))
 
-	for i, subField := range fields {
-		out.Keys[i] = subField.Alias
-		switch subField.Name {
+	// override fields, edit out what we don't need
+	data := NewOrderedMap()
+
+	for _, field := range fields {
+		var val Value
+		switch field.Name {
+		// request for the object's typeName
 		case "__typename":
-			out.Values[i] = graphql.MarshalString(fieldType.Type.String())
-		default:
-			var (
-				// result for the nested field
-				fieldResult graphql.Marshaler
-				isNull      bool
-			)
-			switch parentType := fieldType.Type.(type) {
-			case schema.NamedType:
-				data := res.Data.(map[string]interface{})
-				fieldResult, isNull = ec.execute(ctx, data, subField, parentType)
-				if isNull {
-					// if fieldResult was null (no resolver defined) but the parent resolver worked,
-					// don't overwrite with null
-					// create the marshaller from the value for the
-					// field in the parent object (might also be null)
-					fieldResult = createMarshaler(res.Data.(map[string]interface{})[subField.Name])
-				}
-			default:
-				panic(parentType)
-
-			//case common.List:
-				//	//var fieldResult graphql.Array
-				//	data := res.Data.([]map[string]interface{})
-				//	for _, element := range data {
-				//		arrayType := parentType.OfType.(schema.NamedType)
-				//		elementResult, isNull := ec.execute(ctx, res.Data.(map[string]interface{}), subField, arrayType)
-				//		if isNull {
-				//			// if fieldResult was null (no resolver defined) but the parent resolver worked,
-				//			// don't overwrite with null
-				//			// create the marshaller from the field in the parent object (might also be null)
-				//			elementResult = createMarshaler(res.Data.(map[string]interface{})[subField.Name])
-				//		}
-				//
-				//	}
+			val = &String{
+				Data: typ.TypeName(),
 			}
-			out.Values[i] = fieldResult
+		default:
+			schemaField, err := lookupField(typ, field)
+			if err != nil {
+				return nil, errors.Errorf("unknown field " + strconv.Quote(field.Name))
+			}
+			val, err = ec.resolveField(ctx, resultObject, field, schemaField.Type)
+			if err != nil {
+				return nil, errors.Wrapf(err, "resolving field "+strconv.Quote(field.Name))
+			}
 		}
+		// nothing to overwrite, use original value
+		if val == nil {
+			val = resultObject.Data.Get(field.Name)
+		}
+		if val == nil {
+			val = &Null{}
+		}
+		data.Set(field.Name, val)
 	}
 
-	return out, false
+	return result, nil
 }
 
-func createMarshaler(val interface{}) graphql.Marshaler {
-	if val == nil {
-		return graphql.Null
+func (ec *executionContext) resolveList(ctx context.Context, parent *Object, field graphql.CollectedField, typ *schema.Object) (Value, error) {
+	result, err := ec.resolvers.Resolve(typ, field.Name, Params{
+		Source: parent,
+		Args:   field.Args,
+	})
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to resolve field %v", field.Name)
 	}
-	switch val := val.(type) {
-	case bool:
-		return graphql.MarshalBoolean(val)
-	case float64:
-		return graphql.MarshalFloat(val)
-	case string:
-		return graphql.MarshalString(val)
-	case int:
-		return graphql.MarshalInt(val)
-	case time.Time:
-		return graphql.MarshalTime(val)
-	case []interface{}:
-		var array graphql.Array
-		for _, el := range val {
-			array = append(array, createMarshaler(el))
+
+	resultObject, ok := result.(*Object)
+	if !ok {
+		// TODO: sanitize
+		return nil, errors.Errorf("INTERNAL ERROR: resolver result %v was not *Object value", result)
+	}
+
+	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
+		Object: typ.TypeName(),
+	})
+
+	implementors := getImplementors(typ)
+	fields := graphql.CollectFields(ec.Doc, field.Selections, implementors, ec.Variables)
+
+	// override fields, edit out what we don't need
+	data := NewOrderedMap()
+
+	for _, field := range fields {
+		var val Value
+		switch field.Name {
+		// request for the object's typeName
+		case "__typename":
+			val = &String{
+				Data: typ.TypeName(),
+			}
+		default:
+			schemaField, err := lookupField(typ, field)
+			if err != nil {
+				return nil, errors.Errorf("unknown field " + strconv.Quote(field.Name))
+			}
+			val, err = ec.resolveField(ctx, resultObject, field, schemaField.Type)
+			if err != nil {
+				return nil, errors.Wrapf(err, "resolving field "+strconv.Quote(field.Name))
+			}
 		}
-		return array
-	case map[string]interface{}:
-		return graphql.MarshalMap(val)
+		// nothing to overwrite, use original value
+		if val == nil {
+			val = resultObject.Data.Get(field.Name)
+		}
+		if val == nil {
+			val = &Null{}
+		}
+		data.Set(field.Name, val)
 	}
-	panic(fmt.Errorf("no marshaler implemented yet for type %q", reflect.TypeOf(val)))
+
+	return result, nil
+}
+
+func lookupField(obj *schema.Object, field graphql.CollectedField) (*schema.Field, error) {
+	schemaField := obj.Fields.Get(field.Name)
+	if schemaField == nil {
+		return nil, errors.Errorf("field %v not found for obj %v", field.Name, obj.TypeName())
+	}
+	return schemaField, nil
 }
 
 func getImplementors(typ schema.NamedType) []string {
@@ -240,7 +267,7 @@ func getImplementors(typ schema.NamedType) []string {
 		}
 
 	default:
-		panic(fmt.Errorf("unknown interface %#v", typ))
+		panic(fmt.Errorf("unknown type %#v", typ))
 	}
 	return implementors
 }
@@ -263,7 +290,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel []query.Selection
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
 		default:
-			out.Values[i], _ = ec.execute(ctx, nil, field, ec.EntryPoints["Mutation"])
+			val, err := ec.resolveField(ctx, nil, field, ec.EntryPoints["mutation"])
+			if err != nil {
+				ec.Errors = append(ec.Errors, err)
+				continue
+			}
+			out.Values[i] = val.Marshaller()
 		}
 	}
 

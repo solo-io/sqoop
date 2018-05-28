@@ -105,14 +105,17 @@ type OrderedMap struct {
 	Values []Value
 }
 
-func NewOrderedMap(len int) *OrderedMap {
-	return &OrderedMap{
-		Keys:   make([]string, len),
-		Values: make([]Value, len),
-	}
+func NewOrderedMap() *OrderedMap {
+	return &OrderedMap{}
 }
 
-func (m *OrderedMap) Add(key string, value Value) {
+func (m *OrderedMap) Set(key string, value Value) {
+	for i, k := range m.Keys {
+		if key == k {
+			m.Values[i] = value
+			return
+		}
+	}
 	m.Keys = append(m.Keys, key)
 	m.Values = append(m.Values, value)
 }

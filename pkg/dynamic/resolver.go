@@ -33,7 +33,7 @@ type ResolverFunc func(params Params) (Value, error)
 type RawResolver func(params Params) ([]byte, error)
 
 type Params struct {
-	Source map[string]interface{}
+	Source *Object
 	Args   map[string]interface{}
 }
 
