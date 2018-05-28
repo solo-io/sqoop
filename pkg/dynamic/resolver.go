@@ -7,6 +7,7 @@ import (
 	"github.com/solo-io/gloo/pkg/log"
 	"encoding/json"
 	"time"
+	"strconv"
 )
 
 // store all the user resolvers
@@ -73,36 +74,58 @@ func (rm *ResolverMap) RegisterResolver(typ schema.NamedType, field string, rawR
 	if err != nil {
 		return err
 	}
-	var resolverFunc ResolverFunc
-	switch fieldType := fieldResolver.Type.(type) {
-	case *schema.Object:
-		resolverFunc = func(params Params) (Value, error) {
-			data, err := rawResolver(params)
-			if err != nil {
-				return nil, errors.Wrap(err, "calling raw resolver")
-			}
-			var rawObj map[string]interface{}
-			if err := json.Unmarshal(data, &rawObj); err != nil {
+	fieldResolver.ResolverFunc = func(params Params) (Value, error) {
+		data, err := rawResolver(params)
+		if err != nil {
+			return nil, errors.Wrap(err, "calling raw resolver")
+		}
+		switch fieldType := fieldResolver.Type.(type) {
+		case *schema.Object:
+			var rawResult map[string]interface{}
+			if err := json.Unmarshal(data, &rawResult); err != nil {
 				return nil, errors.Wrap(err, "parsing response as json")
 			}
-			obj := make(map[string]Value)
-			// convert each interface{} type to Value type
-			for _, field := range fieldType.Fields {
-				// set the field to null if the response object
-				// didn't contain it
-				rawValue, ok := rawObj[field.Name]
-				if !ok || rawValue == nil {
-					obj[field.Name] = &Null{}
-					continue
-				}
-
-				var val Value
-
+			return convertValue(fieldType, rawResult)
+		case *common.List:
+			var rawResult []interface{}
+			if err := json.Unmarshal(data, &rawResult); err != nil {
+				return nil, errors.Wrap(err, "parsing response as json")
 			}
-			return &Object{Data: obj, Object: fieldType}, nil
+			return convertValue(fieldType, rawResult)
+		case *schema.Scalar:
+			return scalarFromBytes(fieldType, string(data))
 		}
+		return nil, errors.Errorf("unable to resolve field type %v", fieldResolver.Type)
 	}
 	return nil
+}
+
+// TODO: support custom scalars
+func scalarFromBytes(scalar *schema.Scalar, raw string) (Value, error) {
+	switch scalar.TypeName() {
+	case "Int":
+		v, err := strconv.Atoi(raw)
+		if err != nil {
+			return nil, errors.Wrap(err, "converting bytes to int")
+		}
+		return &Int{Scalar: scalar, Data: v}, nil
+	case "Float":
+		v, err := strconv.ParseFloat(raw, 64)
+		if err != nil {
+			return nil, errors.Wrap(err, "converting bytes to float")
+		}
+		return &Float{Scalar: scalar, Data: v}, nil
+	case "String", "ID":
+		return &String{Scalar: scalar, Data: raw}, nil
+	case "Boolean":
+		v, err := strconv.ParseBool(raw)
+		if err != nil {
+			return nil, errors.Wrap(err, "converting bytes to float")
+		}
+		return &Bool{Scalar: scalar, Data: v}, nil
+	default:
+		return nil, errors.Errorf("custom scalars unsupported: %v", scalar.TypeName())
+	}
 }
 
 func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
