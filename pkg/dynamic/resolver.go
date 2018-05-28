@@ -4,6 +4,7 @@ import (
 	"github.com/vektah/gqlgen/neelance/schema"
 	"github.com/vektah/gqlgen/neelance/common"
 	"github.com/pkg/errors"
+	"github.com/solo-io/gloo/pkg/log"
 )
 
 // store all the user resolvers
@@ -37,30 +38,14 @@ func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) 
 		switch t := t.(type) {
 		case *schema.Object:
 			for _, f := range t.Fields {
-				res := inputResolvers[t.Name+"."+f.Name]
+				inputKey := t.Name+"."+f.Name
+				log.Printf("looking for resolver: %v", inputKey)
+				res := inputResolvers[inputKey]
 				if res == nil {
 					continue
 				}
 				fields[f.Name] = &FieldResolver{Type: f.Type, ResolverFunc: res}
 			}
-		case *schema.Interface:
-			for _, f := range t.Fields {
-				res := inputResolvers[t.Name+"."+f.Name]
-				if res == nil {
-					continue
-				}
-				fields[f.Name] = &FieldResolver{Type: f.Type, ResolverFunc: res}
-			}
-
-			// TODO: figure out union. should support all fields from all children. how to deal with name overlap?
-		case *schema.Union:
-			//for _, o := range t.PossibleTypes {
-			//	res := inputResolvers[t.Name+"."+o.Name]
-			//	if res == nil {
-			//		res = emptyResolver
-			//	}
-			//	fields[o.Name] = &FieldResolver{Type: o, ResolverFunc: res}
-			//}
 		}
 		if len(fields) == 0 {
 			continue
@@ -143,17 +128,6 @@ func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) (*Fi
 		return nil, errors.Errorf("type %v does not contain field %v", typ.TypeName(), field)
 	}
 	return fieldResolver, nil
-}
-
-// for debug purposes
-func (rm *ResolverMap) FieldsToResolve() []string {
-	var allFields []string
-	for typ, fieldRes := range rm.Types {
-		for field := range fieldRes.Fields {
-			allFields = append(allFields, typ.TypeName()+"."+field)
-		}
-	}
-	return allFields
 }
 
 var metaTypes = []string{
