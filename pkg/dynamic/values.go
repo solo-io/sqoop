@@ -26,7 +26,7 @@ var (
 
 type Object struct {
 	*schema.Object
-	Data map[string]Value
+	Data OrderedMap
 }
 
 type Array struct {
@@ -59,18 +59,17 @@ type Time struct {
 	Data time.Time
 }
 
-type Null struct {}
+type Null struct{}
 
-func (t *Null) Kind() string {return "NULL" }
-func (t *Null)  String() string{return "null" }
+func (t *Null) Kind() string   { return "NULL" }
+func (t *Null) String() string { return "null" }
 
 func (t *Object) Marshaller() graphql.Marshaler {
-	fieldMap := graphql.NewOrderedMap(len(t.Data))
-	var i int
-	for k, v := range t.Data {
-		fieldMap.Keys[i] = k
-		fieldMap.Values[i] = v.Marshaller()
-		i++
+	items := t.Data.Items()
+	fieldMap := graphql.NewOrderedMap(len(items))
+	for i, item := range items {
+		fieldMap.Keys[i] = item.Key
+		fieldMap.Values[i] = item.Value.Marshaller()
 	}
 	return fieldMap
 }
@@ -98,4 +97,61 @@ func (t *Time) Marshaller() graphql.Marshaler {
 }
 func (t *Null) Marshaller() graphql.Marshaler {
 	return graphql.Null
+}
+
+// preserving order matters
+type OrderedMap struct {
+	Keys   []string
+	Values []Value
+}
+
+func NewOrderedMap(len int) *OrderedMap {
+	return &OrderedMap{
+		Keys:   make([]string, len),
+		Values: make([]Value, len),
+	}
+}
+
+func (m *OrderedMap) Add(key string, value Value) {
+	m.Keys = append(m.Keys, key)
+	m.Values = append(m.Values, value)
+}
+
+func (m *OrderedMap) Get(key string) Value {
+	for i, k := range m.Keys {
+		if key == k {
+			return m.Values[i]
+		}
+	}
+	return nil
+}
+
+func (m *OrderedMap) Delete(key string) {
+	for i, k := range m.Keys {
+		if key == k {
+			m.Keys = append(m.Keys[:i], m.Keys[i+1:]...)
+			m.Values = append(m.Values[:i], m.Values[i+1:]...)
+			return
+		}
+	}
+}
+
+func (m *OrderedMap) Items() []struct {
+	Key   string
+	Value Value
+} {
+	var items []struct {
+		Key   string;
+		Value Value
+	}
+	for i, k := range m.Keys {
+		items = append(items, struct {
+			Key   string;
+			Value Value
+		}{
+			Key:   k,
+			Value: m.Values[i],
+		})
+	}
+	return items
 }
