@@ -141,7 +141,7 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			// TODO: filter data out of logs (could be sensitive)
 			return nil, errors.Errorf("raw value %v was not type *schema.Object", rawValue)
 		}
-		obj := make(map[string]Value)
+		obj := NewOrderedMap(len(typ.Fields))
 		// convert each interface{} type to Value type
 		for _, field := range typ.Fields {
 			// set each field of the *Object to be a
@@ -150,7 +150,7 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			if err != nil {
 				return nil, errors.Wrapf(err, "converting object field %v", field.Name)
 			}
-			rawObj[field.Name] = convertedValue
+			obj.Add(field.Name, convertedValue)
 		}
 		return &Object{Data: obj, Object: typ}, nil
 	case *common.List:
@@ -217,9 +217,9 @@ func convertResult(typ common.Type, data interface{}) (Value, error) {
 	var result Value
 	switch typ := typ.(type) {
 	case *schema.Object:
-		obj, ok := data.(map[string]Value)
+		obj, ok := data.(*OrderedMap)
 		if !ok {
-			return nil, errors.Errorf("resolver did not return expected type map[string]interface{}: %v", data)
+			return nil, errors.Errorf("resolver did not return expected type *OrderedMap: %v", data)
 		}
 		result = &Object{
 			Object: typ,
@@ -228,7 +228,7 @@ func convertResult(typ common.Type, data interface{}) (Value, error) {
 	case *common.List:
 		items, ok := data.([]interface{})
 		if !ok {
-			return nil, errors.Errorf("resolver did not return expected type map[string]interface{}: %v", data)
+			return nil, errors.Errorf("resolver did not return expected type []interface{}: %v", data)
 		}
 		var list []Value
 		for _, item := range items {

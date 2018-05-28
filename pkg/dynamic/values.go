@@ -26,7 +26,7 @@ var (
 
 type Object struct {
 	*schema.Object
-	Data OrderedMap
+	Data *OrderedMap
 }
 
 type Array struct {
