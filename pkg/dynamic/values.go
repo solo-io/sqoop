@@ -59,6 +59,11 @@ type Time struct {
 	Data time.Time
 }
 
+type Null struct {}
+
+func (t *Null) Kind() string {return "NULL" }
+func (t *Null)  String() string{return "null" }
+
 func (t *Object) Marshaller() graphql.Marshaler {
 	fieldMap := graphql.NewOrderedMap(len(t.Data))
 	var i int
@@ -90,4 +95,7 @@ func (t *Bool) Marshaller() graphql.Marshaler {
 }
 func (t *Time) Marshaller() graphql.Marshaler {
 	return graphql.MarshalTime(t.Data)
+}
+func (t *Null) Marshaller() graphql.Marshaler {
+	return graphql.Null
 }

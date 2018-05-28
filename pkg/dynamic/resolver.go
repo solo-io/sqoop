@@ -5,6 +5,8 @@ import (
 	"github.com/vektah/gqlgen/neelance/common"
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/log"
+	"encoding/json"
+	"time"
 )
 
 // store all the user resolvers
@@ -27,35 +29,7 @@ type FieldResolver struct {
 }
 
 type ResolverFunc func(params Params) (Value, error)
-
-func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) *ResolverMap {
-	typeMap := make(map[schema.NamedType]*TypeResolver)
-	for _, t := range sch.Types {
-		if metaType(t.TypeName()) {
-			continue
-		}
-		fields := make(map[string]*FieldResolver)
-		switch t := t.(type) {
-		case *schema.Object:
-			for _, f := range t.Fields {
-				inputKey := t.Name+"."+f.Name
-				log.Printf("looking for resolver: %v", inputKey)
-				res := inputResolvers[inputKey]
-				if res == nil {
-					continue
-				}
-				fields[f.Name] = &FieldResolver{Type: f.Type, ResolverFunc: res}
-			}
-		}
-		if len(fields) == 0 {
-			continue
-		}
-		typeMap[t] = &TypeResolver{Fields: fields}
-	}
-	return &ResolverMap{
-		Types: typeMap,
-	}
-}
+type RawResolver func(params Params) ([]byte, error)
 
 type Params struct {
 	Source map[string]interface{}
@@ -69,10 +43,141 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
+func NewResolverMap(sch *schema.Schema) *ResolverMap {
+	typeMap := make(map[schema.NamedType]*TypeResolver)
+	for _, t := range sch.Types {
+		if metaType(t.TypeName()) {
+			continue
+		}
+		fields := make(map[string]*FieldResolver)
+		switch t := t.(type) {
+		case *schema.Object:
+			for _, f := range t.Fields {
+				inputKey := t.Name + "." + f.Name
+				log.Printf("initializing resolver: %v", inputKey)
+				fields[f.Name] = &FieldResolver{Type: f.Type, ResolverFunc: nil}
+			}
+		}
+		if len(fields) == 0 {
+			continue
+		}
+		typeMap[t] = &TypeResolver{Fields: fields}
+	}
+	return &ResolverMap{
+		Types: typeMap,
+	}
+}
+
+func (rm *ResolverMap) RegisterResolver(typ schema.NamedType, field string, rawResolver RawResolver) error {
+	fieldResolver, err := rm.getFieldResolver(typ, field)
+	if err != nil {
+		return err
+	}
+	var resolverFunc ResolverFunc
+	switch fieldType := fieldResolver.Type.(type) {
+	case *schema.Object:
+		resolverFunc = func(params Params) (Value, error) {
+			data, err := rawResolver(params)
+			if err != nil {
+				return nil, errors.Wrap(err, "calling raw resolver")
+			}
+			var rawObj map[string]interface{}
+			if err := json.Unmarshal(data, &rawObj); err != nil {
+				return nil, errors.Wrap(err, "parsing response as json")
+			}
+			obj := make(map[string]Value)
+			// convert each interface{} type to Value type
+			for _, field := range fieldType.Fields {
+				// set the field to null if the response object
+				// didn't contain it
+				rawValue, ok := rawObj[field.Name]
+				if !ok || rawValue == nil {
+					obj[field.Name] = &Null{}
+					continue
+				}
+
+				var val Value
+
+			}
+			return &Object{Data: obj, Object: fieldType}, nil
+		}
+	}
+	return nil
+}
+
+func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
+	// TODO: be careful about these nil returns
+	if rawValue == nil {
+		return &Null{}, nil
+	}
+	switch typ := typ.(type) {
+	case *schema.Object:
+		// rawValue must be map[string]interface{}
+		rawObj, ok := rawValue.(map[string]interface{})
+		if !ok {
+			// TODO: filter data out of logs (could be sensitive)
+			return nil, errors.Errorf("raw value %v was not type *schema.Object", rawValue)
+		}
+		obj := make(map[string]Value)
+		// convert each interface{} type to Value type
+		for _, field := range typ.Fields {
+			// set each field of the *Object to be a
+			// value wrapper around the raw object's value for the field
+			convertedValue, err := convertValue(field.Type, rawObj[field.Name])
+			if err != nil {
+				return nil, errors.Wrapf(err, "converting object field %v", field.Name)
+			}
+			rawObj[field.Name] = convertedValue
+		}
+		return &Object{Data: obj, Object: typ}, nil
+	case *common.List:
+		// rawValue must be map[string]interface{}
+		rawList, ok := rawValue.([]interface{})
+		if !ok {
+			// TODO: filter data out of logs (could be sensitive)
+			return nil, errors.Errorf("raw value %v was not type *common.List", rawValue)
+		}
+		var array []Value
+		// convert each interface{} type to Value type
+		for _, rawElement := range rawList {
+			// set each field of the *Object to be a
+			// value wrapper around the raw object's value for the field
+			convertedValue, err := convertValue(typ.OfType, rawElement)
+			if err != nil {
+				return nil, errors.Wrapf(err, "converting array element")
+			}
+			array = append(array, convertedValue)
+		}
+		return &Array{Data: array, List: typ}, nil
+	case *schema.Scalar:
+		switch data := rawValue.(type) {
+		case int:
+			return &Int{Data: data, Scalar: typ}, nil
+		case string:
+			return &String{Data: data, Scalar: typ}, nil
+		case float32:
+			return &Float{Data: float64(data), Scalar: typ}, nil
+		case float64:
+			return &Float{Data: data, Scalar: typ}, nil
+		case bool:
+			return &Bool{Data: data, Scalar: typ}, nil
+		case time.Time:
+			return &Time{Data: data, Scalar: typ}, nil
+		default:
+			// TODO: sanitize logs/error messages
+			return nil, errors.Errorf("unknown return type %v", data)
+		}
+	}
+	return nil, errors.Errorf("unknown or unsupported type %v", typ.String())
+}
+
 func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params) (Value, error) {
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolver lookup")
+	}
+	if fieldResolver.ResolverFunc == nil {
+		return nil, errors.Wrapf(err, "resolver for %v.%v has not been registered", typ.String(), field)
 	}
 	data, err := fieldResolver.ResolverFunc(params)
 	if err != nil {
@@ -85,7 +190,7 @@ func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params
 	return result, nil
 }
 
-func convertResult(typ common.Type, data interface{}) (Value , error) {
+func convertResult(typ common.Type, data interface{}) (Value, error) {
 	var result Value
 	switch typ := typ.(type) {
 	case *schema.Object:
@@ -95,7 +200,7 @@ func convertResult(typ common.Type, data interface{}) (Value , error) {
 		}
 		result = &Object{
 			Object: typ,
-			Data: obj,
+			Data:   obj,
 		}
 	case *common.List:
 		items, ok := data.([]interface{})
