@@ -69,7 +69,17 @@ func NewResolverMap(sch *schema.Schema) *ResolverMap {
 	}
 }
 
-func (rm *ResolverMap) RegisterResolver(typ schema.NamedType, field string, rawResolver RawResolver) error {
+func (rm *ResolverMap) RegisterResolver(typeName string, field string, rawResolver RawResolver) error {
+	var typ schema.NamedType
+	for t := range rm.Types {
+		if t.TypeName() == typeName {
+			typ = t
+			break
+		}
+	}
+	if typ == nil {
+		return errors.Errorf("no type found for %v", typeName)
+	}
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return err
@@ -141,7 +151,7 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			// TODO: filter data out of logs (could be sensitive)
 			return nil, errors.Errorf("raw value %v was not type *schema.Object", rawValue)
 		}
-		obj := NewOrderedMap(len(typ.Fields))
+		obj := NewOrderedMap()
 		// convert each interface{} type to Value type
 		for _, field := range typ.Fields {
 			// set each field of the *Object to be a
@@ -150,7 +160,7 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			if err != nil {
 				return nil, errors.Wrapf(err, "converting object field %v", field.Name)
 			}
-			obj.Add(field.Name, convertedValue)
+			obj.Set(field.Name, convertedValue)
 		}
 		return &Object{Data: obj, Object: typ}, nil
 	case *common.List:
@@ -200,7 +210,7 @@ func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params
 		return nil, errors.Wrap(err, "resolver lookup")
 	}
 	if fieldResolver.ResolverFunc == nil {
-		return nil, errors.Wrapf(err, "resolver for %v.%v has not been registered", typ.String(), field)
+		return nil, errors.Errorf("resolver for %v.%v has not been registered", typ.String(), field)
 	}
 	data, err := fieldResolver.ResolverFunc(params)
 	if err != nil {

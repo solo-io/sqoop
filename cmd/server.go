@@ -14,9 +14,13 @@ import (
 	"encoding/json"
 )
 
+var starWarsSchema = test.StarWarsSchema
+
 func main() {
 	http.Handle("/", handler.Playground("Starwars", "/query"))
-	http.Handle("/query", handler.GraphQL(dynamic.MakeExecutableSchema(test.StarWarsSchema, starWarsResolvers),
+	execSchema, resolvers := dynamic.MakeExecutableSchema(starWarsSchema)
+	addResolvers(resolvers)
+	http.Handle("/query", handler.GraphQL(execSchema,
 		handler.ResolverMiddleware(func(ctx context.Context, next graphql.Resolver) (res interface{}, err error) {
 			rc := graphql.GetResolverContext(ctx)
 			fmt.Println("Entered", rc.Object, rc.Field.Name)
@@ -31,26 +35,14 @@ func main() {
 
 var baseResolvers = starwars.NewResolver()
 
-var starWarsResolvers = map[string]dynamic.ResolverFunc{
-	"Query.character": func(params dynamic.Params) (interface{}, error) {
-		v, err := baseResolvers.Query_character(context.TODO(), params.Arg("id").(string))
+func addResolvers(resolvers *dynamic.ResolverMap) {
+	resolvers.RegisterResolver("Query", "human", func(params dynamic.Params) ([]byte, error) {
+		v, err := baseResolvers.Query_human(context.TODO(), params.Arg("id").(string))
 		if err != nil {
 			return nil, err
 		}
-		return fromJson(v), nil
-	},
-	//"Character.friends": func(params dynamic.Params) (interface{}, error) {
-	//	var friends []map[string]interface{}
-	//	ids := params.Source["FriendIds"].([]interface{})
-	//	for _, id := range ids {
-	//		f, err := baseResolvers.Query_character(context.TODO(), id.(string))
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//		friends = append(friends, fromJson(f))
-	//	}
-	//	return friends, nil
-	//},
+		return json.Marshal(v)
+	})
 }
 
 // simulate parsing a json response

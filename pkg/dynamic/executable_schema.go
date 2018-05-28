@@ -104,7 +104,8 @@ func (ec *executionContext) _Query(ctx context.Context, sel []query.Selection) g
 		default:
 			val, err := ec.resolveField(ctx, nil, field, ec.EntryPoints["query"])
 			if err != nil {
-				ec.Errors = append(ec.Errors, err)
+				ec.Error(ctx, err)
+				out.Values[i] = graphql.Null
 				continue
 			}
 			out.Values[i] = val.Marshaller()
@@ -124,11 +125,11 @@ func (ec *executionContext) resolveField(ctx context.Context, parent *Object, fi
 	case *schema.Scalar:
 		return ec.resolveScalar(ctx, parent, field, typ)
 	default:
-		return nil, errors.Errorf("unsupported field type %v", typ.TypeName())
+		return nil, errors.Errorf("unsupported field type %v", typ.String())
 	}
 }
 
-func (ec *executionContext) resolveObject(ctx context.Context, parent *Object, field graphql.CollectedField, typ *schema.Object) (Value, error) {
+func (ec *executionContext) resolveObject(ctx context.Context, parent *Object, field graphql.CollectedField, typ *schema.Object) (*Object, error) {
 	result, err := ec.resolvers.Resolve(typ, field.Name, Params{
 		Source: parent,
 		Args:   field.Args,
@@ -150,7 +151,6 @@ func (ec *executionContext) resolveObject(ctx context.Context, parent *Object, f
 	implementors := getImplementors(typ)
 	fields := graphql.CollectFields(ec.Doc, field.Selections, implementors, ec.Variables)
 
-	// override fields, edit out what we don't need
 	data := NewOrderedMap()
 
 	for _, field := range fields {
@@ -181,63 +181,18 @@ func (ec *executionContext) resolveObject(ctx context.Context, parent *Object, f
 		data.Set(field.Name, val)
 	}
 
-	return result, nil
+	// override fields, edit out what we don't need
+	resultObject.Data = data
+
+	return resultObject, nil
 }
 
-func (ec *executionContext) resolveList(ctx context.Context, parent *Object, field graphql.CollectedField, typ *schema.Object) (Value, error) {
-	result, err := ec.resolvers.Resolve(typ, field.Name, Params{
-		Source: parent,
-		Args:   field.Args,
-	})
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to resolve field %v", field.Name)
-	}
+func (ec *executionContext) resolveList(ctx context.Context, parent *Object, field graphql.CollectedField, typ *common.List) (Value, error) {
+	panic("not implemented")
+}
 
-	resultObject, ok := result.(*Object)
-	if !ok {
-		// TODO: sanitize
-		return nil, errors.Errorf("INTERNAL ERROR: resolver result %v was not *Object value", result)
-	}
-
-	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
-		Object: typ.TypeName(),
-	})
-
-	implementors := getImplementors(typ)
-	fields := graphql.CollectFields(ec.Doc, field.Selections, implementors, ec.Variables)
-
-	// override fields, edit out what we don't need
-	data := NewOrderedMap()
-
-	for _, field := range fields {
-		var val Value
-		switch field.Name {
-		// request for the object's typeName
-		case "__typename":
-			val = &String{
-				Data: typ.TypeName(),
-			}
-		default:
-			schemaField, err := lookupField(typ, field)
-			if err != nil {
-				return nil, errors.Errorf("unknown field " + strconv.Quote(field.Name))
-			}
-			val, err = ec.resolveField(ctx, resultObject, field, schemaField.Type)
-			if err != nil {
-				return nil, errors.Wrapf(err, "resolving field "+strconv.Quote(field.Name))
-			}
-		}
-		// nothing to overwrite, use original value
-		if val == nil {
-			val = resultObject.Data.Get(field.Name)
-		}
-		if val == nil {
-			val = &Null{}
-		}
-		data.Set(field.Name, val)
-	}
-
-	return result, nil
+func (ec *executionContext) resolveScalar(ctx context.Context, parent *Object, field graphql.CollectedField, typ *schema.Scalar) (Value, error) {
+	panic("not implemented")
 }
 
 func lookupField(obj *schema.Object, field graphql.CollectedField) (*schema.Field, error) {
