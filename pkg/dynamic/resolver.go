@@ -25,7 +25,6 @@ type FieldResolver struct {
 	ResolverFunc ResolverFunc
 }
 
-// todo
 type ResolverFunc func(params Params) (Value, error)
 
 func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) *ResolverMap {
@@ -40,7 +39,7 @@ func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) 
 			for _, f := range t.Fields {
 				res := inputResolvers[t.Name+"."+f.Name]
 				if res == nil {
-					res = emptyResolver
+					continue
 				}
 				fields[f.Name] = &FieldResolver{Type: f.Type, ResolverFunc: res}
 			}
@@ -48,7 +47,7 @@ func NewResolverMap(sch *schema.Schema, inputResolvers map[string]ResolverFunc) 
 			for _, f := range t.Fields {
 				res := inputResolvers[t.Name+"."+f.Name]
 				if res == nil {
-					res = emptyResolver
+					continue
 				}
 				fields[f.Name] = &FieldResolver{Type: f.Type, ResolverFunc: res}
 			}
@@ -85,7 +84,7 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func (rm *ResolverMap) Resolve(typ common.Type, field string, params Params) (Value, error) {
+func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params) (Value, error) {
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolver lookup")
@@ -146,10 +145,7 @@ func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) (*Fi
 	return fieldResolver, nil
 }
 
-func emptyResolver(params Params) (interface{}, error) {
-	return nil, nil
-}
-
+// for debug purposes
 func (rm *ResolverMap) FieldsToResolve() []string {
 	var allFields []string
 	for typ, fieldRes := range rm.Types {
