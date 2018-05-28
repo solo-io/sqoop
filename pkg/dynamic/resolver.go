@@ -227,13 +227,24 @@ func convertResult(typ common.Type, data interface{}) (Value, error) {
 	var result Value
 	switch typ := typ.(type) {
 	case *schema.Object:
-		obj, ok := data.(*OrderedMap)
-		if !ok {
-			return nil, errors.Errorf("resolver did not return expected type *OrderedMap: %v", data)
-		}
-		result = &Object{
-			Object: typ,
-			Data:   obj,
+		switch data := data.(type) {
+		case *Object:
+			return data, nil
+		case map[string]interface{}:
+			orderedData := NewOrderedMap()
+			for _, f := range typ.Fields {
+				typedValue, err := convertValue(f.Type, data[f.Name])
+				if err != nil {
+					return nil, errors.Wrapf(err, "converting untyped value %v", data[f.Name])
+				}
+				orderedData.Set(f.Name, typedValue)
+			}
+			result = &Object{
+				Object: typ,
+				Data:   orderedData,
+			}
+		default:
+			return nil, errors.Errorf("resolver did not return expected type map or *Object: %v", data)
 		}
 	case *common.List:
 		items, ok := data.([]interface{})
