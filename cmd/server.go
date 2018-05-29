@@ -37,6 +37,13 @@ func main() {
 var baseResolvers = starwars.NewResolver()
 
 func addResolvers(resolvers *dynamic.ResolverMap) {
+	resolvers.RegisterResolver("Query", "hero", func(params dynamic.Params) ([]byte, error) {
+		v, err := baseResolvers.Query_hero(context.TODO(), starwars.EpisodeJedi)
+		if err != nil {
+			return nil, err
+		}
+		return json.Marshal(v)
+	})
 	resolvers.RegisterResolver("Query", "human", func(params dynamic.Params) ([]byte, error) {
 		v, err := baseResolvers.Query_human(context.TODO(), params.Arg("id").(string))
 		if err != nil {

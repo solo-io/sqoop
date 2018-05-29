@@ -96,7 +96,7 @@ func (rm *ResolverMap) RegisterResolver(typeName string, field string, rawResolv
 
 func toValue(data []byte, typ common.Type) (Value, error) {
 	switch fieldType := typ.(type) {
-	case *schema.Object:
+	case *schema.Object, *schema.Interface:
 		var rawResult map[string]interface{}
 		if err := json.Unmarshal(data, &rawResult); err != nil {
 			return nil, errors.Wrap(err, "parsing response as json")
