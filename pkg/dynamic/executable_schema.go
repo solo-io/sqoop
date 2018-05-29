@@ -120,9 +120,9 @@ func (ec *executionContext) resolveField(ctx context.Context, typ common.Type, f
 	switch typ := typ.(type) {
 	// TODO: add cases for interface and union
 	case *schema.Object:
-		return ec.resolveObject(ctx, typ, field, parent)
+		return ec.resolveObjectField(ctx, typ, field, parent)
 	case *common.List:
-		return ec.resolveList(ctx, parent, field, typ)
+		return ec.resolveListField(ctx, parent, field, typ)
 	case *schema.Scalar:
 		return ec.resolveScalar(ctx, parent, field, typ)
 	default:
@@ -130,7 +130,7 @@ func (ec *executionContext) resolveField(ctx context.Context, typ common.Type, f
 	}
 }
 
-func (ec *executionContext) resolveObject(ctx context.Context, object *schema.Object, field graphql.CollectedField, source *Object) (Value, error) {
+func (ec *executionContext) resolveObjectField(ctx context.Context, object *schema.Object, field graphql.CollectedField, source *Object) (Value, error) {
 	result, err := ec.resolvers.Resolve(object, field.Name, Params{
 		Source: source,
 		Args:   field.Args,
@@ -139,12 +139,16 @@ func (ec *executionContext) resolveObject(ctx context.Context, object *schema.Ob
 		return nil, errors.Wrapf(err, "failed to resolve field %v", field.Name)
 	}
 
-	resultObject, ok := result.(*Object)
-	if !ok {
-		// not an object, no need to recurse
+	switch result := result.(type) {
+	case *Object:
+		return ec.resolveObjectFields(ctx, object, field, result)
+	default:
+		// field is not an object, no need to recurse
 		return result, nil
 	}
+}
 
+func (ec *executionContext) resolveObjectFields(ctx context.Context, object *schema.Object, field graphql.CollectedField, resultObject *Object) (*Object, error) {
 	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
 		Object: object.TypeName(),
 	})
@@ -191,7 +195,7 @@ func (ec *executionContext) resolveObject(ctx context.Context, object *schema.Ob
 	return resultObject, nil
 }
 
-func (ec *executionContext) resolveList(ctx context.Context, parent *Object, field graphql.CollectedField, typ *common.List) (Value, error) {
+func (ec *executionContext) resolveListField(ctx context.Context, parent *Object, field graphql.CollectedField, typ *common.List) (Value, error) {
 	panic("not implemented")
 }
 
