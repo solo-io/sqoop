@@ -150,11 +150,18 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 		return &Null{}, nil
 	}
 	switch typ := typ.(type) {
+	case *schema.Interface:
+		concreteType, err := determineType(typ, rawValue)
+		if err != nil {
+			// TODO: sanitize
+			return nil, errors.Wrapf(err, "determining concrete type of interface %v", rawValue)
+		}
+		return convertValue(concreteType, rawValue)
 	case *schema.Object:
 		// rawValue must be map[string]interface{}
 		rawObj, ok := rawValue.(map[string]interface{})
 		if !ok {
-			// TODO: filter data out of logs (could be sensitive)
+			// TODO: sanitize
 			return nil, errors.Errorf("raw value %v was not type *schema.Object", rawValue)
 		}
 		obj := NewOrderedMap()
@@ -171,7 +178,7 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			delete(rawObj, field.Name)
 		}
 		for extraField, val := range rawObj {
-			obj.Set(extraField, &Unknown{Data: val})
+			obj.Set(extraField, &InternalOnly{Data: val})
 		}
 		return &Object{Data: obj, Object: typ}, nil
 	case *common.List:
@@ -221,6 +228,32 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 		return &Enum{Data: data, Enum: typ}, nil
 	}
 	return nil, errors.Errorf("unknown or unsupported type %v", typ.String())
+}
+
+func determineType(iface *schema.Interface, rawValue interface{}) (*schema.Object, error) {
+	// rawValue must be map[string]interface{}
+	rawObj, ok := rawValue.(map[string]interface{})
+	if !ok {
+		// TODO: sanitize
+		return nil, errors.Errorf("raw value %v was not type *schema.Object", rawValue)
+	}
+	objType := rawObj["__typename"]
+	if objType == nil {
+		// TODO: sanitize
+		return nil, errors.Errorf("object implements interface %v but does not contain field __typename, " +
+			"cannot determine object type", iface.Name)
+	}
+	objTypeName, ok := objType.(string)
+	if !ok {
+		// TODO: sanitize
+		return nil, errors.Errorf("__typename must be a string")
+	}
+	for _, possibleType := range iface.PossibleTypes {
+		if possibleType.Name == objTypeName {
+			return possibleType, nil
+		}
+	}
+	return nil, errors.Errorf("%v does not implement %v", objTypeName, iface.Name)
 }
 
 func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params) (Value, error) {

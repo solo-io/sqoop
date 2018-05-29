@@ -56,7 +56,7 @@ func addResolvers(resolvers *dynamic.ResolverMap) {
 		return []byte("[\"EMPIRE\"]"), nil
 	})
 	resolvers.RegisterResolver("Human", "friends", func(params dynamic.Params) ([]byte, error) {
-		fieldVal := params.Source.Data.Get("friendIds").(*dynamic.Unknown).Data
+		fieldVal := params.Source.Data.Get("friendIds").(*dynamic.InternalOnly).Data
 		ids := fieldVal.([]interface{})
 		var friends []interface{}
 		for _, id := range ids {

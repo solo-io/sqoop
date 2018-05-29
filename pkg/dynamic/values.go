@@ -25,7 +25,7 @@ var (
 	_ Value = &Float{}
 	_ Value = &Int{}
 	_ Value = &Time{}
-	_ Value = &Unknown{}
+	_ Value = &InternalOnly{}
 )
 
 type Object struct {
@@ -69,18 +69,17 @@ type Time struct {
 }
 
 // Extra are meant for internal use, not for replies
-type Unknown struct {
+type InternalOnly struct {
 	Data interface{}
 }
 
-func (t *Unknown) Kind() string   { panic("not implemented for unknown type") }
-func (t *Unknown) String() string { panic("not implemented for unknown type") }
+func (t *InternalOnly) Kind() string   { panic("not implemented for internal-only type") }
+func (t *InternalOnly) String() string { panic("not implemented for internal-only type") }
 
 type Null struct{}
 
 func (t *Null) Kind() string   { return "NULL" }
 func (t *Null) String() string { return "null" }
-
 
 func (t *Object) Type() common.Type {
 	return t.Object
@@ -109,11 +108,17 @@ func (t *Time) Type() common.Type {
 func (t *Null) Type() common.Type {
 	return nil
 }
-func (t *Unknown) Type() common.Type {
-	panic("not implemented for unknown type")
+func (t *InternalOnly) Type() common.Type {
+	panic("not implemented for internal-only type")
 }
 
 func (t *Object) Marshaller() graphql.Marshaler {
+	// remove 
+	for _, item := range t.Data.Items() {
+		if _, ok := item.Value.(*InternalOnly); ok {
+			t.Data.Delete(item.Key)
+		}
+	}
 	items := t.Data.Items()
 	fieldMap := graphql.NewOrderedMap(len(items))
 	for i, item := range items {
@@ -150,8 +155,8 @@ func (t *Time) Marshaller() graphql.Marshaler {
 func (t *Null) Marshaller() graphql.Marshaler {
 	return graphql.Null
 }
-func (t *Unknown) Marshaller() graphql.Marshaler {
-	panic("not implemented for unknown type")
+func (t *InternalOnly) Marshaller() graphql.Marshaler {
+	panic("not implemented for internal-only type")
 }
 
 // preserving order matters
