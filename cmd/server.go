@@ -51,7 +51,21 @@ func addResolvers(resolvers *dynamic.ResolverMap) {
 		name := params.Source.Data.Get("name").(*dynamic.String).Data
 		return []byte(name), nil
 	})
+	// overriding resolver
 	resolvers.RegisterResolver("Human", "appearsIn", func(params dynamic.Params) ([]byte, error) {
 		return []byte("[\"EMPIRE\"]"), nil
+	})
+	resolvers.RegisterResolver("Human", "friends", func(params dynamic.Params) ([]byte, error) {
+		fieldVal := params.Source.Data.Get("friendIds").(*dynamic.Unknown).Data
+		ids := fieldVal.([]interface{})
+		var friends []interface{}
+		for _, id := range ids {
+			v, err := baseResolvers.Query_human(context.TODO(), id.(string))
+			if err != nil {
+				return nil, err
+			}
+			friends = append(friends, v)
+		}
+		return json.Marshal(friends)
 	})
 }

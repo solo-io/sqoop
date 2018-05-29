@@ -167,6 +167,11 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 				return nil, errors.Wrapf(err, "converting object field %v", field.Name)
 			}
 			obj.Set(field.Name, convertedValue)
+			// so we can pass extra data down
+			delete(rawObj, field.Name)
+		}
+		for extraField, val := range rawObj {
+			obj.Set(extraField, &Unknown{Data: val})
 		}
 		return &Object{Data: obj, Object: typ}, nil
 	case *common.List:
@@ -228,7 +233,7 @@ func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params
 			if fieldValue := params.Source.Data.Get(field); fieldValue != nil && fieldValue.Kind() != "NULL" {
 				return fieldValue, nil
 			}
- 		}
+		}
 		return nil, errors.Errorf("resolver for %v.%v has not been registered", typ.String(), field)
 	}
 	data, err := fieldResolver.ResolverFunc(params)

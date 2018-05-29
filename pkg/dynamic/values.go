@@ -25,6 +25,7 @@ var (
 	_ Value = &Float{}
 	_ Value = &Int{}
 	_ Value = &Time{}
+	_ Value = &Unknown{}
 )
 
 type Object struct {
@@ -67,6 +68,14 @@ type Time struct {
 	Data time.Time
 }
 
+// Extra are meant for internal use, not for replies
+type Unknown struct {
+	Data interface{}
+}
+
+func (t *Unknown) Kind() string   { panic("not implemented for unknown type") }
+func (t *Unknown) String() string { panic("not implemented for unknown type") }
+
 type Null struct{}
 
 func (t *Null) Kind() string   { return "NULL" }
@@ -99,6 +108,9 @@ func (t *Time) Type() common.Type {
 }
 func (t *Null) Type() common.Type {
 	return nil
+}
+func (t *Unknown) Type() common.Type {
+	panic("not implemented for unknown type")
 }
 
 func (t *Object) Marshaller() graphql.Marshaler {
@@ -137,6 +149,9 @@ func (t *Time) Marshaller() graphql.Marshaler {
 }
 func (t *Null) Marshaller() graphql.Marshaler {
 	return graphql.Null
+}
+func (t *Unknown) Marshaller() graphql.Marshaler {
+	panic("not implemented for unknown type")
 }
 
 // preserving order matters
