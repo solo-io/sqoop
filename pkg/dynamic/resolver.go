@@ -225,7 +225,7 @@ func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params
 	}
 	if fieldResolver.ResolverFunc == nil {
 		if params.Source != nil {
-			if fieldValue := params.Source.Data.Get(field); fieldValue != nil {
+			if fieldValue := params.Source.Data.Get(field); fieldValue != nil && fieldValue.Kind() != "NULL" {
 				return fieldValue, nil
 			}
  		}
