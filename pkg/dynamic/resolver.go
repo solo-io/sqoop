@@ -89,31 +89,31 @@ func (rm *ResolverMap) RegisterResolver(typeName string, field string, rawResolv
 		if err != nil {
 			return nil, errors.Wrap(err, "calling raw resolver")
 		}
-		switch fieldType := fieldResolver.Type.(type) {
-		case *schema.Object:
-			var rawResult map[string]interface{}
-			if err := json.Unmarshal(data, &rawResult); err != nil {
-				return nil, errors.Wrap(err, "parsing response as json")
-			}
-			return convertValue(fieldType, rawResult)
-		case *common.List:
-			var rawResult []interface{}
-			if err := json.Unmarshal(data, &rawResult); err != nil {
-				return nil, errors.Wrap(err, "parsing response as json")
-			}
-			return convertValue(fieldType, rawResult)
-		case *schema.Scalar:
-			return scalarFromBytes(fieldType, string(data))
-		case *common.NonNull:
-			schemaScalar, ok := fieldType.OfType.(*schema.Scalar)
-			if !ok {
-				return nil, errors.Errorf("unsupported non-null %v", fieldResolver.Type)
-			}
-			return scalarFromBytes(schemaScalar, string(data))
-		}
-		return nil, errors.Errorf("unable to resolve field type %v", fieldResolver.Type)
+		return toValue(data, fieldResolver.Type)
 	}
 	return nil
+}
+
+func toValue(data []byte, typ common.Type) (Value, error) {
+	switch fieldType := typ.(type) {
+	case *schema.Object:
+		var rawResult map[string]interface{}
+		if err := json.Unmarshal(data, &rawResult); err != nil {
+			return nil, errors.Wrap(err, "parsing response as json")
+		}
+		return convertValue(fieldType, rawResult)
+	case *common.List:
+		var rawResult []interface{}
+		if err := json.Unmarshal(data, &rawResult); err != nil {
+			return nil, errors.Wrap(err, "parsing response as json")
+		}
+		return convertValue(fieldType, rawResult)
+	case *schema.Scalar:
+		return scalarFromBytes(fieldType, string(data))
+	case *common.NonNull:
+		return toValue(data, fieldType.OfType)
+	}
+	return nil, errors.Errorf("unable to resolve field type %v", typ)
 }
 
 // TODO: support custom scalars

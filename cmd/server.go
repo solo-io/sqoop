@@ -51,4 +51,7 @@ func addResolvers(resolvers *dynamic.ResolverMap) {
 		name := params.Source.Data.Get("name").(*dynamic.String).Data
 		return []byte(name), nil
 	})
+	resolvers.RegisterResolver("Human", "appearsIn", func(params dynamic.Params) ([]byte, error) {
+		return []byte("[\"EMPIRE\"]"), nil
+	})
 }
