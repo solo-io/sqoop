@@ -115,6 +115,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel []query.Selection) g
 	return out
 }
 
+
 func (ec *executionContext) resolveField(ctx context.Context, typ common.Type, field graphql.CollectedField, parent *Object) (Value, error) {
 	switch typ := typ.(type) {
 	// TODO: add cases for interface and union
@@ -129,7 +130,7 @@ func (ec *executionContext) resolveField(ctx context.Context, typ common.Type, f
 	}
 }
 
-func (ec *executionContext) resolveObject(ctx context.Context, object *schema.Object, field graphql.CollectedField, source *Object) (*Object, error) {
+func (ec *executionContext) resolveObject(ctx context.Context, object *schema.Object, field graphql.CollectedField, source *Object) (Value, error) {
 	result, err := ec.resolvers.Resolve(object, field.Name, Params{
 		Source: source,
 		Args:   field.Args,
@@ -140,8 +141,8 @@ func (ec *executionContext) resolveObject(ctx context.Context, object *schema.Ob
 
 	resultObject, ok := result.(*Object)
 	if !ok {
-		// TODO: sanitize
-		return nil, errors.Errorf("INTERNAL ERROR: resolver result %v was not *Object value", result)
+		// not an object, no need to recurse
+		return result, nil
 	}
 
 	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{

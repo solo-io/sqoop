@@ -224,6 +224,11 @@ func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params
 		return nil, errors.Wrap(err, "resolver lookup")
 	}
 	if fieldResolver.ResolverFunc == nil {
+		if params.Source != nil {
+			if fieldValue := params.Source.Data.Get(field); fieldValue != nil {
+				return fieldValue, nil
+			}
+ 		}
 		return nil, errors.Errorf("resolver for %v.%v has not been registered", typ.String(), field)
 	}
 	data, err := fieldResolver.ResolverFunc(params)
