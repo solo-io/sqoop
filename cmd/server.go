@@ -60,7 +60,20 @@ func addResolvers(resolvers *dynamic.ResolverMap) {
 		ids := fieldVal.([]interface{})
 		var friends []interface{}
 		for _, id := range ids {
-			v, err := baseResolvers.Query_human(context.TODO(), id.(string))
+			v, err := baseResolvers.Query_character(context.TODO(), id.(string))
+			if err != nil {
+				return nil, err
+			}
+			friends = append(friends, v)
+		}
+		return json.Marshal(friends)
+	})
+	resolvers.RegisterResolver("Droid", "friends", func(params dynamic.Params) ([]byte, error) {
+		fieldVal := params.Source.Data.Get("friendIds").(*dynamic.InternalOnly).Data
+		ids := fieldVal.([]interface{})
+		var friends []interface{}
+		for _, id := range ids {
+			v, err := baseResolvers.Query_character(context.TODO(), id.(string))
 			if err != nil {
 				return nil, err
 			}
