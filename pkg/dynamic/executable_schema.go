@@ -120,12 +120,26 @@ func (ec *executionContext) resolveField(ctx context.Context, objectType *schema
 		return nil, errors.Wrapf(err, "executing resolver for field "+strconv.Quote(field.Name))
 	}
 	// lists and objects need to be recursed into
-	switch obj := val.(type) {
+	switch result := val.(type) {
 	case *Object:
-		val, err = ec.resolveObject(ctx, obj.Object, field.Selections, obj)
+		val, err := ec.resolveObject(ctx, result.Object, field.Selections, result)
 		if err != nil {
-			return nil, errors.Wrapf(err, "resolving object "+strconv.Quote(obj.Name))
+			return nil, errors.Wrapf(err, "resolving object "+strconv.Quote(result.Name))
 		}
+		return val, nil
+	case *Array:
+		for i, item := range result.Data {
+			obj, ok := item.(*Object)
+			if !ok {
+				// not an object array, nothing to recurse
+				return val, nil
+			}
+			result.Data[i], err = ec.resolveObject(ctx, obj.Object, field.Selections, obj)
+			if err != nil {
+				return nil, errors.Wrapf(err, "resolving list item object "+strconv.Quote(obj.Name))
+			}
+		}
+		return result, nil
 	}
 	return val, nil
 }
