@@ -102,7 +102,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel []query.Selection) g
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		default:
-			val, err := ec.resolveField(ctx, nil, field, ec.EntryPoints["query"])
+			val, err := ec.resolveField(ctx, ec.EntryPoints["query"], field, nil)
 			if err != nil {
 				ec.Error(ctx, err)
 				out.Values[i] = graphql.Null
@@ -115,11 +115,11 @@ func (ec *executionContext) _Query(ctx context.Context, sel []query.Selection) g
 	return out
 }
 
-func (ec *executionContext) resolveField(ctx context.Context, parent *Object, field graphql.CollectedField, typ common.Type) (Value, error) {
+func (ec *executionContext) resolveField(ctx context.Context, typ common.Type, field graphql.CollectedField, parent *Object) (Value, error) {
 	switch typ := typ.(type) {
 	// TODO: add cases for interface and union
 	case *schema.Object:
-		return ec.resolveObject(ctx, parent, field, typ)
+		return ec.resolveObject(ctx, typ, field, parent)
 	case *common.List:
 		return ec.resolveList(ctx, parent, field, typ)
 	case *schema.Scalar:
@@ -129,9 +129,9 @@ func (ec *executionContext) resolveField(ctx context.Context, parent *Object, fi
 	}
 }
 
-func (ec *executionContext) resolveObject(ctx context.Context, parent *Object, field graphql.CollectedField, typ *schema.Object) (*Object, error) {
-	result, err := ec.resolvers.Resolve(typ, field.Name, Params{
-		Source: parent,
+func (ec *executionContext) resolveObject(ctx context.Context, object *schema.Object, field graphql.CollectedField, source *Object) (*Object, error) {
+	result, err := ec.resolvers.Resolve(object, field.Name, Params{
+		Source: source,
 		Args:   field.Args,
 	})
 	if err != nil {
@@ -145,40 +145,43 @@ func (ec *executionContext) resolveObject(ctx context.Context, parent *Object, f
 	}
 
 	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
-		Object: typ.TypeName(),
+		Object: object.TypeName(),
 	})
 
-	implementors := getImplementors(typ)
+	// get just the fields we need
+	// also, resolve nested resolvers if they exist
+	implementors := getImplementors(object)
 	fields := graphql.CollectFields(ec.Doc, field.Selections, implementors, ec.Variables)
 
 	data := NewOrderedMap()
 
-	for _, field := range fields {
+	schemaField, err := lookupField(object, field)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, subField := range fields {
 		var val Value
-		switch field.Name {
+		switch subField.Name {
 		// request for the object's typeName
 		case "__typename":
 			val = &String{
-				Data: typ.TypeName(),
+				Data: object.TypeName(),
 			}
 		default:
-			schemaField, err := lookupField(typ, field)
+			val, err = ec.resolveField(ctx, schemaField.Type, subField, resultObject)
 			if err != nil {
-				return nil, errors.Errorf("unknown field " + strconv.Quote(field.Name))
-			}
-			val, err = ec.resolveField(ctx, resultObject, field, schemaField.Type)
-			if err != nil {
-				return nil, errors.Wrapf(err, "resolving field "+strconv.Quote(field.Name))
+				return nil, errors.Wrapf(err, "resolving field "+strconv.Quote(subField.Name))
 			}
 		}
 		// nothing to overwrite, use original value
 		if val == nil {
-			val = resultObject.Data.Get(field.Name)
+			val = resultObject.Data.Get(subField.Name)
 		}
 		if val == nil {
 			val = &Null{}
 		}
-		data.Set(field.Name, val)
+		data.Set(subField.Name, val)
 	}
 
 	// override fields, edit out what we don't need
@@ -245,7 +248,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel []query.Selection
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
 		default:
-			val, err := ec.resolveField(ctx, nil, field, ec.EntryPoints["mutation"])
+			val, err := ec.resolveField(ctx, ec.EntryPoints["mutation"], field, nil)
 			if err != nil {
 				ec.Errors = append(ec.Errors, err)
 				continue

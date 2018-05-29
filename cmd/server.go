@@ -12,6 +12,7 @@ import (
 	"github.com/solo-io/qloo/test"
 	"github.com/vektah/gqlgen/example/starwars"
 	"encoding/json"
+	"github.com/pkg/errors"
 )
 
 var starWarsSchema = test.StarWarsSchema
@@ -43,17 +44,11 @@ func addResolvers(resolvers *dynamic.ResolverMap) {
 		}
 		return json.Marshal(v)
 	})
-}
-
-// simulate parsing a json response
-func fromJson(v interface{}) map[string]interface{} {
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	var m map[string]interface{}
-	if err := json.Unmarshal(data, &m); err != nil {
-		panic(err)
-	}
-	return m
+	resolvers.RegisterResolver("Human", "name", func(params dynamic.Params) ([]byte, error) {
+		if params.Source == nil {
+			return nil, errors.Errorf("source was nil")
+		}
+		name := params.Source.Data.Get("name").(*dynamic.String).Data
+		return []byte(name), nil
+	})
 }

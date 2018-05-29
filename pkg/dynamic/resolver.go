@@ -104,6 +104,12 @@ func (rm *ResolverMap) RegisterResolver(typeName string, field string, rawResolv
 			return convertValue(fieldType, rawResult)
 		case *schema.Scalar:
 			return scalarFromBytes(fieldType, string(data))
+		case *common.NonNull:
+			schemaScalar, ok := fieldType.OfType.(*schema.Scalar)
+			if !ok {
+				return nil, errors.Errorf("unsupported non-null %v", fieldResolver.Type)
+			}
+			return scalarFromBytes(schemaScalar, string(data))
 		}
 		return nil, errors.Errorf("unable to resolve field type %v", fieldResolver.Type)
 	}
@@ -182,6 +188,8 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			array = append(array, convertedValue)
 		}
 		return &Array{Data: array, List: typ}, nil
+	case *common.NonNull:
+		return convertValue(typ.OfType, rawValue)
 	case *schema.Scalar:
 		switch data := rawValue.(type) {
 		case int:
@@ -200,6 +208,12 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			// TODO: sanitize logs/error messages
 			return nil, errors.Errorf("unknown return type %v", data)
 		}
+	case *schema.Enum:
+		data, ok := rawValue.(string)
+		if !ok {
+			return nil, errors.Errorf("expected string type for enum, got %v", rawValue)
+		}
+		return &Enum{Data: data, Enum: typ}, nil
 	}
 	return nil, errors.Errorf("unknown or unsupported type %v", typ.String())
 }
@@ -216,11 +230,11 @@ func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed executing resolver for %v.%v", typ.String(), field)
 	}
-	result, err := convertResult(typ, data)
-	if err != nil {
-		return nil, errors.Wrap(err, "converting interface{} to result")
-	}
-	return result, nil
+	//result, err := convertResult(fieldResolver.Type, data)
+	//if err != nil {
+	//	return nil, errors.Wrap(err, "converting interface{} to result")
+	//}
+	return data, nil
 }
 
 func convertResult(typ common.Type, data interface{}) (Value, error) {
