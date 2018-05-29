@@ -76,7 +76,9 @@ type InternalOnly struct {
 func (t *InternalOnly) Kind() string   { panic("not implemented for internal-only type") }
 func (t *InternalOnly) String() string { panic("not implemented for internal-only type") }
 
-type Null struct{}
+type Null struct{
+	TypeOf common.Type
+}
 
 func (t *Null) Kind() string   { return "NULL" }
 func (t *Null) String() string { return "null" }
@@ -106,7 +108,7 @@ func (t *Time) Type() common.Type {
 	return t.Scalar
 }
 func (t *Null) Type() common.Type {
-	return nil
+	return t.TypeOf
 }
 func (t *InternalOnly) Type() common.Type {
 	panic("not implemented for internal-only type")
