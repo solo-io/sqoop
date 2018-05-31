@@ -41,14 +41,17 @@ func main() {
 
 var baseResolvers = starwars.NewResolver()
 
-func addResolvers(resolvers *dynamic.ResolverMap) {
-	resolvers.RegisterResolver("Query", "hero", func(params dynamic.Params) ([]byte, error) {
-		v, err := baseResolvers.Query_hero(context.TODO(), starwars.EpisodeJedi)
-		if err != nil {
-			return nil, err
-		}
-		return json.Marshal(v)
-	})
+type UserInput struct {
+	TypeToResolve    string
+	FieldToResolve   string
+	BodyTemplate     string
+	ResponseTemplate string
+	ContentType      string
+}
+
+func addResolvers(resolvers *dynamic.ResolverMap, factory *GlooResolverFactory) {
+	resolver, err := factory.Resolver()
+	resolvers.RegisterResolver("Query", "hero", resolver)
 	resolvers.RegisterResolver("Query", "human", func(params dynamic.Params) ([]byte, error) {
 		v, err := baseResolvers.Query_human(context.TODO(), params.Arg("id").(string))
 		if err != nil {
@@ -212,24 +215,41 @@ func resolverRoute(route Route) (*v1.Route, error) {
 }
 
 type GlooResolverFactory struct {
-	ProxyAddr    string
+	ProxyAddr string
 }
 
-func (gr *GlooResolverFactory) Resolver(path, bodyTemplate, contentType string) (dynamic.RawResolver, error) {
+func (gr *GlooResolverFactory) Resolver(path, requestBodyTemplate, responseBodyTemplate, contentType string) (dynamic.RawResolver, error) {
 	if contentType == "" {
 		contentType = "application/json"
 	}
-	tmpl, err := template.New("requestBody").Parse(bodyTemplate)
-	if err != nil {
-		return nil, errors.Wrap(err, "parsing body template failed")
+	var (
+		requestTemplate *template.Template
+		responseTemplate *template.Template
+		err error
+	)
+
+	if requestBodyTemplate != "" {
+		requestTemplate, err = template.New("requestBody").Parse(requestBodyTemplate)
+		if err != nil {
+			return nil, errors.Wrap(err, "parsing request body template failed")
+		}
 	}
+	if responseBodyTemplate != "" {
+		responseTemplate, err = template.New("responseBody").Parse(responseBodyTemplate)
+		if err != nil {
+			return nil, errors.Wrap(err, "parsing response body template failed")
+		}
+	}
+
 	return func(params dynamic.Params) ([]byte, error) {
 		body := &bytes.Buffer{}
-		if err := tmpl.Execute(body, params); err != nil {
-			// TODO: sanitize
-			return nil, errors.Wrapf(err, "executing template for params %v", params)
+		if requestTemplate != nil {
+			if err := requestTemplate.Execute(body, params); err != nil {
+				// TODO: sanitize
+				return nil, errors.Wrapf(err, "executing request template for params %v", params)
+			}
 		}
-		url := "http://"+gr.ProxyAddr+path
+		url := "http://" + gr.ProxyAddr + path
 		res, err := http.Post(url, contentType, body)
 		if err != nil {
 			return nil, errors.Wrap(err, "performing http post")
@@ -242,6 +262,29 @@ func (gr *GlooResolverFactory) Resolver(path, bodyTemplate, contentType string) 
 			return nil, nil
 		}
 		defer res.Body.Close()
-		return ioutil.ReadAll(res.Body)
+		data, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, errors.Wrap(err, "reading response body")
+		}
+		if responseTemplate == nil {
+			return data, nil
+		}
+
+		// requires output to be json object
+		var result map[string]interface{}
+		if err := json.Unmarshal(data, &result); err != nil {
+			return nil, errors.Wrap(err, "failed to parse response as json object. " +
+				"response templates may only be used with JSON responses")
+		}
+		input := struct{
+			Result map[string]interface{}
+		}{
+			Result: result,
+		}
+		buf := &bytes.Buffer{}
+		if err := requestTemplate.Execute(buf, input); err != nil {
+			return nil, errors.Wrapf(err, "executing response template for response %v", input)
+		}
+		return buf.Bytes(), nil
 	}, nil
 }
