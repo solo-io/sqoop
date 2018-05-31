@@ -15,8 +15,7 @@
     "autorest/azure",
     "autorest/date"
   ]
-  revision = "99e5f302c7148cd5027b50700fccebec33ab6ee2"
-  version = "v10.9.1"
+  revision = "e14a70c556c8e0db173358d1a903dca345a8e75e"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -490,7 +489,6 @@
   revision = "bd76ce7dd8e65e8c2197803a1e64869ca5905309"
 
 [[projects]]
-  branch = "master"
   name = "k8s.io/apimachinery"
   packages = [
     "pkg/api/errors",
@@ -532,7 +530,7 @@
     "pkg/watch",
     "third_party/forked/golang/reflect"
   ]
-  revision = "94ebb086c69b9fec4ddbfb6a1433d28ecca9292b"
+  revision = "31dade610c053669d8054bfd847da657251e8c1a"
 
 [[projects]]
   name = "k8s.io/client-go"
@@ -600,6 +598,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5493f44611c94eedbaa18aa26bfdfdef1794eac80c613d411ab8493a2de1b713"
+  inputs-digest = "a3933282b6be5c4330a9be541cf9beec85e3dfc4d6f54c21b7849f99e01c15d0"
   solver-name = "gps-cdcl"
   solver-version = 1

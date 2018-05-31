@@ -24,10 +24,13 @@
 #   go-tests = true
 #   unused-packages = true
 
+[[override]]
+  name = "k8s.io/apimachinery"
+  revision = "31dade610c053669d8054bfd847da657251e8c1a"
 
-[[constraint]]
-  name = "github.com/fatih/structs"
-  version = "1.0.0"
+[[override]]
+  name = "github.com/Azure/go-autorest"
+  revision = "e14a70c556c8e0db173358d1a903dca345a8e75e"
 
 [[constraint]]
   name = "github.com/onsi/ginkgo"
