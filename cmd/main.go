@@ -44,6 +44,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	flags.AddConfigStorageOptionFlags(rootCmd, &opts)
+	flags.AddFileFlags(rootCmd, &opts)
 }
 
 func run() error {
