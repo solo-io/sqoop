@@ -1,0 +1,28 @@
+name: starwars-rest
+type: service
+hosts:
+- addr: localhost
+  port: 9000
+service_info:
+  type: REST
+functions:
+ - name: GetHero
+   spec:
+     headers:
+       :method: GET
+     path: /api/hero
+ - name: GetHuman
+   spec:
+     headers:
+       :method: GET
+     path: /api/humans/{{id}}
+ - name: GetHumanFriends
+   spec:
+     headers:
+       :method: POST
+     path: /api/humans/{{id}}/friends
+ - name: GetDroidFriends
+   spec:
+     headers:
+       :method: POST
+     path: /api/droids/{{id}}/friends

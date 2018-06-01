@@ -23,74 +23,6 @@ import (
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
 )
 
-var starWarsSchema = test.StarWarsSchema
-
-func main() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-var opts bootstrap.Options
-
-var rootCmd = &cobra.Command{
-	Use:   "qloo",
-	Short: "runs qloo",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return run()
-	},
-}
-
-func init() {
-	flags.AddConfigStorageOptionFlags(rootCmd, &opts)
-	flags.AddFileFlags(rootCmd, &opts)
-}
-
-func run() error {
-	factory := &GlooResolverFactory{
-		ProxyAddr: "localhost:8080",
-	}
-
-	gloo, err := configstorage.Bootstrap(opts)
-	if err != nil {
-		return err
-	}
-
-	client := &GlooClient{
-		gloo:           gloo,
-		virtualService: "qloo",
-		role:           "qloo",
-	}
-
-	execSchema, resolvers := dynamic.MakeExecutableSchema(starWarsSchema)
-
-	if err := addResolvers(resolvers, factory, client, inputs); err != nil {
-		return errors.Wrap(err, "failed to start")
-	}
-	http.Handle("/", handler.Playground("Starwars", "/query"))
-	http.Handle("/query", handler.GraphQL(execSchema,
-		handler.ResolverMiddleware(func(ctx context.Context, next graphql.Resolver) (res interface{}, err error) {
-			rc := graphql.GetResolverContext(ctx)
-			fmt.Println("Entered", rc.Object, rc.Field.Name)
-			res, err = next(ctx)
-			fmt.Println("Left", rc.Object, rc.Field.Name, "=>", res, err)
-			return res, err
-		}),
-	))
-
-	return http.ListenAndServe(":8080", nil)
-}
-
-type UserInput struct {
-	TypeToResolve    string
-	FieldToResolve   string
-	RequestTemplate  string
-	ResponseTemplate string
-	ContentType      string
-	Destinations     []Destination
-}
-
 var inputs = []UserInput{
 	{
 		TypeToResolve:  "Query",
@@ -135,6 +67,74 @@ var inputs = []UserInput{
 			},
 		},
 	},
+}
+
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+var opts bootstrap.Options
+
+var rootCmd = &cobra.Command{
+	Use:   "qloo",
+	Short: "runs qloo",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return run()
+	},
+}
+
+func init() {	
+	flags.AddConfigStorageOptionFlags(rootCmd, &opts)
+	flags.AddFileFlags(rootCmd, &opts)
+}
+
+var starWarsSchema = test.StarWarsSchema
+
+func run() error {
+	factory := &GlooResolverFactory{
+		ProxyAddr: "localhost:8080",
+	}
+
+	gloo, err := configstorage.Bootstrap(opts)
+	if err != nil {
+		return err
+	}
+
+	client := &GlooClient{
+		gloo:           gloo,
+		virtualService: "qloo",
+		role:           "qloo",
+	}
+
+	execSchema, resolvers := dynamic.MakeExecutableSchema(starWarsSchema)
+
+	if err := addResolvers(resolvers, factory, client, inputs); err != nil {
+		return errors.Wrap(err, "failed to start")
+	}
+	http.Handle("/", handler.Playground("Starwars", "/query"))
+	http.Handle("/query", handler.GraphQL(execSchema,
+		handler.ResolverMiddleware(func(ctx context.Context, next graphql.Resolver) (res interface{}, err error) {
+			rc := graphql.GetResolverContext(ctx)
+			fmt.Println("Entered", rc.Object, rc.Field.Name)
+			res, err = next(ctx)
+			fmt.Println("Left", rc.Object, rc.Field.Name, "=>", res, err)
+			return res, err
+		}),
+	))
+
+	return http.ListenAndServe(":8080", nil)
+}
+
+type UserInput struct {
+	TypeToResolve    string
+	FieldToResolve   string
+	RequestTemplate  string
+	ResponseTemplate string
+	ContentType      string
+	Destinations     []Destination
 }
 
 func pathName(graphqlType, field string) string {
