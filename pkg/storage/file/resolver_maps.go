@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/solo-io/qloo/pkg/api/types/v1"
+	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
 	"github.com/solo-io/qloo/pkg/storage"
 )
@@ -31,7 +32,7 @@ func (c *resolverMapsClient) Create(item *v1.ResolverMap) (*v1.ResolverMap, erro
 		return nil, errors.New("internal error: output of proto.Clone was not expected type")
 	}
 	if resolverMapClone.Metadata == nil {
-		resolverMapClone.Metadata = &v1.Metadata{}
+		resolverMapClone.Metadata = &gloov1.Metadata{}
 	}
 	resolverMapClone.Metadata.ResourceVersion = newOrIncrementResourceVer(resolverMapClone.Metadata.ResourceVersion)
 	resolverMapFiles, err := c.pathsToResolverMaps()

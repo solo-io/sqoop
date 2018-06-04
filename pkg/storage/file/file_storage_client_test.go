@@ -9,8 +9,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/solo-io/gloo/pkg/log"
-	. "github.com/solo-io/gloo/pkg/storage/file"
+	. "github.com/solo-io/qloo/pkg/storage/file"
 	. "github.com/solo-io/gloo/test/helpers"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
+	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 )
 
 var _ = Describe("CrdStorageClient", func() {
@@ -99,32 +101,7 @@ var _ = Describe("CrdStorageClient", func() {
 			Expect(created2).To(Equal(resolverMap2))
 		})
 	})
-	Describe("Create2Update role", func() {
-		It("creates and updates", func() {
-			client, err := NewStorage(dir, resync)
-			Expect(err).NotTo(HaveOccurred())
-			err = client.V1().Register()
-			Expect(err).NotTo(HaveOccurred())
-			role := NewTestRole("v1")
-			role, err = client.V1().Roles().Create(role)
-			role2 := NewTestRole("v2")
-			role2, err = client.V1().Roles().Create(role2)
-			Expect(err).NotTo(HaveOccurred())
 
-			_, err = client.V1().Roles().Update(role)
-			Expect(err).NotTo(HaveOccurred())
-
-			created1, err := client.V1().Roles().Get(role.Name)
-			Expect(err).NotTo(HaveOccurred())
-			role.Metadata = created1.Metadata
-			Expect(created1).To(Equal(role))
-
-			created2, err := client.V1().Roles().Get(role2.Name)
-			Expect(err).NotTo(HaveOccurred())
-			role2.Metadata = created2.Metadata
-			Expect(created2).To(Equal(role2))
-		})
-	})
 	Describe("Get", func() {
 		It("gets a file from the name", func() {
 			client, err := NewStorage(dir, resync)
@@ -149,7 +126,7 @@ var _ = Describe("CrdStorageClient", func() {
 			schema := NewTestSchema1()
 			created, err := client.V1().Schemas().Create(schema)
 			Expect(err).NotTo(HaveOccurred())
-			schema.Type = "something-else"
+			schema.InlineSchema = "something-else"
 			_, err = client.V1().Schemas().Update(schema)
 			// need to set resource ver
 			Expect(err).To(HaveOccurred())
@@ -176,3 +153,39 @@ var _ = Describe("CrdStorageClient", func() {
 		})
 	})
 })
+
+func NewTestSchema1() *v1.Schema{
+	return &v1.Schema{
+		Name: "schema1",
+		ResolverMap: "resolvers",
+		InlineSchema: "SOMETHING",
+		Metadata: &gloov1.Metadata{
+			Annotations: map[string]string{
+				"foo": "bar",
+			},
+		},
+	}
+}
+
+func NewTestSchema2() *v1.Schema{
+	return &v1.Schema{
+		Name: "schema2",
+		ResolverMap: "resolvers",
+		InlineSchema: "SOMETHINGELSE",
+		Metadata: &gloov1.Metadata{
+			Annotations: map[string]string{
+				"foo": "bar",
+			},
+		},
+	}
+}
+func NewTestResolverMap(name string) *v1.ResolverMap{
+	return &v1.ResolverMap{
+		Name: name,
+		Metadata: &gloov1.Metadata{
+			Annotations: map[string]string{
+				"foo": "bar",
+			},
+		},
+	}
+}

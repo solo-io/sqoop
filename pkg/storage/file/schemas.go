@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/solo-io/qloo/pkg/api/types/v1"
+	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
 	"github.com/solo-io/qloo/pkg/storage"
 )
@@ -31,7 +32,7 @@ func (c *schemasClient) Create(item *v1.Schema) (*v1.Schema, error) {
 		return nil, errors.New("internal error: output of proto.Clone was not expected type")
 	}
 	if schemaClone.Metadata == nil {
-		schemaClone.Metadata = &v1.Metadata{}
+		schemaClone.Metadata = &gloov1.Metadata{}
 	}
 	schemaClone.Metadata.ResourceVersion = newOrIncrementResourceVer(schemaClone.Metadata.ResourceVersion)
 	schemaFiles, err := c.pathsToSchemas()
