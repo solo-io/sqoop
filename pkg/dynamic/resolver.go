@@ -37,13 +37,6 @@ type Params struct {
 	Args   map[string]interface{}
 }
 
-func (p Params) GetSource() interface{} {
-	if p.Parent == nil || p.Parent.Data == nil {
-		return nil
-	}
-	return p.Parent.GoValue()
-}
-
 func (p Params) Arg(name string) interface{} {
 	if len(p.Args) == 0 {
 		return nil
@@ -269,6 +262,7 @@ func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params
 		return nil, errors.Wrap(err, "resolver lookup")
 	}
 	if fieldResolver.ResolverFunc == nil {
+		// no resolver func? look in the parent for the field
 		if params.Parent != nil {
 			if fieldValue := params.Parent.Data.Get(field); fieldValue != nil && fieldValue.Kind() != "NULL" {
 				return fieldValue, nil

@@ -59,17 +59,11 @@ func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyT
 	return func(params dynamic.Params) ([]byte, error) {
 		body := bytes.Buffer{}
 		if requestTemplate != nil {
-			if err := requestTemplate.Execute(&body, params); err != nil {
+			if err := requestTemplate.Execute(&body, templateParams(params)); err != nil {
 				// TODO: sanitize
 				return nil, errors.Wrapf(err, "executing request template for params %v", params)
 			}
 		}
-		str := body.String()
-		log.Printf("body: %v", str)
-		if params.Parent != nil {
-			log.Printf("source: %v", params.Parent.GoValue())
-		}
-
 		url := "http://" + gr.ProxyAddr + path
 		res, err := http.Post(url, contentType, &body)
 		if err != nil {
@@ -112,4 +106,16 @@ func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyT
 		}
 		return buf.Bytes(), nil
 	}, nil
+}
+
+type params struct {
+	Args   map[string]interface{}
+	Parent map[string]interface{}
+}
+
+func templateParams(p dynamic.Params) params {
+	return params{
+		Args:   p.Args,
+		Parent: p.Parent.GoValue().(map[string]interface{}),
+	}
 }

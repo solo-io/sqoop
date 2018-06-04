@@ -18,50 +18,73 @@ import (
 	"github.com/solo-io/gloo/pkg/bootstrap/flags"
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
 	"github.com/solo-io/qloo/pkg/gloo"
+	"encoding/json"
 )
 
 var inputs = []UserInput{
 	{
 		TypeToResolve:  "Query",
 		FieldToResolve: "hero",
-		Destinations: []Destination{
-			{
-				UpstreamName: "starwars-rest",
-				FunctionName: "GetHero",
+		GlooResolverInput: &GlooResolverInput{
+			Destinations: []Destination{
+				{
+					UpstreamName: "starwars-rest",
+					FunctionName: "GetHero",
+				},
 			},
 		},
 	},
 	{
-		TypeToResolve:   "Query",
-		FieldToResolve:  "human",
-		RequestTemplate: `{"id": {{ index .Args "id" }}}`,
-		Destinations: []Destination{
-			{
-				UpstreamName: "starwars-rest",
-				FunctionName: "GetCharacter",
+		TypeToResolve:  "Query",
+		FieldToResolve: "human",
+		GlooResolverInput: &GlooResolverInput{
+			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
+			Destinations: []Destination{
+				{
+					UpstreamName: "starwars-rest",
+					FunctionName: "GetCharacter",
+				},
 			},
 		},
 	},
 	{
-		TypeToResolve:   "Human",
-		FieldToResolve:  "friends",
-		RequestTemplate: `{{ marshal (index .Parent.GoValue "friend_ids") }}`,
-		Destinations: []Destination{
-			{
-				UpstreamName: "starwars-rest",
-				FunctionName: "GetCharacters",
+		TypeToResolve:  "Human",
+		FieldToResolve: "friends",
+		GlooResolverInput: &GlooResolverInput{
+			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
+			Destinations: []Destination{
+				{
+					UpstreamName: "starwars-rest",
+					FunctionName: "GetCharacters",
+				},
 			},
 		},
 	},
 	{
-		TypeToResolve:   "Droid",
-		FieldToResolve:  "friends",
-		RequestTemplate: `{{ marshal (index .Parent.GoValue "friend_ids") }}`,
-		Destinations: []Destination{
-			{
-				UpstreamName: "starwars-rest",
-				FunctionName: "GetCharacters",
+		TypeToResolve:  "Droid",
+		FieldToResolve: "friends",
+		GlooResolverInput: &GlooResolverInput{
+			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
+			Destinations: []Destination{
+				{
+					UpstreamName: "starwars-rest",
+					FunctionName: "GetCharacters",
+				},
 			},
+		},
+	},
+	{
+		TypeToResolve:  "Human",
+		FieldToResolve: "appearsIn",
+		ParentResolverInput: &ParentResolverInput{
+			ParentField: "appears_in",
+		},
+	},
+	{
+		TypeToResolve:  "Droid",
+		FieldToResolve: "appearsIn",
+		ParentResolverInput: &ParentResolverInput{
+			ParentField: "appears_in",
 		},
 	},
 }
@@ -126,12 +149,21 @@ func run() error {
 }
 
 type UserInput struct {
-	TypeToResolve    string
-	FieldToResolve   string
+	TypeToResolve       string
+	FieldToResolve      string
+	GlooResolverInput   *GlooResolverInput
+	ParentResolverInput *ParentResolverInput
+}
+
+type GlooResolverInput struct {
 	RequestTemplate  string
 	ResponseTemplate string
 	ContentType      string
 	Destinations     []Destination
+}
+
+type ParentResolverInput struct {
+	ParentField string
 }
 
 func pathName(graphqlType, field string) string {
@@ -141,18 +173,40 @@ func pathName(graphqlType, field string) string {
 func addResolvers(resolvers *dynamic.ResolverMap, factory *gloo.ResolverFactory, client *GlooClient, inputs []UserInput) error {
 	var glooRoutes []Route
 	for _, in := range inputs {
-		path := pathName(in.TypeToResolve, in.FieldToResolve)
-		resolver, err := factory.MakeResolver(path, in.RequestTemplate, in.ResponseTemplate, in.ContentType)
-		if err != nil {
-			return errors.Wrap(err, "generating resolver from inputs")
+		switch {
+		case in.ParentResolverInput != nil:
+			resolver := func(params dynamic.Params) ([]byte, error) {
+				if params.Parent == nil {
+					return nil, errors.Errorf("no parent to lookup field")
+				}
+				m, isMap := params.Parent.GoValue().(map[string]interface{})
+				if !isMap {
+					return nil, errors.Errorf("parent was not an object")
+				}
+				v, ok := m[in.ParentResolverInput.ParentField]
+				if !ok {
+					return nil, errors.Errorf("filed %v not found in parent", in.ParentResolverInput.ParentField)
+				}
+				return json.Marshal(v)
+			}
+			if err := resolvers.RegisterResolver(in.TypeToResolve, in.FieldToResolve, resolver); err != nil {
+				return errors.Wrap(err, "attaching resolver to schema")
+			}
+		case in.GlooResolverInput != nil:
+			path := pathName(in.TypeToResolve, in.FieldToResolve)
+			glooInputs := in.GlooResolverInput
+			resolver, err := factory.MakeResolver(path, glooInputs.RequestTemplate, glooInputs.ResponseTemplate, glooInputs.ContentType)
+			if err != nil {
+				return errors.Wrap(err, "generating resolver from inputs")
+			}
+			if err := resolvers.RegisterResolver(in.TypeToResolve, in.FieldToResolve, resolver); err != nil {
+				return errors.Wrap(err, "attaching resolver to schema")
+			}
+			glooRoutes = append(glooRoutes, Route{
+				Path:         path,
+				Destinations: glooInputs.Destinations,
+			})
 		}
-		if err := resolvers.RegisterResolver(in.TypeToResolve, in.FieldToResolve, resolver); err != nil {
-			return errors.Wrap(err, "attaching resolver to schema")
-		}
-		glooRoutes = append(glooRoutes, Route{
-			Path:         path,
-			Destinations: in.Destinations,
-		})
 	}
 	return client.SyncVirtualService(glooRoutes)
 }
