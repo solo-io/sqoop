@@ -4,8 +4,9 @@ package v1;
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all) = true;
 
-import "status.proto";
-import "metadata.proto";
+// imported from Gloo
+import "github.com/solo-io/gloo/api/v1/status.proto";
+import "github.com/solo-io/gloo/api/v1/metadata.proto";
 
 /*
     * The Schema object wraps the user's GraphQL Schema, which is stored as an inline string.

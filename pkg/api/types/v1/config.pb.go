@@ -6,14 +6,11 @@ Package v1 is a generated protocol buffer package.
 
 It is generated from these files:
 	config.proto
-	metadata.proto
 	resolver_map.proto
 	schema.proto
-	status.proto
 
 It has these top-level messages:
 	Config
-	Metadata
 	ResolverMap
 	TypeResolver
 	Resolver
@@ -24,7 +21,6 @@ It has these top-level messages:
 	TemplateResolver
 	CodeResolver
 	Schema
-	Status
 */
 package v1
 
