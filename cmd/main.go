@@ -91,7 +91,7 @@ func init() {
 var starWarsSchema = test.StarWarsSchema
 
 func run() error {
-	factory := &GlooResolverFactory{
+	factory := &gloo.ResolverFactory{
 		ProxyAddr: "localhost:8080",
 	}
 
@@ -122,7 +122,7 @@ func run() error {
 		}),
 	))
 
-	return http.ListenAndServe(":8080", nil)
+	return http.ListenAndServe(":9090", nil)
 }
 
 type UserInput struct {
@@ -138,11 +138,11 @@ func pathName(graphqlType, field string) string {
 	return fmt.Sprintf("/%v.%v", graphqlType, field)
 }
 
-func addResolvers(resolvers *dynamic.ResolverMap, factory *GlooResolverFactory, client *GlooClient, inputs []UserInput) error {
+func addResolvers(resolvers *dynamic.ResolverMap, factory *gloo.ResolverFactory, client *GlooClient, inputs []UserInput) error {
 	var glooRoutes []Route
 	for _, in := range inputs {
 		path := pathName(in.TypeToResolve, in.FieldToResolve)
-		resolver, err := factory.Resolver(path, in.RequestTemplate, in.ResponseTemplate, in.ContentType)
+		resolver, err := factory.MakeResolver(path, in.RequestTemplate, in.ResponseTemplate, in.ContentType)
 		if err != nil {
 			return errors.Wrap(err, "generating resolver from inputs")
 		}
@@ -155,52 +155,6 @@ func addResolvers(resolvers *dynamic.ResolverMap, factory *GlooResolverFactory, 
 		})
 	}
 	return client.SyncVirtualService(glooRoutes)
-
-	//resolvers.RegisterResolver("Query", "hero", factory.MustResolver("/Query.hero", ))
-	//resolvers.RegisterResolver("Query", "human", func(params dynamic.Params) ([]byte, error) {
-	//	v, err := baseResolvers.Query_human(context.TODO(), params.Arg("id").(string))
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	return json.Marshal(v)
-	//})
-	//resolvers.RegisterResolver("Human", "name", func(params dynamic.Params) ([]byte, error) {
-	//	if params.Source == nil {
-	//		return nil, errors.Errorf("source was nil")
-	//	}
-	//	name := params.Source.Data.Get("name").(*dynamic.String).Data
-	//	return []byte(name), nil
-	//})
-	//// overriding resolver
-	//resolvers.RegisterResolver("Human", "appearsIn", func(params dynamic.Params) ([]byte, error) {
-	//	return []byte("[\"EMPIRE\"]"), nil
-	//})
-	//resolvers.RegisterResolver("Human", "friends", func(params dynamic.Params) ([]byte, error) {
-	//	fieldVal := params.Source.Data.Get("friendIds").(*dynamic.InternalOnly).Data
-	//	ids := fieldVal.([]interface{})
-	//	var friends []interface{}
-	//	for _, id := range ids {
-	//		v, err := baseResolvers.Query_character(context.TODO(), id.(string))
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//		friends = append(friends, v)
-	//	}
-	//	return json.Marshal(friends)
-	//})
-	//resolvers.RegisterResolver("Droid", "friends", func(params dynamic.Params) ([]byte, error) {
-	//	fieldVal := params.Source.Data.Get("friendIds").(*dynamic.InternalOnly).Data
-	//	ids := fieldVal.([]interface{})
-	//	var friends []interface{}
-	//	for _, id := range ids {
-	//		v, err := baseResolvers.Query_character(context.TODO(), id.(string))
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//		friends = append(friends, v)
-	//	}
-	//	return json.Marshal(friends)
-	//})
 }
 
 type GlooClient struct {
@@ -316,98 +270,5 @@ func resolverRoute(route Route) (*v1.Route, error) {
 		},
 		MultipleDestinations: multiDestination,
 		SingleDestination:    singleDestination,
-	}, nil
-}
-
-type GlooResolverFactory struct {
-	ProxyAddr string
-}
-
-func (gr *GlooResolverFactory) Resolver(path, requestBodyTemplate, responseBodyTemplate, contentType string) (dynamic.RawResolver, error) {
-	if contentType == "" {
-		contentType = "application/json"
-	}
-	var (
-		requestTemplate  *template.Template
-		responseTemplate *template.Template
-		err              error
-	)
-
-	if requestBodyTemplate != "" {
-		requestTemplate, err = template.New("requestBody").Funcs(template.FuncMap{
-			"marshal": func(v interface{}) (template.JS, error) {
-				a, err := json.Marshal(v)
-				if err != nil {
-					return "", err
-				}
-				return template.JS(a), nil
-			},
-		}).Parse(requestBodyTemplate)
-		if err != nil {
-			return nil, errors.Wrap(err, "parsing request body template failed")
-		}
-	}
-	if responseBodyTemplate != "" {
-		responseTemplate, err = template.New("responseBody").Funcs(template.FuncMap{
-			"marshal": func(v interface{}) (template.JS, error) {
-				a, err := json.Marshal(v)
-				if err != nil {
-					return "", err
-				}
-				return template.JS(a), nil
-			},
-		}).Parse(responseBodyTemplate)
-		if err != nil {
-			return nil, errors.Wrap(err, "parsing response body template failed")
-		}
-	}
-
-	return func(params dynamic.Params) ([]byte, error) {
-		body := &bytes.Buffer{}
-		if requestTemplate != nil {
-			if err := requestTemplate.Execute(body, params); err != nil {
-				// TODO: sanitize
-				return nil, errors.Wrapf(err, "executing request template for params %v", params)
-			}
-		}
-		url := "http://" + gr.ProxyAddr + path
-		res, err := http.Post(url, contentType, body)
-		if err != nil {
-			return nil, errors.Wrap(err, "performing http post")
-		}
-		if res.StatusCode < 200 || res.StatusCode >= 300 {
-			return nil, errors.Errorf("unexpected status code: %v", res.StatusCode)
-		}
-		// empty response
-		if res.Body == nil {
-			return nil, nil
-		}
-		defer res.Body.Close()
-		data, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			return nil, errors.Wrap(err, "reading response body")
-		}
-
-		// no template, return raw
-		if responseTemplate == nil {
-			return data, nil
-		}
-
-		// requires output to be json object
-		var result map[string]interface{}
-		if err := json.Unmarshal(data, &result); err != nil {
-			return nil, errors.Wrap(err, "failed to parse response as json object. "+
-				"response templates may only be used with JSON responses")
-		}
-		input := struct {
-			Result map[string]interface{}
-		}{
-			Result: result,
-		}
-		buf := &bytes.Buffer{}
-		if err := requestTemplate.Execute(buf, input); err != nil {
-			return nil, errors.Wrapf(err, "executing response template for response %v", input)
-		}
-		return buf.Bytes(), nil
 	}, nil
 }
