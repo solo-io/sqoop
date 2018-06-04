@@ -1,8 +1,9 @@
 name: starwars-rest
 type: service
-hosts:
-- addr: localhost
-  port: 9000
+spec:
+  hosts:
+  - addr: localhost
+    port: 9000
 service_info:
   type: REST
 functions:
@@ -11,18 +12,14 @@ functions:
      headers:
        :method: GET
      path: /api/hero
- - name: GetHuman
+ - name: GetCharacter
    spec:
+     body: ""
      headers:
        :method: GET
-     path: /api/humans/{{id}}
- - name: GetHumanFriends
+     path: /api/character/{{id}}
+ - name: GetCharacters
    spec:
      headers:
        :method: POST
-     path: /api/humans/{{id}}/friends
- - name: GetDroidFriends
-   spec:
-     headers:
-       :method: POST
-     path: /api/droids/{{id}}/friends
+     path: /api/characters
