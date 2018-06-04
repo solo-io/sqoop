@@ -14,7 +14,7 @@ var baseResolvers = starwars.NewResolver()
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/hero", GetHero).Methods("GET")
-	router.HandleFunc("/api/character/{id}", GetCharacter).Methods("GET")
+	router.HandleFunc("/api/character/", GetCharacter).Methods("GET")
 	// needs to be POST because there's a body
 	router.HandleFunc("/api/characters", GetCharacters).Methods("POST")
 
@@ -35,8 +35,8 @@ func GetHero(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCharacter(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	friends, err := baseResolvers.Query_character(r.Context(), params["id"])
+	id := r.Header.Get("x-id")
+	friends, err := baseResolvers.Query_character(r.Context(), id)
 	if err != nil {
 		log.Printf("request failed: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
