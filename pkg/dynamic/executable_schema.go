@@ -115,7 +115,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel []query.Selection) g
 }
 
 func (ec *executionContext) resolveField(ctx context.Context, objectType *schema.Object, field graphql.CollectedField, parentObject *Object) (Value, error) {
-	val, err := ec.resolvers.Resolve(objectType, field.Name, Params{Source: parentObject, Args: field.Args})
+	val, err := ec.resolvers.Resolve(objectType, field.Name, Params{Parent: parentObject, Args: field.Args})
 	if err != nil {
 		return nil, errors.Wrapf(err, "executing resolver for field "+strconv.Quote(field.Name))
 	}

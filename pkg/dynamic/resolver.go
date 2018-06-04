@@ -33,8 +33,15 @@ type ResolverFunc func(params Params) (Value, error)
 type RawResolver func(params Params) ([]byte, error)
 
 type Params struct {
-	Source *Object
+	Parent *Object
 	Args   map[string]interface{}
+}
+
+func (p Params) GetSource() interface{} {
+	if p.Parent == nil || p.Parent.Data == nil {
+		return nil
+	}
+	return p.Parent.GoValue()
 }
 
 func (p Params) Arg(name string) interface{} {
@@ -262,8 +269,8 @@ func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params
 		return nil, errors.Wrap(err, "resolver lookup")
 	}
 	if fieldResolver.ResolverFunc == nil {
-		if params.Source != nil {
-			if fieldValue := params.Source.Data.Get(field); fieldValue != nil && fieldValue.Kind() != "NULL" {
+		if params.Parent != nil {
+			if fieldValue := params.Parent.Data.Get(field); fieldValue != nil && fieldValue.Kind() != "NULL" {
 				return fieldValue, nil
 			}
 		}
