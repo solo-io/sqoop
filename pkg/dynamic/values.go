@@ -11,6 +11,7 @@ type Value interface {
 	common.Type
 	Type() common.Type
 	Marshaller() graphql.Marshaler
+	GoValue() interface{}
 	//TODO:
 	//Validate() error
 }
@@ -117,7 +118,7 @@ func (t *InternalOnly) Type() common.Type {
 func (t *Object) Marshaller() graphql.Marshaler {
 	// remove 
 	for _, item := range t.Data.Items() {
-		if _, ok := item.Value.(*InternalOnly); ok {
+		if _, isInternal := item.Value.(*InternalOnly); isInternal {
 			t.Data.Delete(item.Key)
 		}
 	}
@@ -159,6 +160,45 @@ func (t *Null) Marshaller() graphql.Marshaler {
 }
 func (t *InternalOnly) Marshaller() graphql.Marshaler {
 	panic("not implemented for internal-only type")
+}
+
+func (t *Object) GoValue() interface{} {
+	goMap := make(map[string]interface{})
+	for _, item := range t.Data.Items() {
+		goMap[item.Key] = item.Value.GoValue()
+	}
+	return goMap
+}
+func (t *Array) GoValue() interface{} {
+	var array []interface{}
+	for _, val := range t.Data {
+		array = append(array, val.GoValue())
+	}
+	return array
+}
+func (t *Int) GoValue() interface{} {
+	return t.Data
+}
+func (t *Float) GoValue() interface{} {
+	return t.Data
+}
+func (t *String) GoValue() interface{} {
+	return t.Data
+}
+func (t *Enum) GoValue() interface{} {
+	return t.Data
+}
+func (t *Bool) GoValue() interface{} {
+	return t.Data
+}
+func (t *Time) GoValue() interface{} {
+	return t.Data
+}
+func (t *Null) GoValue() interface{} {
+	return nil
+}
+func (t *InternalOnly) GoValue() interface{} {
+	return t.Data
 }
 
 // preserving order matters
