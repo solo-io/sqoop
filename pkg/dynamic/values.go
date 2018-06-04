@@ -163,6 +163,9 @@ func (t *InternalOnly) Marshaller() graphql.Marshaler {
 }
 
 func (t *Object) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	goMap := make(map[string]interface{})
 	for _, item := range t.Data.Items() {
 		goMap[item.Key] = item.Value.GoValue()
@@ -170,6 +173,9 @@ func (t *Object) GoValue() interface{} {
 	return goMap
 }
 func (t *Array) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	var array []interface{}
 	for _, val := range t.Data {
 		array = append(array, val.GoValue())
@@ -177,27 +183,48 @@ func (t *Array) GoValue() interface{} {
 	return array
 }
 func (t *Int) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	return t.Data
 }
 func (t *Float) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	return t.Data
 }
 func (t *String) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	return t.Data
 }
 func (t *Enum) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	return t.Data
 }
 func (t *Bool) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	return t.Data
 }
 func (t *Time) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	return t.Data
 }
 func (t *Null) GoValue() interface{} {
 	return nil
 }
 func (t *InternalOnly) GoValue() interface{} {
+	if t == nil {
+		return nil
+	}
 	return t.Data
 }
 

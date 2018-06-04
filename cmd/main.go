@@ -48,6 +48,19 @@ var inputs = []UserInput{
 		},
 	},
 	{
+		TypeToResolve:  "Query",
+		FieldToResolve: "droid",
+		GlooResolverInput: &GlooResolverInput{
+			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
+			Destinations: []Destination{
+				{
+					UpstreamName: "starwars-rest",
+					FunctionName: "GetCharacter",
+				},
+			},
+		},
+	},
+	{
 		TypeToResolve:  "Human",
 		FieldToResolve: "friends",
 		GlooResolverInput: &GlooResolverInput{
@@ -118,13 +131,13 @@ func run() error {
 		ProxyAddr: "localhost:8080",
 	}
 
-	gloo, err := configstorage.Bootstrap(opts)
+	storageClient, err := configstorage.Bootstrap(opts)
 	if err != nil {
 		return err
 	}
 
 	client := &GlooClient{
-		gloo:           gloo,
+		gloo:           storageClient,
 		virtualService: "qloo",
 		role:           "qloo",
 	}

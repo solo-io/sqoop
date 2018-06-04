@@ -114,8 +114,12 @@ type params struct {
 }
 
 func templateParams(p dynamic.Params) params {
+	var parent map[string]interface{}
+	if parentObject, isObject := p.Parent.GoValue().(map[string]interface{}); isObject {
+			parent = parentObject
+	}
 	return params{
 		Args:   p.Args,
-		Parent: p.Parent.GoValue().(map[string]interface{}),
+		Parent: parent,
 	}
 }
