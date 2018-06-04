@@ -52,51 +52,51 @@ var _ = Describe("CrdStorageClient", func() {
 			Expect(err).NotTo(HaveOccurred())
 			err = client.V1().Register()
 			Expect(err).NotTo(HaveOccurred())
-			upstream := NewTestUpstream1()
-			upstream, err = client.V1().Upstreams().Create(upstream)
-			upstream2 := NewTestUpstream2()
-			upstream2, err = client.V1().Upstreams().Create(upstream2)
+			schema := NewTestSchema1()
+			schema, err = client.V1().Schemas().Create(schema)
+			schema2 := NewTestSchema2()
+			schema2, err = client.V1().Schemas().Create(schema2)
 			Expect(err).NotTo(HaveOccurred())
 
-			_, err = client.V1().Upstreams().Update(upstream2)
+			_, err = client.V1().Schemas().Update(schema2)
 			Expect(err).NotTo(HaveOccurred())
 
-			created1, err := client.V1().Upstreams().Get(upstream.Name)
+			created1, err := client.V1().Schemas().Get(schema.Name)
 			Expect(err).NotTo(HaveOccurred())
-			upstream.Metadata = created1.Metadata
-			Expect(created1).To(Equal(upstream))
+			schema.Metadata = created1.Metadata
+			Expect(created1).To(Equal(schema))
 
-			created2, err := client.V1().Upstreams().Get(upstream2.Name)
+			created2, err := client.V1().Schemas().Get(schema2.Name)
 			Expect(err).NotTo(HaveOccurred())
-			upstream2.Metadata = created2.Metadata
-			Expect(created2).To(Equal(upstream2))
+			schema2.Metadata = created2.Metadata
+			Expect(created2).To(Equal(schema2))
 
 		})
 	})
-	Describe("Create2Update vService", func() {
+	Describe("Create2Update resolverMap", func() {
 		It("creates and updates", func() {
 			client, err := NewStorage(dir, resync)
 			Expect(err).NotTo(HaveOccurred())
 			err = client.V1().Register()
 			Expect(err).NotTo(HaveOccurred())
-			vService := NewTestVirtualService("v1")
-			vService, err = client.V1().VirtualServices().Create(vService)
-			vService2 := NewTestVirtualService("v2")
-			vService2, err = client.V1().VirtualServices().Create(vService2)
+			resolverMap := NewTestResolverMap("v1")
+			resolverMap, err = client.V1().ResolverMaps().Create(resolverMap)
+			resolverMap2 := NewTestResolverMap("v2")
+			resolverMap2, err = client.V1().ResolverMaps().Create(resolverMap2)
 			Expect(err).NotTo(HaveOccurred())
 
-			_, err = client.V1().VirtualServices().Update(vService)
+			_, err = client.V1().ResolverMaps().Update(resolverMap)
 			Expect(err).NotTo(HaveOccurred())
 
-			created1, err := client.V1().VirtualServices().Get(vService.Name)
+			created1, err := client.V1().ResolverMaps().Get(resolverMap.Name)
 			Expect(err).NotTo(HaveOccurred())
-			vService.Metadata = created1.Metadata
-			Expect(created1).To(Equal(vService))
+			resolverMap.Metadata = created1.Metadata
+			Expect(created1).To(Equal(resolverMap))
 
-			created2, err := client.V1().VirtualServices().Get(vService2.Name)
+			created2, err := client.V1().ResolverMaps().Get(resolverMap2.Name)
 			Expect(err).NotTo(HaveOccurred())
-			vService2.Metadata = created2.Metadata
-			Expect(created2).To(Equal(vService2))
+			resolverMap2.Metadata = created2.Metadata
+			Expect(created2).To(Equal(resolverMap2))
 		})
 	})
 	Describe("Create2Update role", func() {
@@ -131,13 +131,13 @@ var _ = Describe("CrdStorageClient", func() {
 			Expect(err).NotTo(HaveOccurred())
 			err = client.V1().Register()
 			Expect(err).NotTo(HaveOccurred())
-			upstream := NewTestUpstream1()
-			_, err = client.V1().Upstreams().Create(upstream)
+			schema := NewTestSchema1()
+			_, err = client.V1().Schemas().Create(schema)
 			Expect(err).NotTo(HaveOccurred())
-			created, err := client.V1().Upstreams().Get(upstream.Name)
+			created, err := client.V1().Schemas().Get(schema.Name)
 			Expect(err).NotTo(HaveOccurred())
-			upstream.Metadata = created.Metadata
-			Expect(created).To(Equal(upstream))
+			schema.Metadata = created.Metadata
+			Expect(created).To(Equal(schema))
 		})
 	})
 	Describe("Update", func() {
@@ -146,18 +146,18 @@ var _ = Describe("CrdStorageClient", func() {
 			Expect(err).NotTo(HaveOccurred())
 			err = client.V1().Register()
 			Expect(err).NotTo(HaveOccurred())
-			upstream := NewTestUpstream1()
-			created, err := client.V1().Upstreams().Create(upstream)
+			schema := NewTestSchema1()
+			created, err := client.V1().Schemas().Create(schema)
 			Expect(err).NotTo(HaveOccurred())
-			upstream.Type = "something-else"
-			_, err = client.V1().Upstreams().Update(upstream)
+			schema.Type = "something-else"
+			_, err = client.V1().Schemas().Update(schema)
 			// need to set resource ver
 			Expect(err).To(HaveOccurred())
-			upstream.Metadata = created.GetMetadata()
-			updated, err := client.V1().Upstreams().Update(upstream)
+			schema.Metadata = created.GetMetadata()
+			updated, err := client.V1().Schemas().Update(schema)
 			Expect(err).NotTo(HaveOccurred())
-			upstream.Metadata = updated.GetMetadata()
-			Expect(updated).To(Equal(upstream))
+			schema.Metadata = updated.GetMetadata()
+			Expect(updated).To(Equal(schema))
 		})
 	})
 	Describe("Delete", func() {
@@ -166,12 +166,12 @@ var _ = Describe("CrdStorageClient", func() {
 			Expect(err).NotTo(HaveOccurred())
 			err = client.V1().Register()
 			Expect(err).NotTo(HaveOccurred())
-			upstream := NewTestUpstream1()
-			_, err = client.V1().Upstreams().Create(upstream)
+			schema := NewTestSchema1()
+			_, err = client.V1().Schemas().Create(schema)
 			Expect(err).NotTo(HaveOccurred())
-			err = client.V1().Upstreams().Delete(upstream.Name)
+			err = client.V1().Schemas().Delete(schema.Name)
 			Expect(err).NotTo(HaveOccurred())
-			_, err = client.V1().Upstreams().Get(upstream.Name)
+			_, err = client.V1().Schemas().Get(schema.Name)
 			Expect(err).To(HaveOccurred())
 		})
 	})
