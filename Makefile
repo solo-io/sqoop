@@ -28,5 +28,17 @@ $(GENERATED_PROTO_FILES): $(PROTOS)
 	-I=. \
 	-I=$(GOPATH)/src \
 	-I=$(GOPATH)/src/github.com/gogo/protobuf/ \
-	--gogo_out=$(ROOTDIR)/pkg/api/types/v1 \
+	--gogo_out=$(GOPATH)/src \
 	./*.proto
+
+$(OUTPUT_DIR):
+	mkdir -p $@
+
+# kubernetes custom clientsets
+.PHONY: clientset
+clientset: $(GENERATED_PROTO_FILES) $(SOURCES)
+	cd ${GOPATH}/src/k8s.io/code-generator && \
+	./generate-groups.sh all \
+		$(PACKAGE_PATH)/pkg/storage/crd/client \
+		$(PACKAGE_PATH)/pkg/storage/crd \
+		"solo.io:v1"
