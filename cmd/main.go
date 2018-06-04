@@ -4,23 +4,20 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"bytes"
-	"io/ioutil"
 	"os"
 
 	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/handler"
 	"github.com/solo-io/qloo/pkg/dynamic"
 	"github.com/solo-io/qloo/test"
-	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/storage"
 	"github.com/solo-io/gloo/pkg/api/types/v1"
-	"html/template"
 	"github.com/spf13/cobra"
 	"github.com/solo-io/gloo/pkg/bootstrap"
 	"github.com/solo-io/gloo/pkg/bootstrap/flags"
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
+	"github.com/solo-io/qloo/pkg/gloo"
 )
 
 var inputs = []UserInput{
@@ -29,41 +26,41 @@ var inputs = []UserInput{
 		FieldToResolve: "hero",
 		Destinations: []Destination{
 			{
-				UpstreamName: "myupstream",
-				FunctionName: "getHero",
+				UpstreamName: "starwars-rest",
+				FunctionName: "GetHero",
 			},
 		},
 	},
 	{
 		TypeToResolve:   "Query",
 		FieldToResolve:  "human",
-		RequestTemplate: `{"id": {{ .Args["id"] }}}`,
+		RequestTemplate: `{"id": {{ index .Args "id" }}}`,
 		Destinations: []Destination{
 			{
-				UpstreamName: "myupstream",
-				FunctionName: "getHuman",
+				UpstreamName: "starwars-rest",
+				FunctionName: "GetCharacter",
 			},
 		},
 	},
 	{
 		TypeToResolve:   "Human",
 		FieldToResolve:  "friends",
-		RequestTemplate: `{{ marshal .Source["friendIds"] }}`,
+		RequestTemplate: `{{ marshal (index .Parent.GoValue "friend_ids") }}`,
 		Destinations: []Destination{
 			{
-				UpstreamName: "myupstream",
-				FunctionName: "getHumanFriends",
+				UpstreamName: "starwars-rest",
+				FunctionName: "GetCharacters",
 			},
 		},
 	},
 	{
 		TypeToResolve:   "Droid",
 		FieldToResolve:  "friends",
-		RequestTemplate: `{{ marshal .Source["friendIds"] }}`,
+		RequestTemplate: `{{ marshal (index .Parent.GoValue "friend_ids") }}`,
 		Destinations: []Destination{
 			{
-				UpstreamName: "myupstream",
-				FunctionName: "getDroidFriends",
+				UpstreamName: "starwars-rest",
+				FunctionName: "GetCharacters",
 			},
 		},
 	},
@@ -86,7 +83,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func init() {	
+func init() {
 	flags.AddConfigStorageOptionFlags(rootCmd, &opts)
 	flags.AddFileFlags(rootCmd, &opts)
 }
