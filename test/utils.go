@@ -201,8 +201,8 @@ func WriteResolverMap() {
 						},
 					},
 					"appearsIn": {
-						Resolver: &v1.Resolver_TempalteResolver{
-							TempalteResolver: &v1.TemplateResolver{
+						Resolver: &v1.Resolver_TemplateResolver{
+							TemplateResolver: &v1.TemplateResolver{
 								InlineTemplate: `{{ index .Parent "appears_in" }}}`,
 							},
 						},
@@ -225,8 +225,8 @@ func WriteResolverMap() {
 						},
 					},
 					"appearsIn": {
-						Resolver: &v1.Resolver_TempalteResolver{
-							TempalteResolver: &v1.TemplateResolver{
+						Resolver: &v1.Resolver_TemplateResolver{
+							TemplateResolver: &v1.TemplateResolver{
 								InlineTemplate: `{{ index .Parent "appears_in" }}}`,
 							},
 						},
