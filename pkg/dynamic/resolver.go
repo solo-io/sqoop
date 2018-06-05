@@ -8,10 +8,11 @@ import (
 	"encoding/json"
 	"time"
 	"strconv"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
 )
 
 // store all the user resolvers
-type ResolverMap struct {
+type ExecutableResolvers struct {
 	// resolvers for all named types
 	Types map[schema.NamedType]*TypeResolver
 }
@@ -44,7 +45,35 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func NewResolverMap(sch *schema.Schema) *ResolverMap {
+func ResolverMapSkeleton(sch *schema.Schema) (*v1.ResolverMap) {
+	types := make(map[string]*v1.TypeResolver)
+	for _, t := range sch.Types {
+		if metaType(t.TypeName()) {
+			continue
+		}
+		fields := make(map[string]*v1.Resolver)
+		switch t := t.(type) {
+		case *schema.Object:
+			for _, f := range t.Fields {
+				inputKey := t.Name + "." + f.Name
+				log.Printf("initializing resolver: %v", inputKey)
+				fields[f.Name] = &v1.Resolver{
+					Resolver: nil,
+				}
+			}
+		}
+		if len(fields) == 0 {
+			continue
+		}
+		types[t.TypeName()] = &v1.TypeResolver{Fields: fields}
+	}
+	return &v1.ResolverMap{
+		Types: types,
+	}
+}
+
+func NewExecutableResolvers(sch *schema.Schema) (*ExecutableResolvers) {
+	// return a skeleton for the user
 	typeMap := make(map[schema.NamedType]*TypeResolver)
 	for _, t := range sch.Types {
 		if metaType(t.TypeName()) {
@@ -64,12 +93,12 @@ func NewResolverMap(sch *schema.Schema) *ResolverMap {
 		}
 		typeMap[t] = &TypeResolver{Fields: fields}
 	}
-	return &ResolverMap{
+	return &ExecutableResolvers{
 		Types: typeMap,
 	}
 }
 
-func (rm *ResolverMap) RegisterResolver(typeName string, field string, rawResolver RawResolver) error {
+func (rm *ExecutableResolvers) SetResolver(typeName string, field string, rawResolver RawResolver) error {
 	var typ schema.NamedType
 	for t := range rm.Types {
 		if t.TypeName() == typeName {
@@ -256,7 +285,7 @@ func determineType(iface *schema.Interface, rawValue interface{}) (*schema.Objec
 	return nil, errors.Errorf("%v does not implement %v", objTypeName, iface.Name)
 }
 
-func (rm *ResolverMap) Resolve(typ schema.NamedType, field string, params Params) (Value, error) {
+func (rm *ExecutableResolvers) Resolve(typ schema.NamedType, field string, params Params) (Value, error) {
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolver lookup")
@@ -325,7 +354,7 @@ func convertResult(typ common.Type, data interface{}) (Value, error) {
 	return result, nil
 }
 
-func (rm *ResolverMap) getFieldResolver(typ schema.NamedType, field string) (*FieldResolver, error) {
+func (rm *ExecutableResolvers) getFieldResolver(typ schema.NamedType, field string) (*FieldResolver, error) {
 	typeResolver, ok := rm.Types[typ]
 	if !ok {
 		return nil, errors.Errorf("type %v unknown", typ.TypeName())

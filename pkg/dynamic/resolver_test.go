@@ -11,7 +11,7 @@ import (
 )
 
 var _ = Describe("Resolver", func() {
-	r := NewResolverMap(test.StarWarsSchema, starWarsResolvers)
+	r := NewExecutableResolvers(test.StarWarsSchema, starWarsResolvers)
 	queryObject := test.StarWarsSchema.Types["Query"]
 	Context("Resolve", func() {
 		It("calls the provided resolver for the field on the type", func() {

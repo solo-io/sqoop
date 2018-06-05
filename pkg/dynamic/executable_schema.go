@@ -14,14 +14,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-func MakeExecutableSchema(parsedSchema *schema.Schema) (graphql.ExecutableSchema, *ResolverMap) {
-	resolvers := NewResolverMap(parsedSchema)
+func MakeExecutableSchema(parsedSchema *schema.Schema) (graphql.ExecutableSchema, *ExecutableResolvers) {
+	resolvers := NewExecutableResolvers(parsedSchema)
 	return &executableSchema{schema: parsedSchema, resolvers: resolvers}, resolvers
 }
 
 type executableSchema struct {
 	schema    *schema.Schema
-	resolvers *ResolverMap
+	resolvers *ExecutableResolvers
 }
 
 func (e *executableSchema) Schema() *schema.Schema {
@@ -76,7 +76,7 @@ type executionContext struct {
 	*graphql.RequestContext
 	*schema.Schema
 
-	resolvers *ResolverMap
+	resolvers *ExecutableResolvers
 }
 
 var queryImplementors = []string{"Query"}

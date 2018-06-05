@@ -21,87 +21,6 @@ import (
 	"encoding/json"
 )
 
-var inputs = []UserInput{
-	{
-		TypeToResolve:  "Query",
-		FieldToResolve: "hero",
-		GlooResolverInput: &GlooResolverInput{
-			Destinations: []Destination{
-				{
-					UpstreamName: "starwars-rest",
-					FunctionName: "GetHero",
-				},
-			},
-		},
-	},
-	{
-		TypeToResolve:  "Query",
-		FieldToResolve: "human",
-		GlooResolverInput: &GlooResolverInput{
-			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
-			Destinations: []Destination{
-				{
-					UpstreamName: "starwars-rest",
-					FunctionName: "GetCharacter",
-				},
-			},
-		},
-	},
-	{
-		TypeToResolve:  "Query",
-		FieldToResolve: "droid",
-		GlooResolverInput: &GlooResolverInput{
-			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
-			Destinations: []Destination{
-				{
-					UpstreamName: "starwars-rest",
-					FunctionName: "GetCharacter",
-				},
-			},
-		},
-	},
-	{
-		TypeToResolve:  "Human",
-		FieldToResolve: "friends",
-		GlooResolverInput: &GlooResolverInput{
-			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
-			Destinations: []Destination{
-				{
-					UpstreamName: "starwars-rest",
-					FunctionName: "GetCharacters",
-				},
-			},
-		},
-	},
-	{
-		TypeToResolve:  "Droid",
-		FieldToResolve: "friends",
-		GlooResolverInput: &GlooResolverInput{
-			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
-			Destinations: []Destination{
-				{
-					UpstreamName: "starwars-rest",
-					FunctionName: "GetCharacters",
-				},
-			},
-		},
-	},
-	{
-		TypeToResolve:  "Human",
-		FieldToResolve: "appearsIn",
-		ParentResolverInput: &ParentResolverInput{
-			ParentField: "appears_in",
-		},
-	},
-	{
-		TypeToResolve:  "Droid",
-		FieldToResolve: "appearsIn",
-		ParentResolverInput: &ParentResolverInput{
-			ParentField: "appears_in",
-		},
-	},
-}
-
 func main() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -161,29 +80,11 @@ func run() error {
 	return http.ListenAndServe(":9090", nil)
 }
 
-type UserInput struct {
-	TypeToResolve       string
-	FieldToResolve      string
-	GlooResolverInput   *GlooResolverInput
-	ParentResolverInput *ParentResolverInput
-}
-
-type GlooResolverInput struct {
-	RequestTemplate  string
-	ResponseTemplate string
-	ContentType      string
-	Destinations     []Destination
-}
-
-type ParentResolverInput struct {
-	ParentField string
-}
-
 func pathName(graphqlType, field string) string {
 	return fmt.Sprintf("/%v.%v", graphqlType, field)
 }
 
-func addResolvers(resolvers *dynamic.ResolverMap, factory *gloo.ResolverFactory, client *GlooClient, inputs []UserInput) error {
+func addResolvers(resolvers *dynamic.ExecutableResolvers, factory *gloo.ResolverFactory, client *GlooClient, inputs []UserInput) error {
 	var glooRoutes []Route
 	for _, in := range inputs {
 		switch {
@@ -202,7 +103,7 @@ func addResolvers(resolvers *dynamic.ResolverMap, factory *gloo.ResolverFactory,
 				}
 				return json.Marshal(v)
 			}
-			if err := resolvers.RegisterResolver(in.TypeToResolve, in.FieldToResolve, resolver); err != nil {
+			if err := resolvers.SetResolver(in.TypeToResolve, in.FieldToResolve, resolver); err != nil {
 				return errors.Wrap(err, "attaching resolver to schema")
 			}
 		case in.GlooResolverInput != nil:
@@ -212,7 +113,7 @@ func addResolvers(resolvers *dynamic.ResolverMap, factory *gloo.ResolverFactory,
 			if err != nil {
 				return errors.Wrap(err, "generating resolver from inputs")
 			}
-			if err := resolvers.RegisterResolver(in.TypeToResolve, in.FieldToResolve, resolver); err != nil {
+			if err := resolvers.SetResolver(in.TypeToResolve, in.FieldToResolve, resolver); err != nil {
 				return errors.Wrap(err, "attaching resolver to schema")
 			}
 			glooRoutes = append(glooRoutes, Route{
