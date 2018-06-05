@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
-	"text/template"
 	"github.com/pkg/errors"
-	"github.com/solo-io/gloo/pkg/log"
 	"github.com/solo-io/qloo/pkg/exec"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/util"
+	"text/template"
 )
 
 type ResolverFactory struct {
@@ -36,31 +36,13 @@ func (rf *ResolverFactory) CreateResolver(path string, glooResolver *v1.GlooReso
 	)
 
 	if requestBodyTemplate != "" {
-		requestTemplate, err = template.New("requestBody for " + path).Funcs(template.FuncMap{
-			"marshal": func(v interface{}) (string, error) {
-				a, err := json.Marshal(v)
-				if err != nil {
-					return "", err
-				}
-				log.GreyPrintf("%v", string(a))
-				return string(a), nil
-			},
-		}).Parse(requestBodyTemplate)
+		requestTemplate, err = util.Template(requestBodyTemplate)
 		if err != nil {
 			return nil, errors.Wrap(err, "parsing request body template failed")
 		}
 	}
 	if responseBodyTemplate != "" {
-		responseTemplate, err = template.New("responseBody for " + path).Funcs(template.FuncMap{
-			"marshal": func(v interface{}) (string, error) {
-				a, err := json.Marshal(v)
-				if err != nil {
-					return "", err
-				}
-				log.Printf("parsed: %v", string(a))
-				return string(a), nil
-			},
-		}).Parse(responseBodyTemplate)
+		responseTemplate, err = util.Template(responseBodyTemplate)
 		if err != nil {
 			return nil, errors.Wrap(err, "parsing response body template failed")
 		}
@@ -71,15 +53,17 @@ func (rf *ResolverFactory) CreateResolver(path string, glooResolver *v1.GlooReso
 
 func (rf *ResolverFactory) newResolver(path, contentType string, requestTemplate, responseTemplate *template.Template) exec.RawResolver {
 	return func(params exec.Params) ([]byte, error) {
-		body := bytes.Buffer{}
+		var body *bytes.Buffer
 		if requestTemplate != nil {
-			if err := requestTemplate.Execute(&body, templateParams(params)); err != nil {
+			buf, err := util.ExecTemplate(requestTemplate, params)
+			if err != nil {
 				// TODO: sanitize
 				return nil, errors.Wrapf(err, "executing request template for params %v", params)
 			}
+			body = buf
 		}
 		url := "http://" + rf.proxyAddr + path
-		res, err := http.Post(url, contentType, &body)
+		res, err := http.Post(url, contentType, body)
 		if err != nil {
 			return nil, errors.Wrap(err, "performing http post")
 		}
@@ -119,21 +103,5 @@ func (rf *ResolverFactory) newResolver(path, contentType string, requestTemplate
 			return nil, errors.Wrapf(err, "executing response template for response %v", input)
 		}
 		return buf.Bytes(), nil
-	}
-}
-
-type params struct {
-	Args   map[string]interface{}
-	Parent map[string]interface{}
-}
-
-func templateParams(p exec.Params) params {
-	var parent map[string]interface{}
-	if parentObject, isObject := p.Parent.GoValue().(map[string]interface{}); isObject {
-		parent = parentObject
-	}
-	return params{
-		Args:   p.Args,
-		Parent: parent,
 	}
 }

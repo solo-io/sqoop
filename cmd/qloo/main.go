@@ -47,7 +47,7 @@ var starWarsSchema = test.StarWarsSchema
 
 func run() error {
 	factory := &gloo.ResolverFactory{
-		ProxyAddr: "localhost:8080",
+		proxyAddr: "localhost:8080",
 	}
 
 	storageClient, err := configstorage.Bootstrap(opts)
@@ -109,7 +109,7 @@ func addResolvers(resolvers *dynamic.ExecutableResolvers, factory *gloo.Resolver
 		case in.GlooResolverInput != nil:
 			path := pathName(in.TypeToResolve, in.FieldToResolve)
 			glooInputs := in.GlooResolverInput
-			resolver, err := factory.MakeResolver(path, glooInputs.RequestTemplate, glooInputs.ResponseTemplate, glooInputs.ContentType)
+			resolver, err := factory.CreateResolver(path, glooInputs.RequestTemplate, glooInputs.ResponseTemplate, glooInputs.ContentType)
 			if err != nil {
 				return errors.Wrap(err, "generating resolver from inputs")
 			}

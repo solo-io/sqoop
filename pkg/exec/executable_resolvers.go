@@ -9,6 +9,7 @@ import (
 	"time"
 	"strconv"
 	"github.com/solo-io/qloo/pkg/dynamic"
+	"github.com/solo-io/qloo/pkg/util"
 )
 
 // store all the user resolvers
@@ -57,7 +58,6 @@ func NewExecutableResolvers(sch *schema.Schema) (*ExecutableResolvers, error) {
 		case *schema.Object:
 			for _, f := range t.Fields {
 				inputKey := t.Name + "." + f.Name
-				log.Printf("initializing resolver: %v", inputKey)
 				fields[f.Name] = &fieldResolver{typ: f.Type, resolverFunc: nil}
 			}
 		}
