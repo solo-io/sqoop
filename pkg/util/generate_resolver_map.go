@@ -3,38 +3,13 @@ package util
 import (
 	"github.com/vektah/gqlgen/neelance/schema"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/exec"
 )
-
-var metaTypes = []string{
-	"Map",
-	"Float",
-	"ID",
-	"Int",
-	"Boolean",
-	"String",
-	"__Type",
-	"__TypeKind",
-	"__Directive",
-	"__EnumValue",
-	"__Schema",
-	"__InputValue",
-	"__DirectiveLocation",
-	"__Field",
-}
-
-func MetaType(typeName string) bool {
-	for _, mt := range metaTypes {
-		if typeName == mt {
-			return true
-		}
-	}
-	return false
-}
 
 func GenerateResolverMapSkeleton(sch *schema.Schema) (*v1.ResolverMap) {
 	types := make(map[string]*v1.TypeResolver)
 	for _, t := range sch.Types {
-		if MetaType(t.TypeName()) {
+		if exec.MetaType(t.TypeName()) {
 			continue
 		}
 		fields := make(map[string]*v1.Resolver)

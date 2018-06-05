@@ -8,8 +8,6 @@ import (
 	"time"
 	"strconv"
 	"github.com/solo-io/qloo/pkg/dynamic"
-	"github.com/solo-io/qloo/pkg/util"
-	"github.com/solo-io/qloo/pkg/resolvers"
 )
 
 // store all the user resolvers
@@ -45,17 +43,17 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func NewExecutableResolvers(sch *schema.Schema, resolverFactory *resolvers.ResolverFactory) (*ExecutableResolvers, error) {
+func NewExecutableResolvers(sch *schema.Schema, resolverFor func(string, string) (RawResolver, error)) (*ExecutableResolvers, error) {
 	typeMap := make(map[schema.NamedType]*typeResolver)
 	for _, namedType := range sch.Types {
-		if util.MetaType(namedType.TypeName()) {
+		if MetaType(namedType.TypeName()) {
 			continue
 		}
 		fields := make(map[string]*fieldResolver)
 		switch typ := namedType.(type) {
 		case *schema.Object:
 			for _, field := range typ.Fields {
-				rawResolver, err := resolverFactory.CreateResolver(typ.Name, field.Name)
+				rawResolver, err := resolverFor(typ.Name, field.Name)
 				if err != nil {
 					return nil, errors.Wrapf(err, "generating resolver for %v.%v", typ.Name, field.Name)
 				}
@@ -265,4 +263,30 @@ func (rm *ExecutableResolvers) getFieldResolver(typ schema.NamedType, field stri
 		return nil, errors.Errorf("type %v does not contain field %v", typ.TypeName(), field)
 	}
 	return fieldResolver, nil
+}
+
+var metaTypes = []string{
+	"Map",
+	"Float",
+	"ID",
+	"Int",
+	"Boolean",
+	"String",
+	"__Type",
+	"__TypeKind",
+	"__Directive",
+	"__EnumValue",
+	"__Schema",
+	"__InputValue",
+	"__DirectiveLocation",
+	"__Field",
+}
+
+func MetaType(typeName string) bool {
+	for _, mt := range metaTypes {
+		if typeName == mt {
+			return true
+		}
+	}
+	return false
 }
