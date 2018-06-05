@@ -11,39 +11,41 @@ import (
 	"net/http"
 	"strings"
 	"github.com/solo-io/qloo/test"
-	"io/ioutil"
+	"io"
+	"bytes"
 )
 
 var _ = Describe("GlooResolvers", func() {
 	var (
-		mockProxyAddr string
-		server        *httptest.Server
-		received      chan *http.Request
-		response      = []byte(`{"have":"a","nice":"day","okay":"?"`)
+		mockProxyAddr   string
+		server          *httptest.Server
+		response        = []byte(`{"have":"a","nice":"day","okay":"?"}`)
+		resolverFactory *ResolverFactory
+		buf             *bytes.Buffer
 	)
 	BeforeEach(func() {
-		received = make(chan *http.Request)
+		buf = &bytes.Buffer{}
 		m := mux.NewRouter()
 		m.HandleFunc("/mytype.myfield", func(w http.ResponseWriter, r *http.Request) {
-			go func() { received <- r }()
+			io.Copy(buf, r.Body)
 			w.Write(response)
 		})
 		server = httptest.NewServer(m)
 		mockProxyAddr = strings.TrimPrefix(server.URL, "http://")
+
+		resolverFactory = NewResolverFactory(mockProxyAddr)
 	})
 	AfterEach(func() {
 		server.Close()
 	})
-	proxyAddr := "doesnt-exist"
-	resolverFactory := NewResolverFactory(proxyAddr)
 	Context("happy path with req+response template and params", func() {
 		path := ResolverPath{
 			TypeName:  "mytype",
 			FieldName: "myfield",
 		}
 		gResolver := &v1.GlooResolver{
-			RequestTemplate:  "Params: {{ marshal . }}",
-			ResponseTemplate: "{{  }}",
+			RequestTemplate:  "{{ marshal . }}",
+			ResponseTemplate: "{{ marshal . }}",
 		}
 		It("creates the resolver without error", func() {
 			_, err := resolverFactory.CreateResolver(path, gResolver)
@@ -54,20 +56,13 @@ var _ = Describe("GlooResolvers", func() {
 			Expect(err).NotTo(HaveOccurred())
 			b, err := rawResolver(test.LukeSkywalkerParams)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(b).To(Equal("foo"))
-			var r *http.Request
-			Eventually(func() *http.Request {
-				select {
-				case r = <-received:
-					return r
-				default:
-					return nil
-				}
-			})
-			Expect(r).To(Equal("foo"))
-			b, err = ioutil.ReadAll(r.Body)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(b).To(Equal("foo"))
+			Expect(b).To(Equal([]byte(`{"Result":{"have":"a","nice":"day","okay":"?"}}`)))
+			Expect(buf.String()).To(Equal(`{"Args":{"acting":5,"best_scene":"cloud city"},` +
+				`"Parent":{"CharacterFields":{"AppearsIn":["NEWHOPE","EMPIRE","JEDI"],` +
+				`"FriendIds":["1002","1003","2000","2001"],"ID":"1000","Name":"Luke Skywalker",` +
+				`"TypeName":"Human"},"Mass":77,"StarshipIds":["3001","3003"],"appearsIn":null,` +
+				`"friends":null,"friendsConnection":null,"height":null,"id":null,"mass":null,` +
+				`"name":null,"starships":null}}`))
 		})
 	})
 })
