@@ -1,4 +1,4 @@
-package dynamic
+package exec
 
 import (
 	"github.com/vektah/gqlgen/neelance/schema"
@@ -8,33 +8,33 @@ import (
 	"encoding/json"
 	"time"
 	"strconv"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/dynamic"
 )
 
 // store all the user resolvers
 type ExecutableResolvers struct {
 	// resolvers for all named types
-	Types map[schema.NamedType]*TypeResolver
+	types map[schema.NamedType]*typeResolver
 }
 
-type TypeResolver struct {
+type typeResolver struct {
 	// resolve each field of the type
-	Fields map[string]*FieldResolver
+	fields map[string]*fieldResolver
 }
 
-type FieldResolver struct {
+type fieldResolver struct {
 	// type the field resolves to
-	Type common.Type
+	typ common.Type
 
 	// how to resolve this field. should return Type
-	ResolverFunc ResolverFunc
+	resolverFunc ResolverFunc
 }
 
-type ResolverFunc func(params Params) (Value, error)
+type ResolverFunc func(params Params) (dynamic.Value, error)
 type RawResolver func(params Params) ([]byte, error)
 
 type Params struct {
-	Parent *Object
+	Parent *dynamic.Object
 	Args   map[string]interface{}
 }
 
@@ -45,62 +45,35 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func ResolverMapSkeleton(sch *schema.Schema) (*v1.ResolverMap) {
-	types := make(map[string]*v1.TypeResolver)
-	for _, t := range sch.Types {
-		if metaType(t.TypeName()) {
-			continue
-		}
-		fields := make(map[string]*v1.Resolver)
-		switch t := t.(type) {
-		case *schema.Object:
-			for _, f := range t.Fields {
-				inputKey := t.Name + "." + f.Name
-				log.Printf("initializing resolver: %v", inputKey)
-				fields[f.Name] = &v1.Resolver{
-					Resolver: nil,
-				}
-			}
-		}
-		if len(fields) == 0 {
-			continue
-		}
-		types[t.TypeName()] = &v1.TypeResolver{Fields: fields}
-	}
-	return &v1.ResolverMap{
-		Types: types,
-	}
-}
-
-func NewExecutableResolvers(sch *schema.Schema) (*ExecutableResolvers) {
+func NewExecutableResolvers(sch *schema.Schema) (*ExecutableResolvers, error) {
 	// return a skeleton for the user
-	typeMap := make(map[schema.NamedType]*TypeResolver)
+	typeMap := make(map[schema.NamedType]*typeResolver)
 	for _, t := range sch.Types {
-		if metaType(t.TypeName()) {
+		if util.MetaType(t.TypeName()) {
 			continue
 		}
-		fields := make(map[string]*FieldResolver)
+		fields := make(map[string]*fieldResolver)
 		switch t := t.(type) {
 		case *schema.Object:
 			for _, f := range t.Fields {
 				inputKey := t.Name + "." + f.Name
 				log.Printf("initializing resolver: %v", inputKey)
-				fields[f.Name] = &FieldResolver{Type: f.Type, ResolverFunc: nil}
+				fields[f.Name] = &fieldResolver{typ: f.Type, resolverFunc: nil}
 			}
 		}
 		if len(fields) == 0 {
 			continue
 		}
-		typeMap[t] = &TypeResolver{Fields: fields}
+		typeMap[t] = &typeResolver{fields: fields}
 	}
 	return &ExecutableResolvers{
-		Types: typeMap,
-	}
+		types: typeMap,
+	}, nil
 }
 
 func (rm *ExecutableResolvers) SetResolver(typeName string, field string, rawResolver RawResolver) error {
 	var typ schema.NamedType
-	for t := range rm.Types {
+	for t := range rm.types {
 		if t.TypeName() == typeName {
 			typ = t
 			break
@@ -113,17 +86,17 @@ func (rm *ExecutableResolvers) SetResolver(typeName string, field string, rawRes
 	if err != nil {
 		return err
 	}
-	fieldResolver.ResolverFunc = func(params Params) (Value, error) {
+	fieldResolver.resolverFunc = func(params Params) (dynamic.Value, error) {
 		data, err := rawResolver(params)
 		if err != nil {
 			return nil, errors.Wrap(err, "calling raw resolver")
 		}
-		return toValue(data, fieldResolver.Type)
+		return toValue(data, fieldResolver.typ)
 	}
 	return nil
 }
 
-func toValue(data []byte, typ common.Type) (Value, error) {
+func toValue(data []byte, typ common.Type) (dynamic.Value, error) {
 	switch fieldType := typ.(type) {
 	case *schema.Object, *schema.Interface:
 		var rawResult map[string]interface{}
@@ -146,37 +119,37 @@ func toValue(data []byte, typ common.Type) (Value, error) {
 }
 
 // TODO: support custom scalars
-func scalarFromBytes(scalar *schema.Scalar, raw string) (Value, error) {
+func scalarFromBytes(scalar *schema.Scalar, raw string) (dynamic.Value, error) {
 	switch scalar.TypeName() {
 	case "Int":
 		v, err := strconv.Atoi(raw)
 		if err != nil {
 			return nil, errors.Wrap(err, "converting bytes to int")
 		}
-		return &Int{Scalar: scalar, Data: v}, nil
+		return &dynamic.Int{Scalar: scalar, Data: v}, nil
 	case "Float":
 		v, err := strconv.ParseFloat(raw, 64)
 		if err != nil {
 			return nil, errors.Wrap(err, "converting bytes to float")
 		}
-		return &Float{Scalar: scalar, Data: v}, nil
+		return &dynamic.Float{Scalar: scalar, Data: v}, nil
 	case "String", "ID":
-		return &String{Scalar: scalar, Data: raw}, nil
+		return &dynamic.String{Scalar: scalar, Data: raw}, nil
 	case "Boolean":
 		v, err := strconv.ParseBool(raw)
 		if err != nil {
 			return nil, errors.Wrap(err, "converting bytes to float")
 		}
-		return &Bool{Scalar: scalar, Data: v}, nil
+		return &dynamic.Bool{Scalar: scalar, Data: v}, nil
 	default:
 		return nil, errors.Errorf("custom scalars unsupported: %v", scalar.TypeName())
 	}
 }
 
-func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
+func convertValue(typ common.Type, rawValue interface{}) (dynamic.Value, error) {
 	// TODO: be careful about these nil returns
 	if rawValue == nil {
-		return &Null{}, nil
+		return &dynamic.Null{}, nil
 	}
 	switch typ := typ.(type) {
 	case *schema.Interface:
@@ -193,7 +166,7 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			// TODO: sanitize
 			return nil, errors.Errorf("raw value %v was not type *schema.Object", rawValue)
 		}
-		obj := NewOrderedMap()
+		obj := dynamic.NewOrderedMap()
 		// convert each interface{} type to Value type
 		for _, field := range typ.Fields {
 			// set each field of the *Object to be a
@@ -207,9 +180,9 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			delete(rawObj, field.Name)
 		}
 		for extraField, val := range rawObj {
-			obj.Set(extraField, &InternalOnly{Data: val})
+			obj.Set(extraField, &dynamic.InternalOnly{Data: val})
 		}
-		return &Object{Data: obj, Object: typ}, nil
+		return &dynamic.Object{Data: obj, Object: typ}, nil
 	case *common.List:
 		// rawValue must be map[string]interface{}
 		rawList, ok := rawValue.([]interface{})
@@ -217,7 +190,7 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			// TODO: filter data out of logs (could be sensitive)
 			return nil, errors.Errorf("raw value %v was not type *common.List", rawValue)
 		}
-		var array []Value
+		var array []dynamic.Value
 		// convert each interface{} type to Value type
 		for _, rawElement := range rawList {
 			// set each field of the *Object to be a
@@ -228,23 +201,23 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 			}
 			array = append(array, convertedValue)
 		}
-		return &Array{Data: array, List: typ}, nil
+		return &dynamic.Array{Data: array, List: typ}, nil
 	case *common.NonNull:
 		return convertValue(typ.OfType, rawValue)
 	case *schema.Scalar:
 		switch data := rawValue.(type) {
 		case int:
-			return &Int{Data: data, Scalar: typ}, nil
+			return &dynamic.Int{Data: data, Scalar: typ}, nil
 		case string:
-			return &String{Data: data, Scalar: typ}, nil
+			return &dynamic.String{Data: data, Scalar: typ}, nil
 		case float32:
-			return &Float{Data: float64(data), Scalar: typ}, nil
+			return &dynamic.Float{Data: float64(data), Scalar: typ}, nil
 		case float64:
-			return &Float{Data: data, Scalar: typ}, nil
+			return &dynamic.Float{Data: data, Scalar: typ}, nil
 		case bool:
-			return &Bool{Data: data, Scalar: typ}, nil
+			return &dynamic.Bool{Data: data, Scalar: typ}, nil
 		case time.Time:
-			return &Time{Data: data, Scalar: typ}, nil
+			return &dynamic.Time{Data: data, Scalar: typ}, nil
 		default:
 			// TODO: sanitize logs/error messages
 			return nil, errors.Errorf("unknown return type %v", data)
@@ -254,7 +227,7 @@ func convertValue(typ common.Type, rawValue interface{}) (Value, error) {
 		if !ok {
 			return nil, errors.Errorf("expected string type for enum, got %v", rawValue)
 		}
-		return &Enum{Data: data, Enum: typ}, nil
+		return &dynamic.Enum{Data: data, Enum: typ}, nil
 	}
 	return nil, errors.Errorf("unknown or unsupported type %v", typ.String())
 }
@@ -269,7 +242,7 @@ func determineType(iface *schema.Interface, rawValue interface{}) (*schema.Objec
 	objType := rawObj["__typename"]
 	if objType == nil {
 		// TODO: sanitize
-		return nil, errors.Errorf("object implements interface %v but does not contain field __typename, " +
+		return nil, errors.Errorf("object implements interface %v but does not contain field __typename, "+
 			"cannot determine object type", iface.Name)
 	}
 	objTypeName, ok := objType.(string)
@@ -285,12 +258,12 @@ func determineType(iface *schema.Interface, rawValue interface{}) (*schema.Objec
 	return nil, errors.Errorf("%v does not implement %v", objTypeName, iface.Name)
 }
 
-func (rm *ExecutableResolvers) Resolve(typ schema.NamedType, field string, params Params) (Value, error) {
+func (rm *ExecutableResolvers) Resolve(typ schema.NamedType, field string, params Params) (dynamic.Value, error) {
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolver lookup")
 	}
-	if fieldResolver.ResolverFunc == nil {
+	if fieldResolver.resolverFunc == nil {
 		// no resolver func? look in the parent for the field
 		if params.Parent != nil {
 			if fieldValue := params.Parent.Data.Get(field); fieldValue != nil && fieldValue.Kind() != "NULL" {
@@ -299,95 +272,21 @@ func (rm *ExecutableResolvers) Resolve(typ schema.NamedType, field string, param
 		}
 		return nil, errors.Errorf("resolver for %v.%v has not been registered", typ.String(), field)
 	}
-	data, err := fieldResolver.ResolverFunc(params)
+	data, err := fieldResolver.resolverFunc(params)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed executing resolver for %v.%v", typ.String(), field)
 	}
-	//result, err := convertResult(fieldResolver.Type, data)
-	//if err != nil {
-	//	return nil, errors.Wrap(err, "converting interface{} to result")
-	//}
 	return data, nil
 }
 
-func convertResult(typ common.Type, data interface{}) (Value, error) {
-	var result Value
-	switch typ := typ.(type) {
-	case *schema.Object:
-		switch data := data.(type) {
-		case *Object:
-			return data, nil
-		case map[string]interface{}:
-			orderedData := NewOrderedMap()
-			for _, f := range typ.Fields {
-				typedValue, err := convertValue(f.Type, data[f.Name])
-				if err != nil {
-					return nil, errors.Wrapf(err, "converting untyped value %v", data[f.Name])
-				}
-				orderedData.Set(f.Name, typedValue)
-			}
-			result = &Object{
-				Object: typ,
-				Data:   orderedData,
-			}
-		default:
-			return nil, errors.Errorf("resolver did not return expected type map or *Object: %v", data)
-		}
-	case *common.List:
-		items, ok := data.([]interface{})
-		if !ok {
-			return nil, errors.Errorf("resolver did not return expected type []interface{}: %v", data)
-		}
-		var list []Value
-		for _, item := range items {
-			val, err := convertResult(typ.OfType, item)
-			if err != nil {
-				return nil, errors.Wrap(err, "converting array element into result")
-			}
-			list = append(list, val)
-		}
-		result = &Array{
-			List: typ,
-			Data: list,
-		}
-	}
-	return result, nil
-}
-
-func (rm *ExecutableResolvers) getFieldResolver(typ schema.NamedType, field string) (*FieldResolver, error) {
-	typeResolver, ok := rm.Types[typ]
+func (rm *ExecutableResolvers) getFieldResolver(typ schema.NamedType, field string) (*fieldResolver, error) {
+	typeResolver, ok := rm.types[typ]
 	if !ok {
 		return nil, errors.Errorf("type %v unknown", typ.TypeName())
 	}
-	fieldResolver, ok := typeResolver.Fields[field]
+	fieldResolver, ok := typeResolver.fields[field]
 	if !ok {
 		return nil, errors.Errorf("type %v does not contain field %v", typ.TypeName(), field)
 	}
 	return fieldResolver, nil
-}
-
-var metaTypes = []string{
-	"Map",
-	"Float",
-	"ID",
-	"Int",
-	"Boolean",
-	"String",
-	"__Type",
-	"__TypeKind",
-	"__Directive",
-	"__EnumValue",
-	"__Schema",
-	"__InputValue",
-	"__DirectiveLocation",
-	"__Field",
-}
-
-func metaType(typeName string) bool {
-	for _, mt := range metaTypes {
-		if typeName == mt {
-			return true
-		}
-	}
-	return false
 }

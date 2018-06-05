@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"encoding/json"
 
 	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/handler"
@@ -18,7 +19,6 @@ import (
 	"github.com/solo-io/gloo/pkg/bootstrap/flags"
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
 	"github.com/solo-io/qloo/pkg/gloo"
-	"encoding/json"
 )
 
 func main() {

@@ -1,21 +1,21 @@
 package gloo
 
 import (
-	"github.com/solo-io/qloo/pkg/dynamic"
 	"bytes"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
+	"text/template"
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/log"
-	"text/template"
+	"github.com/solo-io/qloo/pkg/exec"
 )
 
 type ResolverFactory struct {
 	ProxyAddr string
 }
 
-func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyTemplate, contentType string) (dynamic.RawResolver, error) {
+func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyTemplate, contentType string) (exec.RawResolver, error) {
 	if contentType == "" {
 		contentType = "application/json"
 	}
@@ -56,7 +56,7 @@ func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyT
 		}
 	}
 
-	return func(params dynamic.Params) ([]byte, error) {
+	return func(params exec.Params) ([]byte, error) {
 		body := bytes.Buffer{}
 		if requestTemplate != nil {
 			if err := requestTemplate.Execute(&body, templateParams(params)); err != nil {
@@ -113,10 +113,10 @@ type params struct {
 	Parent map[string]interface{}
 }
 
-func templateParams(p dynamic.Params) params {
+func templateParams(p exec.Params) params {
 	var parent map[string]interface{}
 	if parentObject, isObject := p.Parent.GoValue().(map[string]interface{}); isObject {
-			parent = parentObject
+		parent = parentObject
 	}
 	return params{
 		Args:   p.Args,
