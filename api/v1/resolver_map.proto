@@ -47,8 +47,8 @@ message Resolver {
         GlooResolver gloo_resolver = 1;
         // a TemplateResolver, which uses Go Templates to generate data for the query
         TemplateResolver tempalte_resolver = 2;
-        // a CodeResolver, which calls NodeJS functions to return data for the query
-        CodeResolver code_resolver = 3;
+        // a NodeJSResolver, which calls NodeJS functions to return data for the query
+        NodeJSResolver nodejs_resolver = 3;
     }
 }
 
@@ -104,6 +104,6 @@ message TemplateResolver {
 }
 
 // NOTE: currently unsupported
-message CodeResolver {
+message NodeJSResolver {
     string inline_code = 1;
 }

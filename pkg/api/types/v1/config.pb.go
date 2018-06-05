@@ -19,7 +19,7 @@ It has these top-level messages:
 	MultiFunction
 	WeightedFunction
 	TemplateResolver
-	CodeResolver
+	NodeJSResolver
 	Schema
 */
 package v1
