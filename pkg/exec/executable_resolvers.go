@@ -43,7 +43,7 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func NewExecutableResolvers(sch *schema.Schema, resolverFor func(string, string) (RawResolver, error)) (*ExecutableResolvers, error) {
+func NewExecutableResolvers(sch *schema.Schema, generateResolver func(string, string) (RawResolver, error)) (*ExecutableResolvers, error) {
 	typeMap := make(map[schema.NamedType]*typeResolver)
 	for _, namedType := range sch.Types {
 		if MetaType(namedType.TypeName()) {
@@ -53,7 +53,7 @@ func NewExecutableResolvers(sch *schema.Schema, resolverFor func(string, string)
 		switch typ := namedType.(type) {
 		case *schema.Object:
 			for _, field := range typ.Fields {
-				rawResolver, err := resolverFor(typ.Name, field.Name)
+				rawResolver, err := generateResolver(typ.Name, field.Name)
 				if err != nil {
 					return nil, errors.Wrapf(err, "generating resolver for %v.%v", typ.Name, field.Name)
 				}

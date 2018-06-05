@@ -54,7 +54,7 @@ func (rf *ResolverFactory) CreateResolver(path ResolverPath, glooResolver *v1.Gl
 
 func (rf *ResolverFactory) newResolver(path ResolverPath, contentType string, requestTemplate, responseTemplate *template.Template) exec.RawResolver {
 	return func(params exec.Params) ([]byte, error) {
-		var body *bytes.Buffer
+		body := &bytes.Buffer{}
 		if requestTemplate != nil {
 			buf, err := util.ExecTemplate(requestTemplate, params)
 			if err != nil {

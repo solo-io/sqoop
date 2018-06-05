@@ -10,11 +10,11 @@ import (
 )
 
 type ResolverFactory struct {
-	glooResolverFactory gloo.ResolverFactory
+	glooResolverFactory *gloo.ResolverFactory
 	resolverMap *v1.ResolverMap
 }
 
-func NewResolverFactory(glooResolverFactory gloo.ResolverFactory, resolverMap *v1.ResolverMap) *ResolverFactory {
+func NewResolverFactory(glooResolverFactory *gloo.ResolverFactory, resolverMap *v1.ResolverMap) *ResolverFactory {
 	return &ResolverFactory{
 		glooResolverFactory: glooResolverFactory,
 		resolverMap: resolverMap,
