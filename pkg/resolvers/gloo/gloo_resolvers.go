@@ -9,13 +9,23 @@ import (
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/log"
 	"github.com/solo-io/qloo/pkg/exec"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
 )
 
 type ResolverFactory struct {
-	ProxyAddr string
+	proxyAddr string
 }
 
-func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyTemplate, contentType string) (exec.RawResolver, error) {
+func NewResolverFactory(proxyAddr string) *ResolverFactory {
+	return &ResolverFactory{
+		proxyAddr: proxyAddr,
+	}
+}
+
+func (rf *ResolverFactory) CreateResolver(path string, glooResolver *v1.GlooResolver) (exec.RawResolver, error) {
+	requestBodyTemplate := glooResolver.RequestTemplate
+	responseBodyTemplate := glooResolver.ResponseTemplate
+	contentType := glooResolver.ContentType
 	if contentType == "" {
 		contentType = "application/json"
 	}
@@ -56,6 +66,10 @@ func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyT
 		}
 	}
 
+	return rf.newResolver(path, contentType, requestTemplate, responseTemplate), nil
+}
+
+func (rf *ResolverFactory) newResolver(path, contentType string, requestTemplate, responseTemplate *template.Template) exec.RawResolver {
 	return func(params exec.Params) ([]byte, error) {
 		body := bytes.Buffer{}
 		if requestTemplate != nil {
@@ -64,7 +78,7 @@ func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyT
 				return nil, errors.Wrapf(err, "executing request template for params %v", params)
 			}
 		}
-		url := "http://" + gr.ProxyAddr + path
+		url := "http://" + rf.proxyAddr + path
 		res, err := http.Post(url, contentType, &body)
 		if err != nil {
 			return nil, errors.Wrap(err, "performing http post")
@@ -105,7 +119,7 @@ func (gr *ResolverFactory) MakeResolver(path, requestBodyTemplate, responseBodyT
 			return nil, errors.Wrapf(err, "executing response template for response %v", input)
 		}
 		return buf.Bytes(), nil
-	}, nil
+	}
 }
 
 type params struct {
