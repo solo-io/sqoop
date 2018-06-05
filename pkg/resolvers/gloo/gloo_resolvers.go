@@ -100,7 +100,7 @@ func (rf *ResolverFactory) newResolver(path ResolverPath, contentType string, re
 			Result: result,
 		}
 		buf := &bytes.Buffer{}
-		if err := requestTemplate.Execute(buf, input); err != nil {
+		if err := responseTemplate.Execute(buf, input); err != nil {
 			return nil, errors.Wrapf(err, "executing response template for response %v", input)
 		}
 		return buf.Bytes(), nil

@@ -21,13 +21,13 @@ var _ = Describe("GlooResolvers", func() {
 		server          *httptest.Server
 		response        = []byte(`{"have":"a","nice":"day","okay":"?"}`)
 		resolverFactory *ResolverFactory
-		buf             *bytes.Buffer
+		requestBody     *bytes.Buffer
 	)
 	BeforeEach(func() {
-		buf = &bytes.Buffer{}
+		requestBody = &bytes.Buffer{}
 		m := mux.NewRouter()
 		m.HandleFunc("/mytype.myfield", func(w http.ResponseWriter, r *http.Request) {
-			io.Copy(buf, r.Body)
+			io.Copy(requestBody, r.Body)
 			w.Write(response)
 		})
 		server = httptest.NewServer(m)
@@ -44,25 +44,27 @@ var _ = Describe("GlooResolvers", func() {
 			FieldName: "myfield",
 		}
 		gResolver := &v1.GlooResolver{
-			RequestTemplate:  "{{ marshal . }}",
-			ResponseTemplate: "{{ marshal . }}",
+			RequestTemplate:  `REQUEST: best scene: {{ marshal (index .Args "best_scene") }} friendIds: {{ marshal (index .Parent "CharacterFields") }}`,
+			ResponseTemplate: `RESPONSE: {{ marshal (index .Result "nice") }}`,
 		}
-		It("creates the resolver without error", func() {
-			_, err := resolverFactory.CreateResolver(path, gResolver)
-			Expect(err).NotTo(HaveOccurred())
-		})
-		It("calls the resolver without error", func() {
-			rawResolver, err := resolverFactory.CreateResolver(path, gResolver)
-			Expect(err).NotTo(HaveOccurred())
-			b, err := rawResolver(test.LukeSkywalkerParams)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(b).To(Equal([]byte(`{"Result":{"have":"a","nice":"day","okay":"?"}}`)))
-			Expect(buf.String()).To(Equal(`{"Args":{"acting":5,"best_scene":"cloud city"},` +
-				`"Parent":{"CharacterFields":{"AppearsIn":["NEWHOPE","EMPIRE","JEDI"],` +
-				`"FriendIds":["1002","1003","2000","2001"],"ID":"1000","Name":"Luke Skywalker",` +
-				`"TypeName":"Human"},"Mass":77,"StarshipIds":["3001","3003"],"appearsIn":null,` +
-				`"friends":null,"friendsConnection":null,"height":null,"id":null,"mass":null,` +
-				`"name":null,"starships":null}}`))
+		Context("it returns a resolver which ", func() {
+			It("renders the template as the request body", func() {
+				rawResolver, err := resolverFactory.CreateResolver(path, gResolver)
+				Expect(err).NotTo(HaveOccurred())
+				_, err = rawResolver(test.LukeSkywalkerParams)
+				Expect(err).NotTo(HaveOccurred())
+				str := requestBody.String()
+				Expect(str).To(Equal(`REQUEST: best scene: "cloud city" friendIds: `+
+					`{"AppearsIn":["NEWHOPE","EMPIRE","JEDI"],"FriendIds":["1002","1003","2000","2001"],`+
+					`"ID":"1000","Name":"Luke Skywalker","TypeName":"Human"}`))
+			})
+			It("renders the result template on the json response body", func() {
+				rawResolver, err := resolverFactory.CreateResolver(path, gResolver)
+				Expect(err).NotTo(HaveOccurred())
+				b, err := rawResolver(test.LukeSkywalkerParams)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(b).To(Equal([]byte(`RESPONSE: "day"`)))
+			})
 		})
 	})
 })
