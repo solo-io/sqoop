@@ -8,7 +8,7 @@ import (
 )
 
 func NewTemplateResolver(resolver *v1.TemplateResolver) (exec.RawResolver, error) {
-	tmpl, err := util.Template("resolver_template")
+	tmpl, err := util.Template(resolver.InlineTemplate)
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing inline template")
 	}

@@ -15,17 +15,15 @@ var _ = Describe("TemplateResolvers", func() {
 			InlineTemplate:  "{{ marshal . }}",
 		}
 		It("returns a resolver which renders the template", func() {
-			rawResolver, err := resolverFactory.CreateResolver(path, gResolver)
+			rawResolver, err := NewTemplateResolver(tResolver)
 			Expect(err).NotTo(HaveOccurred())
 			b, err := rawResolver(test.LukeSkywalkerParams)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(b).To(Equal([]byte(`{"Result":{"have":"a","nice":"day","okay":"?"}}`)))
-			Expect(buf.String()).To(Equal(`{"Args":{"acting":5,"best_scene":"cloud city"},` +
-				`"Parent":{"CharacterFields":{"AppearsIn":["NEWHOPE","EMPIRE","JEDI"],` +
-				`"FriendIds":["1002","1003","2000","2001"],"ID":"1000","Name":"Luke Skywalker",` +
-				`"TypeName":"Human"},"Mass":77,"StarshipIds":["3001","3003"],"appearsIn":null,` +
-				`"friends":null,"friendsConnection":null,"height":null,"id":null,"mass":null,` +
-				`"name":null,"starships":null}}`))
+			Expect(b).To(Equal([]byte(`{"Args":{"acting":5,"best_scene":"cloud city"},`+
+				`"Parent":{"CharacterFields":{"AppearsIn":["NEWHOPE","EMPIRE","JEDI"],`+
+				`"FriendIds":["1002","1003","2000","2001"],"ID":"1000","Name":"Luke Skywalker","TypeName":"Human"},`+
+				`"Mass":77,"StarshipIds":["3001","3003"],"appearsIn":null,"friends":null,"friendsConnection":null,`+
+				`"height":null,"id":null,"mass":null,"name":null,"starships":null}}`)))
 		})
 	})
 })
