@@ -46,7 +46,7 @@ message Resolver {
         // a GlooResolver, which leverages Gloo to retrieve data from backend services and functions for the query
         GlooResolver gloo_resolver = 1;
         // a TemplateResolver, which uses Go Templates to generate data for the query
-        TemplateResolver tempalte_resolver = 2;
+        TemplateResolver template_resolver = 2;
         // a NodeJSResolver, which calls NodeJS functions to return data for the query
         NodeJSResolver nodejs_resolver = 3;
     }
