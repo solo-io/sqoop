@@ -31,7 +31,7 @@ func MetaType(typeName string) bool {
 	return false
 }
 
-func ResolverMapSkeleton(sch *schema.Schema) (*v1.ResolverMap) {
+func GenerateResolverMapSkeleton(sch *schema.Schema) (*v1.ResolverMap) {
 	types := make(map[string]*v1.TypeResolver)
 	for _, t := range sch.Types {
 		if MetaType(t.TypeName()) {
