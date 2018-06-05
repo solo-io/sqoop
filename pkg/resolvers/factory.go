@@ -11,23 +11,31 @@ import (
 
 type ResolverFactory struct {
 	glooResolverFactory gloo.ResolverFactory
+	resolverMap *v1.ResolverMap
 }
 
-func (rf *ResolverFactory) CreateResolver(typeName, fieldName string, resolverMap *v1.ResolverMap) (exec.RawResolver, error) {
-	if len(resolverMap.Types) == 0 {
-		return nil, errors.Errorf("no types defined in resolver map %v", resolverMap.Name)
+func NewResolverFactory(glooResolverFactory gloo.ResolverFactory, resolverMap *v1.ResolverMap) *ResolverFactory {
+	return &ResolverFactory{
+		glooResolverFactory: glooResolverFactory,
+		resolverMap: resolverMap,
 	}
-	typeResolver, ok := resolverMap.Types[typeName]
+}
+
+func (rf *ResolverFactory) CreateResolver(typeName, fieldName string) (exec.RawResolver, error) {
+	if len(rf.resolverMap.Types) == 0 {
+		return nil, errors.Errorf("no types defined in resolver map %v", rf.resolverMap.Name)
+	}
+	typeResolver, ok := rf.resolverMap.Types[typeName]
 	if !ok {
-		return nil, errors.Errorf("type %v not found in resolver map %v", typeName, resolverMap.Name)
+		return nil, errors.Errorf("type %v not found in resolver map %v", typeName, rf.resolverMap.Name)
 	}
 	if len(typeResolver.Fields) == 0 {
-		return nil, errors.Errorf("no fields defined for type %v in resolver map %v", typeName, resolverMap.Name)
+		return nil, errors.Errorf("no fields defined for type %v in resolver map %v", typeName, rf.resolverMap.Name)
 	}
 	fieldResolver, ok := typeResolver.Fields[fieldName]
 	if !ok {
 		return nil, errors.Errorf("field %v not found for type %v in resolver map %v",
-			fieldName, typeResolver, resolverMap.Name)
+			fieldName, typeResolver, rf.resolverMap.Name)
 	}
 	switch resolver := fieldResolver.Resolver.(type) {
 	case *v1.Resolver_NodejsResolver:
@@ -38,5 +46,6 @@ func (rf *ResolverFactory) CreateResolver(typeName, fieldName string, resolverMa
 		path := gloo.ResolverPath{TypeName: typeName, FieldName: fieldName}
 		return rf.glooResolverFactory.CreateResolver(path, resolver.GlooResolver)
 	}
-	panic("unknown resolver type")
+	// no resolver has been defined
+	return nil, nil
 }

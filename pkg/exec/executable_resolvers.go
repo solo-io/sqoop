@@ -4,12 +4,12 @@ import (
 	"github.com/vektah/gqlgen/neelance/schema"
 	"github.com/vektah/gqlgen/neelance/common"
 	"github.com/pkg/errors"
-	"github.com/solo-io/gloo/pkg/log"
 	"encoding/json"
 	"time"
 	"strconv"
 	"github.com/solo-io/qloo/pkg/dynamic"
 	"github.com/solo-io/qloo/pkg/util"
+	"github.com/solo-io/qloo/pkg/resolvers"
 )
 
 // store all the user resolvers
@@ -28,10 +28,9 @@ type fieldResolver struct {
 	typ common.Type
 
 	// how to resolve this field. should return Type
-	resolverFunc ResolverFunc
+	resolverFunc RawResolver
 }
 
-type ResolverFunc func(params Params) (dynamic.Value, error)
 type RawResolver func(params Params) ([]byte, error)
 
 type Params struct {
@@ -46,54 +45,31 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func NewExecutableResolvers(sch *schema.Schema) (*ExecutableResolvers, error) {
-	// return a skeleton for the user
+func NewExecutableResolvers(sch *schema.Schema, resolverFactory *resolvers.ResolverFactory) (*ExecutableResolvers, error) {
 	typeMap := make(map[schema.NamedType]*typeResolver)
-	for _, t := range sch.Types {
-		if util.MetaType(t.TypeName()) {
+	for _, namedType := range sch.Types {
+		if util.MetaType(namedType.TypeName()) {
 			continue
 		}
 		fields := make(map[string]*fieldResolver)
-		switch t := t.(type) {
+		switch typ := namedType.(type) {
 		case *schema.Object:
-			for _, f := range t.Fields {
-				inputKey := t.Name + "." + f.Name
-				fields[f.Name] = &fieldResolver{typ: f.Type, resolverFunc: nil}
+			for _, field := range typ.Fields {
+				rawResolver, err := resolverFactory.CreateResolver(typ.Name, field.Name)
+				if err != nil {
+					return nil, errors.Wrapf(err, "generating resolver for %v.%v", typ.Name, field.Name)
+				}
+				fields[field.Name] = &fieldResolver{typ: field.Type, resolverFunc: rawResolver}
 			}
 		}
 		if len(fields) == 0 {
 			continue
 		}
-		typeMap[t] = &typeResolver{fields: fields}
+		typeMap[namedType] = &typeResolver{fields: fields}
 	}
 	return &ExecutableResolvers{
 		types: typeMap,
 	}, nil
-}
-
-func (rm *ExecutableResolvers) SetResolver(typeName string, field string, rawResolver RawResolver) error {
-	var typ schema.NamedType
-	for t := range rm.types {
-		if t.TypeName() == typeName {
-			typ = t
-			break
-		}
-	}
-	if typ == nil {
-		return errors.Errorf("no type found for %v", typeName)
-	}
-	fieldResolver, err := rm.getFieldResolver(typ, field)
-	if err != nil {
-		return err
-	}
-	fieldResolver.resolverFunc = func(params Params) (dynamic.Value, error) {
-		data, err := rawResolver(params)
-		if err != nil {
-			return nil, errors.Wrap(err, "calling raw resolver")
-		}
-		return toValue(data, fieldResolver.typ)
-	}
-	return nil
 }
 
 func toValue(data []byte, typ common.Type) (dynamic.Value, error) {
@@ -276,7 +252,7 @@ func (rm *ExecutableResolvers) Resolve(typ schema.NamedType, field string, param
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed executing resolver for %v.%v", typ.String(), field)
 	}
-	return data, nil
+	return toValue(data, fieldResolver.typ)
 }
 
 func (rm *ExecutableResolvers) getFieldResolver(typ schema.NamedType, field string) (*fieldResolver, error) {
