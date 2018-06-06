@@ -1,7 +1,6 @@
 package graphql
 
 import (
-	"fmt"
 	"github.com/vektah/gqlgen/graphql"
 	"context"
 	"github.com/vektah/gqlgen/handler"
@@ -11,30 +10,30 @@ import (
 	"sync"
 )
 
-type Server struct {
+type Router struct {
 	routes *routerSwapper
 }
 
-func NewGraphQLServer() *Server {
-	return &Server{
+func NewRouter() *Router {
+	return &Router{
 		routes: &routerSwapper{
-			router: mux.NewRouter(),
+			mux: mux.NewRouter(),
 		},
 	}
 }
 
 type Endpoint struct {
 	// name of the schema this endpoint serves
-	SchemaName       string
+	SchemaName string
 	// Where the playground will be served
-	RootPath   string
+	RootPath string
 	// Where the query path will be served
-	QueryPath       string
+	QueryPath string
 	// the executable schema to serve
 	ExecSchema graphql.ExecutableSchema
 }
 
-func (s *Server) UpdateEndpoints(endpoints ... *Endpoint) {
+func (s *Router) UpdateEndpoints(endpoints ... *Endpoint) {
 	m := mux.NewRouter()
 	for _, endpoint := range endpoints {
 		m.Handle(endpoint.RootPath, handler.Playground(endpoint.SchemaName, endpoint.QueryPath))
@@ -51,25 +50,25 @@ func (s *Server) UpdateEndpoints(endpoints ... *Endpoint) {
 	s.routes.swap(m)
 }
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.routes.serveHTTP(w, r)
 }
 
 // allows changing the routes being served
 type routerSwapper struct {
-	mu     sync.Mutex
-	router *mux.Router
+	mu  sync.Mutex
+	mux *mux.Router
 }
 
-func (rs *routerSwapper) swap(newRouter *mux.Router) {
+func (rs *routerSwapper) swap(newMux *mux.Router) {
 	rs.mu.Lock()
-	rs.router = newRouter
+	rs.mux = newMux
 	rs.mu.Unlock()
 }
 
 func (rs *routerSwapper) serveHTTP(w http.ResponseWriter, r *http.Request) {
 	rs.mu.Lock()
-	root := rs.router
+	root := rs.mux
 	rs.mu.Unlock()
 	root.ServeHTTP(w, r)
 }

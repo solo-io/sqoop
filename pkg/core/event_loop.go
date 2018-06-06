@@ -23,7 +23,7 @@ import (
 type EventLoop struct {
 	cfgWatcher configwatcher.Interface
 	operator   *operator.GlooOperator
-	server     *graphql.Server
+	server     *graphql.Router
 	qloo       storage.Interface
 	reporter   reporter.Interface
 	proxyAddr  string
@@ -49,7 +49,7 @@ func Setup(opts bootstrap.Options) (*EventLoop, error) {
 		return nil, errors.Wrap(err, "starting watch for QLoo config")
 	}
 	op := operator.NewGlooOperator(gloo, opts.VirtualServiceName, opts.RoleName)
-	server := graphql.NewGraphQLServer()
+	server := graphql.NewRouter()
 	rep := reporter.NewReporter(qloo)
 	return &EventLoop{
 		cfgWatcher: cfgWatcher,

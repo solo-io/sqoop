@@ -4,6 +4,9 @@ import (
 	"github.com/vektah/gqlgen/neelance/schema"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/util"
+	"github.com/vektah/gqlgen/graphql"
+	"github.com/solo-io/qloo/pkg/exec"
+	"github.com/solo-io/qloo/pkg/resolvers"
 )
 
 const resolversName = "starwars-resolvers"
@@ -85,6 +88,24 @@ func StarWarsV1Schema() *v1.Schema {
 		ResolverMap: resolversName,
 		InlineSchema: starWarsSchemaString,
 	}
+}
+
+func StarWarsExecutableSchema(proxyAddr string) graphql.ExecutableSchema {
+	execResolvers := StarWarsExecutableResolvers(proxyAddr)
+	return exec.NewExecutableSchema(StarWarsSchema, execResolvers)
+}
+
+func StarWarsExecutableResolvers(proxyAddr string) *exec.ExecutableResolvers {
+	factory := StarWarsResolverFactory(proxyAddr)
+	execResolvers, err := exec.NewExecutableResolvers(StarWarsSchema, factory.CreateResolver)
+	if err != nil {
+		panic(err)
+	}
+	return execResolvers
+}
+
+func StarWarsResolverFactory(proxyAddr string) *resolvers.ResolverFactory {
+	return resolvers.NewResolverFactory(proxyAddr, StarWarsResolverMap())
 }
 
 var starWarsSchemaString = `# The query type, represents all of the entry points into our object graph
