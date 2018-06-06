@@ -80,6 +80,8 @@ func (el *EventLoop) Run(stop <-chan struct{}) {
 			errs <- errors.Wrap(err, "config watcher error")
 		case err := <-errs:
 			log.Warnf("error in event loop: %v", err)
+		case <-stop:
+			return
 		}
 	}
 }
