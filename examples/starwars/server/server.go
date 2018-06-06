@@ -14,7 +14,7 @@ var baseResolvers = starwars.NewResolver()
 func New() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/hero", GetHero).Methods("GET")
-	router.HandleFunc("/api/character/", GetCharacter).Methods("GET")
+	router.HandleFunc("/api/character", GetCharacter).Methods("GET")
 	// needs to be POST because there's a body
 	router.HandleFunc("/api/characters", GetCharacters).Methods("POST")
 	return router

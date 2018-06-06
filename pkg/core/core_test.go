@@ -14,13 +14,18 @@ import (
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/coreplugins/service"
 	"github.com/solo-io/gloo/pkg/plugins/rest"
-	"github.com/solo-io/gloo/pkg/log"
+	"net/http"
+	"bytes"
+	"io/ioutil"
+	"github.com/pkg/errors"
 )
+
+var qlooPort int
 
 var _ = Describe("Core", func() {
 	It("does the happy path", func() {
 		rand.Seed(time.Now().Unix())
-		port := rand.Int31n(10) + 10000
+		qlooPort = 9090
 		opts := bootstrap.Options{
 			Options: glooopts.Options{
 				ConfigStorageOptions: glooopts.StorageOptions{
@@ -28,11 +33,11 @@ var _ = Describe("Core", func() {
 					SyncFrequency: time.Millisecond,
 				},
 				FileOptions: glooopts.FileOptions{
-					ConfigDir: glooInstance.ConfigDir(),
+					ConfigDir: glooInstance.ConfigDir() + "/_gloo_config",
 				},
 			},
-			ProxyAddr:          envoyInstance.LocalAddr(),
-			BindAddr:           fmt.Sprintf(":%v", port),
+			ProxyAddr:          envoyInstance.LocalAddr()+":8080",
+			BindAddr:           fmt.Sprintf(":%v", qlooPort),
 			RoleName:           "qloo-test",
 			VirtualServiceName: "qloo-test",
 		}
@@ -41,10 +46,16 @@ var _ = Describe("Core", func() {
 		stop := make(chan struct{})
 		go eventLoop.Run(stop)
 
+		err = envoyInstance.RunWithId(opts.RoleName + "~e2e-test")
+		Expect(err).NotTo(HaveOccurred())
+
+		err = glooInstance.Run()
+		Expect(err).NotTo(HaveOccurred())
+
 		gloo, err := configstorage.Bootstrap(opts.Options)
 		Expect(err).NotTo(HaveOccurred())
 
-		_, err = gloo.V1().Upstreams().Create(starWarsUpstream)
+		_, err = gloo.V1().Upstreams().Create(starWarsUpstream())
 		Expect(err).NotTo(HaveOccurred())
 
 		qloo, err := bootstrap.Bootstrap(opts.Options)
@@ -56,59 +67,90 @@ var _ = Describe("Core", func() {
 		_, err = qloo.V1().ResolverMaps().Create(test.StarWarsResolverMap())
 		Expect(err).NotTo(HaveOccurred())
 
+		// it should create the virtual service
+		var virtualServices []*gloov1.VirtualService
 		Eventually(func() ([]*gloov1.VirtualService, error) {
-			l, _ := gloo.V1().VirtualServices().List()
-			log.Printf("%v", l)
-			return gloo.V1().VirtualServices().List()
-		}, time.Second * 2).Should(Equal("foo"))
+			virtualServices, err = gloo.V1().VirtualServices().List()
+			return virtualServices, err
+		}, time.Second*2).Should(HaveLen(1))
+		Expect(virtualServices[0].Name).To(Equal(opts.VirtualServiceName))
+		Expect(virtualServices[0].Roles[0]).To(Equal(opts.RoleName))
+
+		eventuallyQueryShouldRespond(`{"query": "{hero{name}}"}`,
+			`{"data":{"hero":{"name":"R2-D2"}}}`)
+
+		eventuallyQueryShouldRespond(`{"query": "{human(id: 1001){name friends{name}}}"}`,
+			`{"data":{"human":{"name":"Darth Vader","friends":[{"name":"Wilhuff Tarkin"}]}}}`)
+
 	})
 })
+
+func eventuallyQueryShouldRespond(queryString, expectedString string) {
+	Eventually(func() (string, error){
+		res, err := http.Post(fmt.Sprintf("http://localhost:%v/starwars-schema/query", qlooPort),
+			"",
+			bytes.NewBuffer([]byte(queryString)))
+		if err != nil {
+			return "", err
+		}
+		if res.StatusCode != 200 {
+			return "", errors.Errorf("bad status code %v", res.StatusCode)
+		}
+		b, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return "", err
+		}
+		return string(b), nil
+	}, time.Second * 5).Should(Equal(expectedString))
+}
 
 func ptr(str string) *string {
 	return &str
 }
 
-var starWarsUpstream = &gloov1.Upstream{
-	Name: "starwars-rest-test",
-	Type: service.UpstreamTypeService,
-	Spec: service.EncodeUpstreamSpec(service.UpstreamSpec{
-		Hosts: []service.Host{
+func starWarsUpstream() *gloov1.Upstream {
+	return &gloov1.Upstream{
+		Name: "starwars-rest",
+		Type: service.UpstreamTypeService,
+		Spec: service.EncodeUpstreamSpec(service.UpstreamSpec{
+			Hosts: []service.Host{
+				{
+					Addr: "localhost",
+					Port: starWarsPort,
+				},
+			},
+		}),
+		ServiceInfo: &gloov1.ServiceInfo{
+			Type: rest.ServiceTypeREST,
+		},
+		Functions: []*gloov1.Function{
 			{
-				Addr: "localhost",
-				Port: starWarsPort,
+				Name: "GetHero",
+				Spec: rest.EncodeFunctionSpec(rest.Template{
+					Header: map[string]string{":method": "GET"},
+					Path:   "/api/hero",
+				}),
+			},
+			{
+				Name: "GetCharacter",
+				Spec: rest.EncodeFunctionSpec(rest.Template{
+					Body: ptr(""),
+					Header: map[string]string{
+						"x-id":    "{{id}}",
+						":method": "GET",
+					},
+					Path: "/api/character",
+				}),
+			},
+			{
+				Name: "GetCharacters",
+				Spec: rest.EncodeFunctionSpec(rest.Template{
+					Header: map[string]string{
+						":method": "POST",
+					},
+					Path: "/api/characters",
+				}),
 			},
 		},
-	}),
-	ServiceInfo: &gloov1.ServiceInfo{
-		Type: rest.ServiceTypeREST,
-	},
-	Functions: []*gloov1.Function{
-		{
-			Name: "GetHero",
-			Spec: rest.EncodeFunctionSpec(rest.Template{
-				Header: map[string]string{":method": "GET"},
-				Path: "/api/hero",
-			}),
-		},
-		{
-			Name: "GetCharacter",
-			Spec: rest.EncodeFunctionSpec(rest.Template{
-				Body: ptr(""),
-				Header: map[string]string{
-					"x-id": "{{id}}",
-					":method": "GET",
-				},
-				Path: "/api/character",
-			}),
-		},
-		{
-			Name: "GetCharacters",
-			Spec: rest.EncodeFunctionSpec(rest.Template{
-				Header: map[string]string{
-					":method": "POST",
-				},
-				Path: "/api/characters",
-			}),
-		},
-	},
+	}
 }
