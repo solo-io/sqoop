@@ -26,6 +26,9 @@ type schemasClient struct {
 }
 
 func (c *schemasClient) Create(item *v1.Schema) (*v1.Schema, error) {
+	if item.Name == "" {
+		return nil, errors.Errorf("name required")
+	}
 	// set resourceversion on clone
 	schemaClone, ok := proto.Clone(item).(*v1.Schema)
 	if !ok {
@@ -54,6 +57,9 @@ func (c *schemasClient) Create(item *v1.Schema) (*v1.Schema, error) {
 }
 
 func (c *schemasClient) Update(item *v1.Schema) (*v1.Schema, error) {
+	if item.Name == "" {
+		return nil, errors.Errorf("name required")
+	}
 	if item.Metadata == nil || item.Metadata.ResourceVersion == "" {
 		return nil, errors.New("resource version must be set for update operations")
 	}

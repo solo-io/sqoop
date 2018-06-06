@@ -11,6 +11,9 @@ type resolverMapsClient struct {
 }
 
 func (c *resolverMapsClient) Create(item *v1.ResolverMap) (*v1.ResolverMap, error) {
+	if item.Name == "" {
+		return nil, errors.Errorf("name required")
+	}
 	out, err := c.base.Create(&base.StorableItem{ResolverMap: item})
 	if err != nil {
 		return nil, err
@@ -19,6 +22,9 @@ func (c *resolverMapsClient) Create(item *v1.ResolverMap) (*v1.ResolverMap, erro
 }
 
 func (c *resolverMapsClient) Update(item *v1.ResolverMap) (*v1.ResolverMap, error) {
+	if item.Name == "" {
+		return nil, errors.Errorf("name required")
+	}
 	out, err := c.base.Update(&base.StorableItem{ResolverMap: item})
 	if err != nil {
 		return nil, err
