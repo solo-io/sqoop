@@ -6,7 +6,86 @@ import (
 	"github.com/solo-io/qloo/pkg/util"
 )
 
-var StarWarsSchema = schema.MustParse(`# The query type, represents all of the entry points into our object graph
+var StarWarsSchema = schema.MustParse(starWarsSchemaString)
+
+func StarWarsResolverMap() *v1.ResolverMap {
+	resolverMap := util.GenerateResolverMapSkeleton(StarWarsSchema)
+	resolverMap.Types["Query"].Fields["hero"].Resolver = &v1.Resolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			Function: &v1.GlooResolver_SingleFunction{
+				SingleFunction: &v1.Function{
+					Upstream: "starwars-rest",
+					Function: "GetHero",
+				},
+			},
+		},
+	}
+	resolverMap.Types["Query"].Fields["human"].Resolver = &v1.Resolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
+			Function: &v1.GlooResolver_SingleFunction{
+				SingleFunction: &v1.Function{
+					Upstream: "starwars-rest",
+					Function: "GetCharacter",
+				},
+			},
+		},
+	}
+	resolverMap.Types["Query"].Fields["droid"].Resolver = &v1.Resolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
+			Function: &v1.GlooResolver_SingleFunction{
+				SingleFunction: &v1.Function{
+					Upstream: "starwars-rest",
+					Function: "GetCharacter",
+				},
+			},
+		},
+	}
+	resolverMap.Types["Human"].Fields["friends"].Resolver = &v1.Resolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
+			Function: &v1.GlooResolver_SingleFunction{
+				SingleFunction: &v1.Function{
+					Upstream: "starwars-rest",
+					Function: "GetCharacters",
+				},
+			},
+		},
+	}
+	resolverMap.Types["Human"].Fields["appearsIn"].Resolver = &v1.Resolver_TemplateResolver{
+		TemplateResolver: &v1.TemplateResolver{
+			InlineTemplate: `{{ index .Parent "appears_in" }}}`,
+		},
+	}
+	resolverMap.Types["Droid"].Fields["friends"].Resolver = &v1.Resolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
+			Function: &v1.GlooResolver_SingleFunction{
+				SingleFunction: &v1.Function{
+					Upstream: "starwars-rest",
+					Function: "GetCharacters",
+				},
+			},
+		},
+	}
+	resolverMap.Types["Droid"].Fields["appearsIn"].Resolver = &v1.Resolver_TemplateResolver{
+		TemplateResolver: &v1.TemplateResolver{
+			InlineTemplate: `{{ index .Parent "appears_in" }}}`,
+		},
+	}
+	return resolverMap
+}
+
+func StarWarsV1Schema() *v1.Schema {
+	return &v1.Schema{
+		Name: "starwars-schema",
+		ResolverMap: "starwars-resolvers",
+		InlineSchema: starWarsSchemaString,
+	}
+}
+
+var starWarsSchemaString = `# The query type, represents all of the entry points into our object graph
 type Query {
     hero(episode: Episode = NEWHOPE): Character
     reviews(episode: Episode!, since: Time): [Review]!
@@ -137,73 +216,4 @@ type Starship {
 }
 union SearchResult = Human | Droid | Starship
 scalar Time
-`)
-
-func StarWarsResolverMap() *v1.ResolverMap {
-	resolverMap := util.GenerateResolverMapSkeleton(StarWarsSchema)
-	resolverMap.Types["Query"].Fields["hero"].Resolver = &v1.Resolver_GlooResolver{
-		GlooResolver: &v1.GlooResolver{
-			Function: &v1.GlooResolver_SingleFunction{
-				SingleFunction: &v1.Function{
-					Upstream: "starwars-rest",
-					Function: "GetHero",
-				},
-			},
-		},
-	}
-	resolverMap.Types["Query"].Fields["human"].Resolver = &v1.Resolver_GlooResolver{
-		GlooResolver: &v1.GlooResolver{
-			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
-			Function: &v1.GlooResolver_SingleFunction{
-				SingleFunction: &v1.Function{
-					Upstream: "starwars-rest",
-					Function: "GetCharacter",
-				},
-			},
-		},
-	}
-	resolverMap.Types["Query"].Fields["droid"].Resolver = &v1.Resolver_GlooResolver{
-		GlooResolver: &v1.GlooResolver{
-			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
-			Function: &v1.GlooResolver_SingleFunction{
-				SingleFunction: &v1.Function{
-					Upstream: "starwars-rest",
-					Function: "GetCharacter",
-				},
-			},
-		},
-	}
-	resolverMap.Types["Human"].Fields["friends"].Resolver = &v1.Resolver_GlooResolver{
-		GlooResolver: &v1.GlooResolver{
-			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
-			Function: &v1.GlooResolver_SingleFunction{
-				SingleFunction: &v1.Function{
-					Upstream: "starwars-rest",
-					Function: "GetCharacters",
-				},
-			},
-		},
-	}
-	resolverMap.Types["Human"].Fields["appearsIn"].Resolver = &v1.Resolver_TemplateResolver{
-		TemplateResolver: &v1.TemplateResolver{
-			InlineTemplate: `{{ index .Parent "appears_in" }}}`,
-		},
-	}
-	resolverMap.Types["Droid"].Fields["friends"].Resolver = &v1.Resolver_GlooResolver{
-		GlooResolver: &v1.GlooResolver{
-			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
-			Function: &v1.GlooResolver_SingleFunction{
-				SingleFunction: &v1.Function{
-					Upstream: "starwars-rest",
-					Function: "GetCharacters",
-				},
-			},
-		},
-	}
-	resolverMap.Types["Droid"].Fields["appearsIn"].Resolver = &v1.Resolver_TemplateResolver{
-		TemplateResolver: &v1.TemplateResolver{
-			InlineTemplate: `{{ index .Parent "appears_in" }}}`,
-		},
-	}
-	return resolverMap
-}
+`
