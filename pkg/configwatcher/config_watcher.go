@@ -25,26 +25,12 @@ func NewConfigWatcher(storageClient storage.Interface) (*configWatcher, error) {
 		return nil, fmt.Errorf("failed to register to storage backend: %v", err)
 	}
 
-	initialSchemas, err := storageClient.V1().Schemas().List()
-	if err != nil {
-		log.Warnf("Startup: failed to read schemas from storage: %v", err)
-		initialSchemas = []*v1.Schema{}
-	}
-	initialResolverMaps, err := storageClient.V1().ResolverMaps().List()
-	if err != nil {
-		log.Warnf("Startup: failed to read virtual services from storage: %v", err)
-		initialResolverMaps = []*v1.ResolverMap{}
-	}
 	configs := make(chan *v1.Config, 1)
 	// do a first time read
 	cache := &v1.Config{
-		Schemas:      initialSchemas,
-		ResolverMaps: initialResolverMaps,
+		Schemas:      nil,
+		ResolverMaps: nil,
 	}
-	// throw it down the channel to get things going
-	go func() {
-		configs <- cache
-	}()
 
 	syncSchemas := func(updatedList []*v1.Schema, _ *v1.Schema) {
 		sort.SliceStable(updatedList, func(i, j int) bool {

@@ -14,6 +14,7 @@ import (
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/coreplugins/service"
 	"github.com/solo-io/gloo/pkg/plugins/rest"
+	"github.com/solo-io/gloo/pkg/log"
 )
 
 var _ = Describe("Core", func() {
@@ -56,8 +57,10 @@ var _ = Describe("Core", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		Eventually(func() ([]*gloov1.VirtualService, error) {
+			l, _ := gloo.V1().VirtualServices().List()
+			log.Printf("%v", l)
 			return gloo.V1().VirtualServices().List()
-		}).Should(Equal("foo"))
+		}, time.Second * 2).Should(Equal("foo"))
 	})
 })
 

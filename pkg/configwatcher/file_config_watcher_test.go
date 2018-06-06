@@ -37,8 +37,6 @@ var _ = Describe("FileConfigWatcher", func() {
 			go func() { watcher.Run(make(chan struct{})) }()
 
 			time.Sleep(time.Second)
-			// ignore the first empty config
-			<-watcher.configs
 
 			schema := test.StarWarsV1Schema()
 

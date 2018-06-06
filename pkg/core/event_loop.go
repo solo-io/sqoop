@@ -184,6 +184,9 @@ func (el *EventLoop) createGraphqlEndpoint(schema *v1.Schema, resolverMap *v1.Re
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to generate resolvers from map")
 	}
+	if err := el.operator.ApplyResolvers(resolverMap); err != nil {
+		return nil, nil, errors.Wrap(err, "failed to create Gloo resources from resolver map")
+	}
 	executableSchema := exec.NewExecutableSchema(parsedSchema, executableResolvers)
 	return &graphql.Endpoint{
 		SchemaName: schema.Name,

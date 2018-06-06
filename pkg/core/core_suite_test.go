@@ -35,7 +35,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	starWarsPort = 1234
 	starWarsRest = &http.Server{
-		Addr: fmt.Sprintf("localhost:%v", starWarsPort),
+		Addr:    fmt.Sprintf("localhost:%v", starWarsPort),
 		Handler: server.New(),
 	}
 })
@@ -56,10 +56,12 @@ var _ = BeforeEach(func() {
 	Expect(err).NotTo(HaveOccurred())
 	glooInstance, err = glooFactory.NewGlooInstance()
 	Expect(err).NotTo(HaveOccurred())
-	go func() { err := starWarsRest.ListenAndServe()
-	if err != nil {
-		Fail(err.Error())
-	}}()
+	go func() {
+		err := starWarsRest.ListenAndServe()
+		if err != nil {
+			log.Printf("starwars server error: %v", err.Error())
+		}
+	}()
 })
 
 var _ = AfterEach(func() {
