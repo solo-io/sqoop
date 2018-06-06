@@ -36,6 +36,12 @@
   version = "v3.2.0"
 
 [[projects]]
+  name = "github.com/fatih/structs"
+  packages = ["."]
+  revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
+  version = "v1.0"
+
+[[projects]]
   name = "github.com/ghodss/yaml"
   packages = ["."]
   revision = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
@@ -450,7 +456,6 @@
   branch = "master"
   name = "github.com/vektah/gqlgen"
   packages = [
-    "example/starwars",
     "graphql",
     "handler",
     "neelance/common",
@@ -730,6 +735,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3cb1df1a7816c699102a41b8346d03dab5cd17e86caeaade4c31b394acdc3953"
+  inputs-digest = "2611c5532cc8a598e728677a71e4a406a79337ad614e13f059781d734c61f020"
   solver-name = "gps-cdcl"
   solver-version = 1

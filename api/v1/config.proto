@@ -9,7 +9,7 @@ import "gogoproto/gogo.proto";
 option (gogoproto.equal_all) = true;
 
 /**
- * Config is a top-level config object. It is used internally by Qloo as a container for the entire set of config objects.
+ * Config is a top-level config object. It is used internally by QLoo as a container for the entire set of config objects.
  */
 message Config {
     repeated Schema schemas = 3; // the set of all schemas defined by the user
