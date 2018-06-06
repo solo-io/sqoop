@@ -26,6 +26,9 @@ type resolverMapsClient struct {
 }
 
 func (c *resolverMapsClient) Create(item *v1.ResolverMap) (*v1.ResolverMap, error) {
+	if item.Name == "" {
+		return nil, errors.Errorf("name required")
+	}
 	// set resourceversion on clone
 	resolverMapClone, ok := proto.Clone(item).(*v1.ResolverMap)
 	if !ok {
@@ -54,6 +57,9 @@ func (c *resolverMapsClient) Create(item *v1.ResolverMap) (*v1.ResolverMap, erro
 }
 
 func (c *resolverMapsClient) Update(item *v1.ResolverMap) (*v1.ResolverMap, error) {
+	if item.Name == "" {
+		return nil, errors.Errorf("name required")
+	}
 	if item.Metadata == nil || item.Metadata.ResourceVersion == "" {
 		return nil, errors.New("resource version must be set for update operations")
 	}

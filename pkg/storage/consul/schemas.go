@@ -1,6 +1,8 @@
 package consul
 
 import (
+	"github.com/pkg/errors"
+
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/storage"
 	"github.com/solo-io/qloo/pkg/storage/base"
@@ -11,6 +13,9 @@ type schemasClient struct {
 }
 
 func (c *schemasClient) Create(item *v1.Schema) (*v1.Schema, error) {
+	if item.Name == "" {
+		return nil, errors.Errorf("name required")
+	}
 	out, err := c.base.Create(&base.StorableItem{Schema: item})
 	if err != nil {
 		return nil, err
@@ -19,6 +24,9 @@ func (c *schemasClient) Create(item *v1.Schema) (*v1.Schema, error) {
 }
 
 func (c *schemasClient) Update(item *v1.Schema) (*v1.Schema, error) {
+	if item.Name == "" {
+		return nil, errors.Errorf("name required")
+	}
 	out, err := c.base.Update(&base.StorableItem{Schema: item})
 	if err != nil {
 		return nil, err

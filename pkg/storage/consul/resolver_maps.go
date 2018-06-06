@@ -1,10 +1,11 @@
 package consul
 
 import (
+	"github.com/pkg/errors"
+
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/storage"
 	"github.com/solo-io/qloo/pkg/storage/base"
-	"github.com/pkg/errors"
 )
 
 type resolverMapsClient struct {

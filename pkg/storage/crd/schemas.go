@@ -21,7 +21,7 @@ import (
 type schemasClient struct {
 	crds    crdclientset.Interface
 	apiexts apiexts.Interface
-	// write and read objects to this namespace if not specified on the QLooObjects
+	// write and read objects to this namespace if not specified on the QlooObjects
 	namespace     string
 	syncFrequency time.Duration
 }

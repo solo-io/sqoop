@@ -1,5 +1,3 @@
-//go:generate gorunpkg github.com/vektah/gqlgen -typemap types.json -out generated.go
-
 package starwars
 
 import (

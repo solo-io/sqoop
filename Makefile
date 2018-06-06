@@ -42,3 +42,68 @@ clientset: $(GENERATED_PROTO_FILES) $(SOURCES)
 		$(PACKAGE_PATH)/pkg/storage/crd/client \
 		$(PACKAGE_PATH)/pkg/storage/crd \
 		"solo.io:v1"
+
+.PHONY: generated-code
+generated-code:
+	go generate ./...
+
+$(OUTPUT):
+	mkdir -p $(OUTPUT)
+
+# Core Binaries
+
+BINARIES ?= qloo
+DEBUG_BINARIES = $(foreach BINARY,$(BINARIES),$(BINARY)-debug)
+
+DOCKER_ORG=soloio
+
+.PHONY: build
+build: $(BINARIES)
+
+.PHONY: debug-build
+debug-build: $(DEBUG_BINARIES)
+
+docker: $(foreach BINARY,$(BINARIES),$(shell echo $(BINARY)-docker))
+docker-push: $(foreach BINARY,$(BINARIES),$(shell echo $(BINARY)-docker-push))
+
+define BINARY_TARGETS
+$(eval VERSION := $(shell cat version))
+$(eval IMAGE_TAG ?= $(VERSION))
+$(eval OUTPUT_BINARY := $(OUTPUT_DIR)/$(BINARY))
+
+.PHONY: $(BINARY)
+.PHONY: $(BINARY)-debug
+.PHONY: $(BINARY)-docker
+.PHONY: $(BINARY)-docker-debug
+.PHONY: $(BINARY)-docker-push
+.PHONY: $(BINARY)-docker-push-debug
+
+# nice targets for the binaries
+$(BINARY): $(OUTPUT_BINARY)
+$(BINARY)-debug: $(OUTPUT_BINARY)-debug
+
+# go build
+$(OUTPUT_BINARY): $(OUTPUT_DIR) $(PREREQUISITES)
+	CGO_ENABLED=0 GOOS=linux go build -v -o $(OUTPUT_BINARY) cmd/$(BINARY)/main.go
+$(OUTPUT_BINARY)-debug: $(OUTPUT_DIR) $(PREREQUISITES)
+	go build -i -gcflags "all=-N -l" -o $(OUTPUT_BINARY)-debug cmd/$(BINARY)/main.go
+
+# docker
+$(BINARY)-docker: $(OUTPUT_BINARY)
+	docker build -t $(DOCKER_ORG)/$(BINARY):$(IMAGE_TAG) $(OUTPUT_DIR) -f - < cmd/$(BINARY)/Dockerfile
+$(BINARY)-docker-debug: $(OUTPUT_BINARY)-debug
+	docker build -t $(DOCKER_ORG)/$(BINARY)-debug:$(IMAGE_TAG) $(OUTPUT_DIR) -f - < cmd/$(BINARY)/Dockerfile.debug
+$(BINARY)-docker-push: $(BINARY)-docker
+	docker push $(DOCKER_ORG)/$(BINARY):$(IMAGE_TAG)
+$(BINARY)-docker-push-debug: $(BINARY)-docker-debug
+	docker push $(DOCKER_ORG)/$(BINARY)-debug:$(IMAGE_TAG)
+
+endef
+
+PREREQUISITES := $(SOURCES) $(GENERATED_PROTO_FILES) generated-code clientset
+$(foreach BINARY,$(BINARIES),$(eval $(BINARY_TARGETS)))
+
+# clean
+
+clean:
+	rm -rf $(OUTPUT_DIR)
