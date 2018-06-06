@@ -39,17 +39,15 @@ var _ = Describe("GlooResolvers", func() {
 		server.Close()
 	})
 	Context("happy path with req+response template and params", func() {
-		path := ResolverPath{
-			TypeName:  "mytype",
-			FieldName: "myfield",
-		}
+		typeName := "mytype"
+		fieldName := "myfield"
 		gResolver := &v1.GlooResolver{
 			RequestTemplate:  `REQUEST: best scene: {{ marshal (index .Args "best_scene") }} friendIds: {{ marshal (index .Parent "CharacterFields") }}`,
 			ResponseTemplate: `RESPONSE: {{ marshal (index .Result "nice") }}`,
 		}
 		Context("it returns a resolver which ", func() {
 			It("renders the template as the request body", func() {
-				rawResolver, err := resolverFactory.CreateResolver(path, gResolver)
+				rawResolver, err := resolverFactory.CreateResolver(typeName, fieldName, gResolver)
 				Expect(err).NotTo(HaveOccurred())
 				_, err = rawResolver(test.LukeSkywalkerParams)
 				Expect(err).NotTo(HaveOccurred())
@@ -59,7 +57,7 @@ var _ = Describe("GlooResolvers", func() {
 					`"ID":"1000","Name":"Luke Skywalker","TypeName":"Human"}`))
 			})
 			It("renders the result template on the json response body", func() {
-				rawResolver, err := resolverFactory.CreateResolver(path, gResolver)
+				rawResolver, err := resolverFactory.CreateResolver(typeName, fieldName, gResolver)
 				Expect(err).NotTo(HaveOccurred())
 				b, err := rawResolver(test.LukeSkywalkerParams)
 				Expect(err).NotTo(HaveOccurred())

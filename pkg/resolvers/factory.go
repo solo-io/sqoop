@@ -43,8 +43,7 @@ func (rf *ResolverFactory) CreateResolver(typeName, fieldName string) (exec.RawR
 	case *v1.Resolver_TemplateResolver:
 		return template.NewTemplateResolver(resolver.TemplateResolver)
 	case *v1.Resolver_GlooResolver:
-		path := gloo.ResolverPath{TypeName: typeName, FieldName: fieldName}
-		return rf.glooResolverFactory.CreateResolver(path, resolver.GlooResolver)
+		return rf.glooResolverFactory.CreateResolver(typeName, fieldName, resolver.GlooResolver)
 	}
 	// no resolver has been defined
 	return nil, nil

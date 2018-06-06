@@ -10,7 +10,7 @@ import (
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/util"
 	"text/template"
-	"fmt"
+	"github.com/solo-io/qloo/pkg/gloo"
 )
 
 type ResolverFactory struct {
@@ -23,7 +23,7 @@ func NewResolverFactory(proxyAddr string) *ResolverFactory {
 	}
 }
 
-func (rf *ResolverFactory) CreateResolver(path ResolverPath, glooResolver *v1.GlooResolver) (exec.RawResolver, error) {
+func (rf *ResolverFactory) CreateResolver(typeName, fieldName string, glooResolver *v1.GlooResolver) (exec.RawResolver, error) {
 	requestBodyTemplate := glooResolver.RequestTemplate
 	responseBodyTemplate := glooResolver.ResponseTemplate
 	contentType := glooResolver.ContentType
@@ -49,10 +49,10 @@ func (rf *ResolverFactory) CreateResolver(path ResolverPath, glooResolver *v1.Gl
 		}
 	}
 
-	return rf.newResolver(path, contentType, requestTemplate, responseTemplate), nil
+	return rf.newResolver(typeName, fieldName, contentType, requestTemplate, responseTemplate), nil
 }
 
-func (rf *ResolverFactory) newResolver(path ResolverPath, contentType string, requestTemplate, responseTemplate *template.Template) exec.RawResolver {
+func (rf *ResolverFactory) newResolver(typeName, fieldName string, contentType string, requestTemplate, responseTemplate *template.Template) exec.RawResolver {
 	return func(params exec.Params) ([]byte, error) {
 		body := &bytes.Buffer{}
 		if requestTemplate != nil {
@@ -63,7 +63,7 @@ func (rf *ResolverFactory) newResolver(path ResolverPath, contentType string, re
 			}
 			body = buf
 		}
-		url := "http://" + rf.proxyAddr + path.Path()
+		url := "http://" + rf.proxyAddr + gloo.RoutePath(typeName, fieldName)
 		res, err := http.Post(url, contentType, body)
 		if err != nil {
 			return nil, errors.Wrap(err, "performing http post")
@@ -105,13 +105,4 @@ func (rf *ResolverFactory) newResolver(path ResolverPath, contentType string, re
 		}
 		return buf.Bytes(), nil
 	}
-}
-
-type ResolverPath struct {
-	TypeName  string
-	FieldName string
-}
-
-func (p ResolverPath) Path() string {
-	return fmt.Sprintf("/%v.%v", p.TypeName, p.FieldName)
 }
