@@ -18,15 +18,17 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/solo-io/qloo/pkg/util"
 	"fmt"
+	"net/http"
 )
 
 type EventLoop struct {
 	cfgWatcher configwatcher.Interface
 	operator   *operator.GlooOperator
-	server     *graphql.Router
+	router     *graphql.Router
 	qloo       storage.Interface
 	reporter   reporter.Interface
 	proxyAddr  string
+	bindAddr   string
 }
 
 func Setup(opts bootstrap.Options) (*EventLoop, error) {
@@ -49,20 +51,24 @@ func Setup(opts bootstrap.Options) (*EventLoop, error) {
 		return nil, errors.Wrap(err, "starting watch for QLoo config")
 	}
 	op := operator.NewGlooOperator(gloo, opts.VirtualServiceName, opts.RoleName)
-	server := graphql.NewRouter()
+	router := graphql.NewRouter()
 	rep := reporter.NewReporter(qloo)
 	return &EventLoop{
 		cfgWatcher: cfgWatcher,
 		operator:   op,
-		server:     server,
+		router:     router,
 		qloo:       qloo,
 		reporter:   rep,
 		proxyAddr:  opts.ProxyAddr,
+		bindAddr:   opts.BindAddr,
 	}, nil
 }
 
 func (el *EventLoop) Run(stop <-chan struct{}) {
 	go el.cfgWatcher.Run(stop)
+	go func(){
+		log.Fatalf("failed to start server: %v", http.ListenAndServe(el.bindAddr, el.router))
+	}()
 	errs := make(chan error)
 	for {
 		select {
@@ -80,7 +86,7 @@ func (el *EventLoop) Run(stop <-chan struct{}) {
 
 func (el *EventLoop) update(cfg *v1.Config) error {
 	endpoints, reports := el.createGraphqlEndpoints(cfg)
-	el.server.UpdateEndpoints(endpoints...)
+	el.router.UpdateEndpoints(endpoints...)
 	return el.reporter.WriteReports(reports)
 }
 
@@ -89,7 +95,6 @@ func (el *EventLoop) createGraphqlEndpoints(cfg *v1.Config) ([]*graphql.Endpoint
 		endpoints          []*graphql.Endpoint
 		schemaReports      []reporter.ConfigObjectReport
 		resolverMapReports []reporter.ConfigObjectReport
-
 	)
 	resolverMapErrs := make(map[*v1.ResolverMap]error)
 
@@ -117,9 +122,9 @@ func (el *EventLoop) createGraphqlEndpoints(cfg *v1.Config) ([]*graphql.Endpoint
 		endpoints = append(endpoints, ep)
 	}
 	for resolverMap, err := range resolverMapErrs {
-		resolverMapReports = append(resolverMapReports,reporter.ConfigObjectReport{
+		resolverMapReports = append(resolverMapReports, reporter.ConfigObjectReport{
 			CfgObject: resolverMap,
-			Err: err,
+			Err:       err,
 		})
 	}
 	return endpoints, append(schemaReports, resolverMapReports...)

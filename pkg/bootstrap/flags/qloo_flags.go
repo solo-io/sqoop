@@ -13,4 +13,6 @@ func AddQLooFlags(cmd *cobra.Command, opts *bootstrap.Options) {
 		"name of the mesh role to assign to QLoo when communicating with Gloo")
 	cmd.PersistentFlags().StringVar(&opts.ProxyAddr, "qloo.proxy-addr", "localhost:8080", "the " +
 		"address (hostname:port) of the QLoo proxy")
+	cmd.PersistentFlags().StringVar(&opts.BindAddr, "qloo.bind-addr", ":9090", "the " +
+		"address for the QLoo server to listen on")
 }

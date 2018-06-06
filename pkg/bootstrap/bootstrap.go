@@ -15,6 +15,7 @@ type Options struct {
 	VirtualServiceName string
 	RoleName           string
 	ProxyAddr          string
+	BindAddr           string
 }
 
 func Bootstrap(opts bootstrap.Options) (storage.Interface, error) {
