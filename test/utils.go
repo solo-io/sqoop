@@ -6,10 +6,12 @@ import (
 	"github.com/solo-io/qloo/pkg/util"
 )
 
+const resolversName = "starwars-resolvers"
+
 var StarWarsSchema = schema.MustParse(starWarsSchemaString)
 
 func StarWarsResolverMap() *v1.ResolverMap {
-	resolverMap := util.GenerateResolverMapSkeleton(StarWarsSchema)
+	resolverMap := util.GenerateResolverMapSkeleton(resolversName, StarWarsSchema)
 	resolverMap.Types["Query"].Fields["hero"].Resolver = &v1.Resolver_GlooResolver{
 		GlooResolver: &v1.GlooResolver{
 			Function: &v1.GlooResolver_SingleFunction{
@@ -80,7 +82,7 @@ func StarWarsResolverMap() *v1.ResolverMap {
 func StarWarsV1Schema() *v1.Schema {
 	return &v1.Schema{
 		Name: "starwars-schema",
-		ResolverMap: "starwars-resolvers",
+		ResolverMap: resolversName,
 		InlineSchema: starWarsSchemaString,
 	}
 }
