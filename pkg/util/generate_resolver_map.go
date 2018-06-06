@@ -6,7 +6,7 @@ import (
 	"github.com/solo-io/qloo/pkg/exec"
 )
 
-func GenerateResolverMapSkeleton(sch *schema.Schema) (*v1.ResolverMap) {
+func GenerateResolverMapSkeleton(name string, sch *schema.Schema) (*v1.ResolverMap) {
 	types := make(map[string]*v1.TypeResolver)
 	for _, t := range sch.Types {
 		if exec.MetaType(t.TypeName()) {
@@ -27,6 +27,7 @@ func GenerateResolverMapSkeleton(sch *schema.Schema) (*v1.ResolverMap) {
 		types[t.TypeName()] = &v1.TypeResolver{Fields: fields}
 	}
 	return &v1.ResolverMap{
+		Name: name,
 		Types: types,
 	}
 }

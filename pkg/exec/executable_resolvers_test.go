@@ -7,7 +7,6 @@ import (
 	. "github.com/solo-io/qloo/pkg/exec"
 	"github.com/solo-io/qloo/test"
 	"github.com/solo-io/qloo/pkg/resolvers"
-	"github.com/solo-io/qloo/pkg/resolvers/gloo"
 	"net/http/httptest"
 	"bytes"
 	"github.com/gorilla/mux"
@@ -35,8 +34,7 @@ var _ = Describe("ExecutableResolvers", func() {
 		server = httptest.NewServer(m)
 		proxyAddr = strings.TrimPrefix(server.URL, "http://")
 
-		glooResolverFactory := gloo.NewResolverFactory(proxyAddr)
-		resolverFactory := resolvers.NewResolverFactory(glooResolverFactory, test.StarWarsResolverMap())
+		resolverFactory := resolvers.NewResolverFactory(proxyAddr, test.StarWarsResolverMap())
 		createResolver = resolverFactory.CreateResolver
 	})
 	AfterEach(func() {

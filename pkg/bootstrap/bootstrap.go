@@ -10,6 +10,13 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+type Options struct {
+	bootstrap.Options
+	VirtualServiceName string
+	RoleName           string
+	ProxyAddr          string
+}
+
 func Bootstrap(opts bootstrap.Options) (storage.Interface, error) {
 	switch opts.ConfigStorageOptions.Type {
 	case bootstrap.WatcherTypeFile:
