@@ -3,6 +3,7 @@ package gloo
 import (
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"fmt"
+	"sort"
 )
 
 func RoutePath(typeName, fieldName string) string {
@@ -23,6 +24,9 @@ func buildRoutes(resolverMap *v1.ResolverMap) []route {
 			})
 		}
 	}
+	sort.SliceStable(routes, func(i, j int) bool {
+		return routes[i].path < routes[j].path
+	})
 	return routes
 }
 

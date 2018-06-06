@@ -31,7 +31,7 @@ type destination struct {
 	weight                     uint32
 }
 
-func (client *GlooOperator) SyncVirtualService(resolverMap *qloov1.ResolverMap) error {
+func (client *GlooOperator) ApplyResolvers(resolverMap *qloov1.ResolverMap) error {
 	routes := buildRoutes(resolverMap)
 	desiredVirtualService, err := client.desiredVirtualService(routes)
 	if err != nil {
