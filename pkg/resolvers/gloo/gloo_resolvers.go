@@ -10,7 +10,7 @@ import (
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/util"
 	"text/template"
-	"github.com/solo-io/qloo/pkg/gloo"
+	"github.com/solo-io/qloo/pkg/operator"
 )
 
 type ResolverFactory struct {
@@ -63,7 +63,7 @@ func (rf *ResolverFactory) newResolver(typeName, fieldName string, contentType s
 			}
 			body = buf
 		}
-		url := "http://" + rf.proxyAddr + gloo.RoutePath(typeName, fieldName)
+		url := "http://" + rf.proxyAddr + operator.RoutePath(typeName, fieldName)
 		res, err := http.Post(url, contentType, body)
 		if err != nil {
 			return nil, errors.Wrap(err, "performing http post")

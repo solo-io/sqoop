@@ -1,4 +1,4 @@
-package gloo
+package operator
 
 import (
 	"github.com/solo-io/gloo/pkg/storage"

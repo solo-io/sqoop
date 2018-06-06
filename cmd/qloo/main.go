@@ -18,7 +18,7 @@ import (
 	"github.com/solo-io/gloo/pkg/bootstrap"
 	"github.com/solo-io/gloo/pkg/bootstrap/flags"
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
-	"github.com/solo-io/qloo/pkg/gloo"
+	"github.com/solo-io/qloo/pkg/operator"
 )
 
 func main() {
@@ -46,7 +46,7 @@ func init() {
 var starWarsSchema = test.StarWarsSchema
 
 func run() error {
-	factory := &gloo.ResolverFactory{
+	factory := &operator.ResolverFactory{
 		proxyAddr: "localhost:8080",
 	}
 
@@ -56,7 +56,7 @@ func run() error {
 	}
 
 	client := &GlooClient{
-		gloo:           storageClient,
+		operator:       storageClient,
 		virtualService: "qloo",
 		role:           "qloo",
 	}
@@ -84,7 +84,7 @@ func pathName(graphqlType, field string) string {
 	return fmt.Sprintf("/%v.%v", graphqlType, field)
 }
 
-func addResolvers(resolvers *dynamic.ExecutableResolvers, factory *gloo.ResolverFactory, client *GlooClient, inputs []UserInput) error {
+func addResolvers(resolvers *dynamic.ExecutableResolvers, factory *operator.ResolverFactory, client *GlooClient, inputs []UserInput) error {
 	var glooRoutes []Route
 	for _, in := range inputs {
 		switch {
