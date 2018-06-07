@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	port := 9000
+	port := 1234
 	log.Printf("listening on :%v", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), server.New()))
 }

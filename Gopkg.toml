@@ -32,6 +32,10 @@
   name = "github.com/Azure/go-autorest"
   revision = "e14a70c556c8e0db173358d1a903dca345a8e75e"
 
+[[override]]
+  name = "github.com/solo-io/gloo"
+  revision = "efe7170ce04af3c5e964e74353b12867f045bc5b"
+
 [[constraint]]
   name = "github.com/onsi/ginkgo"
   version = "1.5.0"

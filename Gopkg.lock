@@ -448,7 +448,6 @@
   version = "v1.0.2"
 
 [[projects]]
-  branch = "master"
   name = "github.com/solo-io/gloo"
   packages = [
     "internal/control-plane/filewatcher",
@@ -466,6 +465,7 @@
     "pkg/plugins/rest",
     "pkg/protoutil",
     "pkg/secretwatcher",
+    "pkg/signals",
     "pkg/storage",
     "pkg/storage/base",
     "pkg/storage/consul",
@@ -480,7 +480,7 @@
     "test/helpers",
     "test/helpers/local"
   ]
-  revision = "99a4b972b74b7bebe9d4a12b96484a75c89800c0"
+  revision = "efe7170ce04af3c5e964e74353b12867f045bc5b"
 
 [[projects]]
   name = "github.com/spf13/cobra"
@@ -822,6 +822,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8d81bc369a01c53abc4ef5a8fbc5876ddb963e097f0eb0083ccb882b5cc49bd1"
+  inputs-digest = "54e35bbf2976d5d7466776dc2ba92a2a55709b63a2382e9389b4c5a192b20b0c"
   solver-name = "gps-cdcl"
   solver-version = 1
