@@ -4,7 +4,6 @@ import (
 	"github.com/solo-io/qloo/pkg/bootstrap"
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
 	"github.com/pkg/errors"
-	qloobootstrap "github.com/solo-io/qloo/pkg/bootstrap"
 	"github.com/solo-io/qloo/pkg/configwatcher"
 	"github.com/solo-io/gloo/pkg/log"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
@@ -19,6 +18,7 @@ import (
 	"github.com/solo-io/qloo/pkg/util"
 	"fmt"
 	"net/http"
+	gloobootstrap "github.com/solo-io/gloo/pkg/bootstrap"
 )
 
 type EventLoop struct {
@@ -36,9 +36,17 @@ func Setup(opts bootstrap.Options) (*EventLoop, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "creating gloo client")
 	}
-	qloo, err := qloobootstrap.Bootstrap(opts.Options)
+	qloo, err := bootstrap.Bootstrap(opts.Options)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating qloo client")
+	}
+	switch opts.ConfigStorageOptions.Type {
+	case gloobootstrap.WatcherTypeFile:
+		log.Printf("QLoo storage options: %v", opts.FileOptions)
+	case gloobootstrap.WatcherTypeConsul:
+		log.Printf("QLoo storage options: %v", opts.ConsulOptions)
+	case gloobootstrap.WatcherTypeKube:
+		log.Printf("QLoo storage options: %v", opts.KubeOptions)
 	}
 	if err := gloo.V1().Register(); err != nil {
 		return nil, errors.Wrap(err, "registering gloo client")
@@ -67,6 +75,7 @@ func Setup(opts bootstrap.Options) (*EventLoop, error) {
 func (el *EventLoop) Run(stop <-chan struct{}) {
 	go el.cfgWatcher.Run(stop)
 	go func(){
+		log.Printf("QLoo server started and listening on %v", el.bindAddr)
 		log.Fatalf("failed to start server: %v", http.ListenAndServe(el.bindAddr, el.router))
 	}()
 	errs := make(chan error)

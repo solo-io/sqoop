@@ -12,3 +12,4 @@
 *.out
 vendor/
 _output/
+_gloo_config/

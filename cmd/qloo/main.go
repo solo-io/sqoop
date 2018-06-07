@@ -42,7 +42,6 @@ var rootCmd = &cobra.Command{
 func init() {
 	glooflags.AddConfigStorageOptionFlags(rootCmd, &opts.Options)
 	glooflags.AddFileFlags(rootCmd, &opts.Options)
-	glooflags.AddFileFlags(rootCmd, &opts.Options)
 	glooflags.AddKubernetesFlags(rootCmd, &opts.Options)
 	glooflags.AddConsulFlags(rootCmd, &opts.Options)
 	flags.AddQLooFlags(rootCmd, &opts)
