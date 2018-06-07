@@ -142,14 +142,30 @@ func (c *resolverMapsClient) pathsToResolverMaps() (map[string]*v1.ResolverMap, 
 		if !strings.HasSuffix(path, ".yml") && !strings.HasSuffix(path, ".yaml") {
 			continue
 		}
-		var resolverMap v1.ResolverMap
-		err := ReadFileInto(path, &resolverMap)
-		if err != nil {
-			return nil, errors.Wrap(err, "unable to parse .yml file as resolverMap")
-		}
-		resolverMaps[path] = &resolverMap
+
+		resolverMap, err := pathToResolverMap(path)
+        if err != nil {
+            return nil, errors.Wrap(err, "unable to parse .yml file as resolverMap")
+        }
+
+        resolverMaps[path] = resolverMap
 	}
 	return resolverMaps, nil
+}
+
+func pathToResolverMap(path string) (*v1.ResolverMap, error) {
+	var resolverMap v1.ResolverMap
+	err := ReadFileInto(path, &resolverMap)
+	if err != nil {
+		return nil, err
+	}
+	if resolverMap.Metadata == nil {
+		resolverMap.Metadata = &gloov1.Metadata{}
+	}
+	if resolverMap.Metadata.ResourceVersion == "" {
+		resolverMap.Metadata.ResourceVersion = "1"
+	}
+	return &resolverMap, nil
 }
 
 func (u *resolverMapsClient) Watch(handlers ...storage.ResolverMapEventHandler) (*storage.Watcher, error) {
@@ -207,21 +223,19 @@ func (u *resolverMapsClient) onEvent(event watcher.Event, handlers ...storage.Re
 	switch event.Op {
 	case watcher.Create:
 		for _, h := range handlers {
-			var created v1.ResolverMap
-			err := ReadFileInto(event.Path, &created)
+			created, err := pathToResolverMap(event.Path)
 			if err != nil {
 				return err
 			}
-			h.OnAdd(current, &created)
+			h.OnAdd(current, created)
 		}
 	case watcher.Write:
 		for _, h := range handlers {
-			var updated v1.ResolverMap
-			err := ReadFileInto(event.Path, &updated)
+			updated, err := pathToResolverMap(event.Path)
 			if err != nil {
 				return err
 			}
-			h.OnUpdate(current, &updated)
+			h.OnUpdate(current, updated)
 		}
 	case watcher.Remove:
 		for _, h := range handlers {

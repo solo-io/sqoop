@@ -72,9 +72,15 @@ func Setup(opts bootstrap.Options) (*EventLoop, error) {
 	}, nil
 }
 
+func sendErr(errs chan error, err error) {
+	go func(err error) {
+		errs <- errors.Wrap(err, "update failed")
+	}(err)
+}
+
 func (el *EventLoop) Run(stop <-chan struct{}) {
 	go el.cfgWatcher.Run(stop)
-	go func(){
+	go func() {
 		log.Printf("QLoo server started and listening on %v", el.bindAddr)
 		log.Fatalf("failed to start server: %v", http.ListenAndServe(el.bindAddr, el.router))
 	}()
@@ -83,10 +89,10 @@ func (el *EventLoop) Run(stop <-chan struct{}) {
 		select {
 		case cfg := <-el.cfgWatcher.Config():
 			if err := el.update(cfg); err != nil {
-				errs <- errors.Wrap(err, "update failed")
+				sendErr(errs, errors.Wrap(err, "update failed"))
 			}
 		case err := <-el.cfgWatcher.Error():
-			errs <- errors.Wrap(err, "config watcher error")
+			sendErr(errs, errors.Wrap(err, "config watcher error"))
 		case err := <-errs:
 			log.Warnf("error in event loop: %v", err)
 		case <-stop:

@@ -144,11 +144,11 @@ func (c *schemasClient) pathsToSchemas() (map[string]*v1.Schema, error) {
 		}
 
 		schema, err := pathToSchema(path)
-		if err != nil {
-			return nil, errors.Wrap(err, "unable to parse .yml file as schema")
-		}
+        if err != nil {
+            return nil, errors.Wrap(err, "unable to parse .yml file as schema")
+        }
 
-		schemas[path] = schema
+        schemas[path] = schema
 	}
 	return schemas, nil
 }
