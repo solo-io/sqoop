@@ -142,14 +142,30 @@ func (c *schemasClient) pathsToSchemas() (map[string]*v1.Schema, error) {
 		if !strings.HasSuffix(path, ".yml") && !strings.HasSuffix(path, ".yaml") {
 			continue
 		}
-		var schema v1.Schema
-		err := ReadFileInto(path, &schema)
+
+		schema, err := pathToSchema(path)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to parse .yml file as schema")
 		}
-		schemas[path] = &schema
+
+		schemas[path] = schema
 	}
 	return schemas, nil
+}
+
+func pathToSchema(path string) (*v1.Schema, error) {
+	var schema v1.Schema
+	err := ReadFileInto(path, &schema)
+	if err != nil {
+		return nil, err
+	}
+	if schema.Metadata == nil {
+		schema.Metadata = &gloov1.Metadata{}
+	}
+	if schema.Metadata.ResourceVersion == "" {
+		schema.Metadata.ResourceVersion = "1"
+	}
+	return &schema, nil
 }
 
 func (u *schemasClient) Watch(handlers ...storage.SchemaEventHandler) (*storage.Watcher, error) {
@@ -207,21 +223,19 @@ func (u *schemasClient) onEvent(event watcher.Event, handlers ...storage.SchemaE
 	switch event.Op {
 	case watcher.Create:
 		for _, h := range handlers {
-			var created v1.Schema
-			err := ReadFileInto(event.Path, &created)
+			created, err := pathToSchema(event.Path)
 			if err != nil {
 				return err
 			}
-			h.OnAdd(current, &created)
+			h.OnAdd(current, created)
 		}
 	case watcher.Write:
 		for _, h := range handlers {
-			var updated v1.Schema
-			err := ReadFileInto(event.Path, &updated)
+			updated, err := pathToSchema(event.Path)
 			if err != nil {
 				return err
 			}
-			h.OnUpdate(current, &updated)
+			h.OnUpdate(current, updated)
 		}
 	case watcher.Remove:
 		for _, h := range handlers {
