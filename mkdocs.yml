@@ -1,0 +1,54 @@
+site_name: QLoo
+pages:
+    - Index: README.md
+    - About QLoo:
+      - Introduction: introduction/introduction.md
+#      - Concepts: introduction/concepts.md
+#      - Architecture: introduction/architecture.md
+#    - Installation:
+#      - Installing on Docker: installation/docker.md
+#      - Installing on Kubernetes: installation/kubernetes.md
+#      - Installing on OpenShift: installation/openshift.md
+##      - Installing on Local Docker: installation/docker.md
+#    - Getting Started:
+#      - Docker:
+#        - Basic Routing: getting_started/docker/1.md
+#        - Function Routing: getting_started/docker/2.md
+#      - Kubernetes:
+#        - Basic Routing: getting_started/kubernetes/1.md
+#        - Function Routing: getting_started/kubernetes/2.md
+#      - OpenShift:
+#        - Basic Routing: getting_started/openshift/1.md
+#        - Function Routing: getting_started/openshift/2.md
+#      - AWS:
+#        - Basic Lambda with Gloo: getting_started/aws/lambda.md
+#    - Dev Guide: dev/README.md
+#    - Tutorials:
+#      - Refactoring Monoliths with Microservices and Serverless: tutorials/refactor_monolith.md
+#      - Sourcing NATS Messages from HTTP Requests: tutorials/source_events_from_github.md
+#    - Plugins:
+#      - AWS Lambda Plugin: plugins/aws.md
+#      - Kubernetes Plugin: plugins/kubernetes.md
+#      - Request Transformation Plugin: plugins/request_transformation.md
+#      - External Service Plugin: plugins/service.md
+#    - thetool:
+#      - Install: thetool/install.md
+#      - Quick Start: thetool/quickstart.md
+#      - Building Custom Gloo: thetool/custom.md
+#    - Advanced:
+#      - Bootstrap Options: advanced/bootstrap_options.md
+#    - v1 API reference:
+##      - Overview: v1/overview.md
+#      - Upstreams: v1/upstream.md
+#      - Virtual Services: v1/virtualservice.md
+#      - Metadata: v1/metadata.md
+#      - Status: v1/status.md
+repo_url: https://github.com/solo-io/qloo/
+site_author: gloo Project Authors
+copyright: © Copyright 2018, solo.io Inc.
+google_analytics: ['UA-101654320-1', 'qloo.solo.io']
+theme:
+  name: 'material'
+extra_css: [extra.css]
+extra:
+    version: 0.1.1
