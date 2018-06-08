@@ -1,0 +1,191 @@
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: schemas.qloo.solo.io
+spec:
+  group: qloo.solo.io
+  names:
+    kind: Schema
+    listKind: SchemaList
+    plural: schemas
+    singular: schema
+  scope: Namespaced
+  version: v1
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: resourcemaps.qloo.solo.io
+spec:
+  group: qloo.solo.io
+  names:
+    kind: ResourceMap
+    listKind: ResourceMapList
+    plural: resourcemaps
+    singular: resourcemap
+  scope: Namespaced
+  version: v1
+
+---
+#rbac for function-discovery
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: qloo-role
+rules:
+- apiGroups: ["qloo.solo.io"]
+  resources: ["schemas", "resolvermaps"]
+  verbs: ["*"]
+- apiGroups: ["gloo.solo.io"]
+  resources: ["virtualservices"]
+  verbs: ["*"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: qloo-cluster-binding
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: gloo-system
+roleRef:
+  kind: ClusterRole
+  name: qloo-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: qloo
+  namespace: gloo-system
+  labels:
+    gloo: qloo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      gloo: qloo
+  template:
+    metadata:
+      labels:
+        gloo: qloo
+    spec:
+      initContainers:
+      - name: assignnodeid
+        image: busybox
+        command:
+        - sed
+        - s/NODE_ID_PLACE_HOLDER/$(POD_NAME).$(POD_NAMESPACE)/;w /config-tmp/envoy.yaml
+        - "/config/envoy.yaml"
+        volumeMounts:
+        - name: qloo-proxy-config
+          mountPath: /config
+        - name: config-tmp
+          mountPath: /config-tmp
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+      containers:
+      - name: proxy
+        image: "soloio/envoy:0.2.27"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8443
+          name: https
+        - containerPort: 19000
+          name: admin
+        command: ["envoy"]
+        args: ["-c", "/config/envoy.yaml", "--v2-config-only"]
+        volumeMounts:
+        - name: config-tmp
+          mountPath: /config
+      - name: qloo
+        image: "soloio/qloo:0.1.0"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9090
+          name: http
+        args:
+        - "--storage.type=kube"
+        - "--storage.refreshrate=1m"
+        - "--kube.namespace=gloo-system"
+        volumeMounts:
+        - name: config-tmp
+          mountPath: /config
+      volumes:
+      - name: qloo-proxy-config
+        configMap:
+          name: qloo-proxy-config
+      - name: config-tmp
+        emptyDir: {}
+---
+# GW
+apiVersion: v1
+kind: Service
+metadata:
+  name: qloo
+  namespace: gloo-system
+  labels:
+    gloo: qloo
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 9090
+      protocol: TCP
+      name: http
+  selector:
+    gloo: qloo
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qloo-proxy-config
+  namespace: gloo-system
+data:
+  envoy.yaml: |
+    node:
+      cluster: qloo-proxy
+      id: qloo-proxy~NODE_ID_PLACE_HOLDER
+    static_resources:
+      clusters:
+      - name: xds_cluster
+        connect_timeout: 5.000s
+        hosts:
+        - socket_address:
+            address: control-plane
+            port_value: 8081
+        http2_protocol_options: {}
+        type: STRICT_DNS
+    dynamic_resources:
+      ads_config:
+        api_type: GRPC
+        grpc_services:
+        - envoy_grpc: {cluster_name: xds_cluster}
+      cds_config:
+        ads: {}
+      lds_config:
+        ads: {}
+    admin:
+      access_log_path: /dev/null
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 19000

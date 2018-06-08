@@ -1,6 +1,6 @@
 node:
-  cluster: qloo-role
-  id: qloo-role~1
+  cluster: qloo
+  id: qloo~1
 static_resources:
   clusters:
   - name: xds_cluster
