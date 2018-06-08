@@ -1,0 +1,38 @@
+dependencies:
+  - name: prometheus
+    version: 0.0.24
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op
+  - name: grafana
+    version: 0.0.23
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op
+  # overall kubernetes metrics
+  - name: exporter-kube-controller-manager
+    version: 0.1.7
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op
+  - name: exporter-kube-dns
+    version: 0.1.5
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op
+  - name: exporter-kube-etcd
+    version: 0.1.8
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op
+  - name: exporter-kube-scheduler
+    version: 0.1.6
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op
+  - name: exporter-kube-state
+    version: 0.1.15
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op
+  - name: exporter-kubelets
+    version: 0.2.7
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op
+  - name: exporter-kubernetes
+    version: 0.1.6
+    repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+    condition: metrics.prometheus_op

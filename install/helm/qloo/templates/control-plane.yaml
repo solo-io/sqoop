@@ -1,0 +1,58 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "control_plane.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    gloo: control-plane
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.control_plane.replicaCount }}
+  selector:
+    matchLabels:
+      gloo: control-plane
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        gloo: control-plane
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: control-plane
+        image: "{{ .Values.control_plane.image }}:{{ .Values.control_plane.imageTag }}"
+        imagePullPolicy: {{ .Values.control_plane.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.control_plane.port }}
+          name: http
+        env:
+        - name: GRPC_TRACE
+          value: "all"
+        - name: DEBUG
+          value: "1"
+        args:
+        - "--storage.type=kube"
+        - "--storage.refreshrate=1m"
+        - "--secrets.type=kube"
+        - "--secrets.refreshrate=1m"
+        - "--files.type=kube"
+        - "--files.refreshrate=1m"
+        - "--xds.port={{ .Values.control_plane.port }}"
+        - "--kube.namespace={{ .Release.Namespace }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name}}-control-plane
+  namespace: {{ .Release.Namespace }}
+  labels:
+    gloo: control-plane
+    release: {{ .Release.Name }}
+spec:
+  ports:
+    - port: {{ .Values.control_plane.port }}
+      protocol: TCP
+      name: http
+  selector:
+    gloo: control-plane
+    release: {{ .Release.Name }}

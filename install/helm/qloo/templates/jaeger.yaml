@@ -1,0 +1,51 @@
+{{ if .Values.opentracing.status -}}
+{{ if eq .Values.opentracing.status "install" -}}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "jaeger.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: jaeger
+spec:
+  selector:
+    matchLabels:
+      app: jaeger
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+      - image: {{ .Values.opentracing.jaeger }}
+        env:
+        - name: COLLECTOR_ZIPKIN_HTTP_PORT 
+          value: "9411"
+        name: jaeger
+        ports:
+        - containerPort: 9411
+          name: tracing
+        - containerPort: 16686
+          name: web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "jaeger.name" . }}
+  labels:
+    sevice: jaeger
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - port: 9411
+    protocol: TCP
+    name: tracing
+  - port: 16686
+    protocol: TCP
+    name: web
+  selector:
+    app: jaeger
+  type: NodePort
+{{ end -}}
+{{ end -}}

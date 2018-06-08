@@ -1,0 +1,13 @@
+name: qloo-helm
+version: 0.1.0
+description: Helm Chart for installing QLoo and Gloo
+apiVersion: v1
+appVersion: "0.1.0"
+icon: https://raw.githubusercontent.com/solo-io/qloo/master/Qloo-01.png
+sources:
+  - https://github.com/solo-io/qloo
+keywords:
+  - gloo
+  - qloo
+  - function-gateway
+  - graphql

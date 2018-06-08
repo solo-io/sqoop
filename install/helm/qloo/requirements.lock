@@ -1,0 +1,30 @@
+dependencies:
+- name: prometheus
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.0.24
+- name: grafana
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.0.23
+- name: exporter-kube-controller-manager
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.1.7
+- name: exporter-kube-dns
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.1.5
+- name: exporter-kube-etcd
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.1.8
+- name: exporter-kube-scheduler
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.1.6
+- name: exporter-kube-state
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.1.15
+- name: exporter-kubelets
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.2.7
+- name: exporter-kubernetes
+  repository: https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+  version: 0.1.6
+digest: sha256:a34cd2464d1e4a75ddc7a6267bbe2e2b18947f835203ad8b602b7bbb13b97922
+generated: 2018-03-28T09:52:03.791534209-04:00
