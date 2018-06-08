@@ -107,3 +107,14 @@ $(foreach BINARY,$(BINARIES),$(eval $(BINARY_TARGETS)))
 
 clean:
 	rm -rf $(OUTPUT_DIR)
+
+#----------------------------------------------------------------------------------
+# qlooctl
+#----------------------------------------------------------------------------------
+
+.PHONY: qlooctl
+qlooctl: $(OUTPUT_DIR)/qlooctl
+
+$(OUTPUT_DIR)/qlooctl: $(SOURCES)
+	go build -v -o $@ cmd/qlooctl/main.go
+
