@@ -1,8 +1,8 @@
 site_name: QLoo
 pages:
-    - Index: README.md
-    - About QLoo:
-      - Introduction: introduction/introduction.md
+    - Index: index.md
+#    - About QLoo:
+#      - Introduction: introduction/introduction.md
 #      - Concepts: introduction/concepts.md
 #      - Architecture: introduction/architecture.md
 #    - Installation:

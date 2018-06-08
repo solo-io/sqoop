@@ -1,7 +1,7 @@
 
 
 <h1 align="center">
-    <img src="docs/QLoo-01.png" alt="QLoo" width="200" height="242">
+    <img src="QLoo-01.png" alt="QLoo" width="200" height="242">
   <br>
   The Codeless GraphQL Server
 </h1>
@@ -12,12 +12,12 @@ QLoo is a GraphQL Server built on top of [Gloo](https://github.com/solo-io/gloo)
 
 QLoo leverages Gloo's function registry and Envoy's advanced HTTP routing features to provide a GraphQL frontend
 for REST/gRPC applications and serverless functions. QLoo routes requests to data sources via Envoy, leveraging 
-Envoy [HTTP filters](https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/filter/filter.html?highlight=http%20filter) 
+Envoy [HTTP filters](https://www.envoyproxy.io/envoy/latest/api-v2/config/filter/filter.html?highlight=http%20filter) 
 for security, load balancing, and more.
 
 <BR>
 <p align="center">
-<img src="docs/introduction/high_level_architecture.png" alt="QLoo" width="676" height="400">
+<img src="introduction/high_level_architecture.png" alt="QLoo" width="676" height="400">
 </p>    
 <BR>
     
@@ -28,12 +28,14 @@ for security, load balancing, and more.
 
 ## Features
 **Service Discovery**:
+
 * Kubernetes
 * OpenShift
 * HashiCorp Stack (Vault, Consul, Nomad)
 * Cloud Foundry
 
 **Function Discovery**:
+
 * AWS Lambda
 * Microsoft Azure Functions
 * Google Cloud Platform Functions
@@ -44,6 +46,7 @@ for security, load balancing, and more.
 * gRPC
 
 **Features**:
+
 * **Codeless GraphQL API**: Instantly deploy a GraphQL server and connect it to your data sources with configuration,
 zero code required.
 * **Dynamic Load Balancing**: Load balance traffic across multiple data sources.
@@ -61,19 +64,19 @@ of data sources QLoo can connect to.
 ## Documentation
 
 ### Installation:
-* [Installing locally Docker-Compose](docs/installation/kubernetes.md): Installation guide for Docker-Compose (easiest way to get started)
-* [Installing on Kubernetes](docs/installation/kubernetes.md): Installation guide for Kubernetes
+* [Installing locally Docker-Compose](installation/kubernetes.md): Installation guide for Docker-Compose (easiest way to get started)
+* [Installing on Kubernetes](installation/kubernetes.md): Installation guide for Kubernetes
 
 ### Getting Started:
-* [Getting Started on Kubernetes](docs/getting_started/kubernetes/1.md): Getting started with Kubernetes (recommended for first time users)
-* [Function Routing on Kubernetes](docs/getting_started/kubernetes/2.md): Introduction to Function Routing with QLoo
-* [Getting Started on OpenShift](docs/getting_started/openshift/1.md): Getting started with OpenShift
-* [Function Routing on OpenShift](docs/getting_started/openshift/2.md): Introduction to Function Routing with QLoo (OpenShift version)
-* [AWS Lambda](docs/getting_started/aws/lambda.md): Basic AWS Lambda with QLoo
+* [Getting Started on Kubernetes](getting_started/kubernetes/1.md): Getting started with Kubernetes (recommended for first time users)
+* [Function Routing on Kubernetes](getting_started/kubernetes/2.md): Introduction to Function Routing with QLoo
+* [Getting Started on OpenShift](getting_started/openshift/1.md): Getting started with OpenShift
+* [Function Routing on OpenShift](getting_started/openshift/2.md): Introduction to Function Routing with QLoo (OpenShift version)
+* [AWS Lambda](getting_started/aws/lambda.md): Basic AWS Lambda with QLoo
 
 ### v1 API reference:
-* [Schemas](docs/v1/schema.md): API Specification for proving your GraphQL Schemas to QLoo
-* [ResolverMaps](docs/v1/resolvermap.md): API Reference for ResolverMaps, which map your data sources to your Schemas
+* [Schemas](v1/schema.md): API Specification for proving your GraphQL Schemas to QLoo
+* [ResolverMaps](v1/resolvermap.md): API Reference for ResolverMaps, which map your data sources to your Schemas
 
 
 Blogs & Demos
