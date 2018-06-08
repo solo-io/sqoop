@@ -35,6 +35,19 @@ var rootCmd = &cobra.Command{
 		"Start by creating a schema using qlooctl schema create --from-file <path/to/your/graphql/schema>",
 }
 
+var schemaCmd = &cobra.Command{
+	Use: "schema",
+	Aliases: []string{
+		"schemas",
+	},
+	Short: "Create, read, update, and delete GraphQL schemas for QLoo",
+	Long:  `Use these commands to register a GraphQL schema with QLoo`,
+}
+
+func init() {
+	rootCmd.AddCommand(schemaCmd)
+}
+
 func init() {
 	glooflags.AddConfigStorageOptionFlags(rootCmd, &opts)
 	glooflags.AddFileFlags(rootCmd, &opts)
