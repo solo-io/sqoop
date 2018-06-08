@@ -1,17 +1,3 @@
-.wy-nav-side {
-    background: #3a4653;
-}
-.wy-side-nav-search {
-    background: #002853;
-}
-
-.wy-menu-vertical header, .wy-menu-vertical p.caption {
-    color: #d8e3dd;
-}
-
-.warning {
-    padding: 20px;
-    background-color: #f4ef95; /* Red */
-    color: white;
-    margin-bottom: 15px;
+.md-header {
+    background-color: #f46ac0; /* Red */
 }
