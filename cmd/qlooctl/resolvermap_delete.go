@@ -3,17 +3,17 @@ package main
 import (
 	"github.com/spf13/cobra"
 	"fmt"
-	"github.com/vektah/gqlgen/neelance/errors"
+	"github.com/pkg/errors"
 )
 
-var schemaDeleteCmd = &cobra.Command{
+var resolverMapDeleteCmd = &cobra.Command{
 	Use:   "delete [NAME]",
-	Short: "delete a schema by its name",
+	Short: "delete a resolver map by its name",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 || args[0] == "" {
 			return errors.Errorf("must provide name")
 		}
-		err := deleteSchema(args[0])
+		err := deleteResolverMap(args[0])
 		if err != nil {
 			return err
 		}
@@ -22,13 +22,13 @@ var schemaDeleteCmd = &cobra.Command{
 }
 
 func init() {
-	schemaCmd.AddCommand(schemaDeleteCmd)
+	resolverMapCmd.AddCommand(resolverMapDeleteCmd)
 }
 
-func deleteSchema(name string) error {
+func deleteResolverMap(name string) error {
 	cli, err := makeClient()
 	if err != nil {
 		return err
 	}
-	return cli.V1().Schemas().Delete(name)
+	return cli.V1().ResolverMaps().Delete(name)
 }
