@@ -48,6 +48,20 @@ func init() {
 	rootCmd.AddCommand(schemaCmd)
 }
 
+
+var resolverMapCmd = &cobra.Command{
+	Use: "resolvermap",
+	Aliases: []string{
+		"resolvermaps",
+	},
+	Short: "Create, read, update, and delete QLoo Resolver Maps",
+	Long:  `Use these commands to define resolvers for your GraphQL Schemas`,
+}
+
+func init() {
+	rootCmd.AddCommand(resolverMapCmd)
+}
+
 func init() {
 	glooflags.AddConfigStorageOptionFlags(rootCmd, &opts)
 	glooflags.AddFileFlags(rootCmd, &opts)
