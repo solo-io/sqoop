@@ -51,7 +51,8 @@ func printAsYaml(msg proto.Message) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%v\n", yam)
+	fmt.Printf("%s\n", yam)
+	return nil
 }
 
 func makeClient() (storage.Interface, error) {

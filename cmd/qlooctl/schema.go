@@ -15,8 +15,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/pkg/errors"
@@ -30,9 +28,6 @@ var schemaCmd = &cobra.Command{
 	},
 	Short: "Create, read, update, and delete GraphQL schemas for QLoo",
 	Long:  `Use these commands to register a GraphQL schema with QLoo`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("qlooctl/schema called")
-	},
 }
 
 func init() {
