@@ -2,13 +2,22 @@ package server
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"github.com/gorilla/mux"
 	"github.com/solo-io/qloo/examples/starwars/imported/starwars"
+	"github.com/solo-io/gloo/pkg/log"
 )
 
 var baseResolvers = starwars.NewResolver()
+
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Log request path
+		log.Printf("%v", r.RequestURI)
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(w, r)
+	})
+}
 
 // our main function
 func New() *mux.Router {
@@ -16,7 +25,8 @@ func New() *mux.Router {
 	router.HandleFunc("/api/hero", GetHero).Methods("GET")
 	router.HandleFunc("/api/character", GetCharacter).Methods("GET")
 	// needs to be POST because there's a body
-	router.HandleFunc("/api/characters", GetCharacters).Methods("POST")
+	router.Use(loggingMiddleware)
+
 	return router
 }
 
