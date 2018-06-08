@@ -13,13 +13,13 @@ import (
 	"github.com/solo-io/qloo/pkg/dynamic"
 )
 
-func NewExecutableSchema(parsedSchema *schema.Schema, resolvers *ExecutableResolvers) graphql.ExecutableSchema {
+func NewExecutableSchema(parsedSchema *schema.Schema, resolvers *ExecutableResolverMap) graphql.ExecutableSchema {
 	return &executableSchema{schema: parsedSchema, resolvers: resolvers}
 }
 
 type executableSchema struct {
 	schema    *schema.Schema
-	resolvers *ExecutableResolvers
+	resolvers *ExecutableResolverMap
 }
 
 func (e *executableSchema) Schema() *schema.Schema {
@@ -74,7 +74,7 @@ type executionContext struct {
 	*graphql.RequestContext
 	*schema.Schema
 
-	resolvers *ExecutableResolvers
+	resolvers *ExecutableResolverMap
 }
 
 var queryImplementors = []string{"Query"}
@@ -173,14 +173,6 @@ func (ec *executionContext) resolveObject(ctx context.Context, objectType *schem
 	}
 
 	return &dynamic.Object{Object: objectType, Data: data}, nil
-}
-
-func lookupField(obj *schema.Object, field graphql.CollectedField) (*schema.Field, error) {
-	schemaField := obj.Fields.Get(field.Name)
-	if schemaField == nil {
-		return nil, errors.Errorf("field %v not found for obj %v", field.Name, obj.TypeName())
-	}
-	return schemaField, nil
 }
 
 func getImplementors(typ schema.NamedType) []string {

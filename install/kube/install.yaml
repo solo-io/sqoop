@@ -162,8 +162,8 @@ metadata:
 data:
   envoy.yaml: |
     node:
-      cluster: qloo-proxy
-      id: qloo-proxy~NODE_ID_PLACE_HOLDER
+      cluster: qloo
+      id: qloo~NODE_ID_PLACE_HOLDER
     static_resources:
       clusters:
       - name: xds_cluster

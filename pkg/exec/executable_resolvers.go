@@ -11,7 +11,7 @@ import (
 )
 
 // store all the user resolvers
-type ExecutableResolvers struct {
+type ExecutableResolverMap struct {
 	// resolvers for all named types
 	types map[schema.NamedType]*typeResolver
 }
@@ -43,7 +43,7 @@ func (p Params) Arg(name string) interface{} {
 	return p.Args[name]
 }
 
-func NewExecutableResolvers(sch *schema.Schema, generateResolver func(string, string) (RawResolver, error)) (*ExecutableResolvers, error) {
+func NewExecutableResolvers(sch *schema.Schema, generateResolver func(string, string) (RawResolver, error)) (*ExecutableResolverMap, error) {
 	typeMap := make(map[schema.NamedType]*typeResolver)
 	for _, namedType := range sch.Types {
 		if MetaType(namedType.TypeName()) {
@@ -65,7 +65,7 @@ func NewExecutableResolvers(sch *schema.Schema, generateResolver func(string, st
 		}
 		typeMap[namedType] = &typeResolver{fields: fields}
 	}
-	return &ExecutableResolvers{
+	return &ExecutableResolverMap{
 		types: typeMap,
 	}, nil
 }
@@ -232,7 +232,7 @@ func determineType(iface *schema.Interface, rawValue interface{}) (*schema.Objec
 	return nil, errors.Errorf("%v does not implement %v", objTypeName, iface.Name)
 }
 
-func (rm *ExecutableResolvers) Resolve(typ schema.NamedType, field string, params Params) (dynamic.Value, error) {
+func (rm *ExecutableResolverMap) Resolve(typ schema.NamedType, field string, params Params) (dynamic.Value, error) {
 	fieldResolver, err := rm.getFieldResolver(typ, field)
 	if err != nil {
 		return nil, errors.Wrap(err, "resolver lookup")
@@ -253,7 +253,7 @@ func (rm *ExecutableResolvers) Resolve(typ schema.NamedType, field string, param
 	return toValue(data, fieldResolver.typ)
 }
 
-func (rm *ExecutableResolvers) getFieldResolver(typ schema.NamedType, field string) (*fieldResolver, error) {
+func (rm *ExecutableResolverMap) getFieldResolver(typ schema.NamedType, field string) (*fieldResolver, error) {
 	typeResolver, ok := rm.types[typ]
 	if !ok {
 		return nil, errors.Errorf("type %v unknown", typ.TypeName())

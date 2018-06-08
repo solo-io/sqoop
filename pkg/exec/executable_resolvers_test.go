@@ -16,7 +16,7 @@ import (
 	"encoding/json"
 )
 
-var _ = Describe("ExecutableResolvers", func() {
+var _ = Describe("ExecutableResolverMap", func() {
 	var (
 		proxyAddr      string
 		server         *httptest.Server

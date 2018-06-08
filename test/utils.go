@@ -95,7 +95,7 @@ func StarWarsExecutableSchema(proxyAddr string) graphql.ExecutableSchema {
 	return exec.NewExecutableSchema(StarWarsSchema, execResolvers)
 }
 
-func StarWarsExecutableResolvers(proxyAddr string) *exec.ExecutableResolvers {
+func StarWarsExecutableResolvers(proxyAddr string) *exec.ExecutableResolverMap {
 	factory := StarWarsResolverFactory(proxyAddr)
 	execResolvers, err := exec.NewExecutableResolvers(StarWarsSchema, factory.CreateResolver)
 	if err != nil {
