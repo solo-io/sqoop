@@ -1,4 +1,4 @@
-package main
+package schema
 
 import (
 	"github.com/spf13/cobra"
@@ -28,7 +28,7 @@ var schemaCreateCmd = &cobra.Command{
 	},
 }
 
-func init() {
+func Init(schemaCmd *cobra.Command) {
 	schemaCreateCmd.PersistentFlags().StringVarP(&schemaCreateOpts.FromFile, "from-file", "f", "", "path to a "+
 		"graphql schema file from which to create the QLoo schema object")
 	schemaCreateCmd.PersistentFlags().StringVarP(&schemaCreateOpts.UseResolverMap, "resolvermap", "r", "", "The name of a "+
@@ -44,7 +44,7 @@ func createSchema(name, filename, resolvermap string) error {
 	if filename == "" {
 		return errors.Errorf("filename must be set")
 	}
-	cli, err := makeClient()
+	cli, err := qlooctl.MakeClient()
 	if err != nil {
 		return err
 	}

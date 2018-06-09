@@ -1,8 +1,9 @@
-package main
+package resolvermap
 
 import (
 	"github.com/spf13/cobra"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/qlooctl"
 )
 
 var resolverMapGetCmd = &cobra.Command{
@@ -15,7 +16,7 @@ var resolverMapGetCmd = &cobra.Command{
 				return err
 			}
 			for _, msg := range list {
-				if err := printAsYaml(msg); err != nil {
+				if err := qlooctl.PrintAsYaml(msg); err != nil {
 					return err
 				}
 			}
@@ -25,7 +26,7 @@ var resolverMapGetCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return printAsYaml(msg)
+		return qlooctl.PrintAsYaml(msg)
 	},
 }
 
@@ -34,7 +35,7 @@ func init() {
 }
 
 func getResolverMap(name string) (*v1.ResolverMap, error) {
-	cli, err := makeClient()
+	cli, err := qlooctl.MakeClient()
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +43,7 @@ func getResolverMap(name string) (*v1.ResolverMap, error) {
 }
 
 func listResolverMaps() ([]*v1.ResolverMap, error) {
-	cli, err := makeClient()
+	cli, err := qlooctl.MakeClient()
 	if err != nil {
 		return nil, err
 	}

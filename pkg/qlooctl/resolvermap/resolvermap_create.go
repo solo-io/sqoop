@@ -1,4 +1,4 @@
-package main
+package resolvermap
 
 import (
 	"github.com/spf13/cobra"
@@ -41,7 +41,7 @@ func createResolverMap(name, filename string) error {
 	if filename == "" {
 		return errors.Errorf("filename must be set")
 	}
-	cli, err := makeClient()
+	cli, err := qlooctl.MakeClient()
 	if err != nil {
 		return err
 	}

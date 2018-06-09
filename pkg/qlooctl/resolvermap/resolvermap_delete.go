@@ -1,9 +1,10 @@
-package main
+package resolvermap
 
 import (
 	"github.com/spf13/cobra"
 	"fmt"
 	"github.com/pkg/errors"
+	"github.com/solo-io/qloo/pkg/qlooctl"
 )
 
 var resolverMapDeleteCmd = &cobra.Command{
@@ -26,7 +27,7 @@ func init() {
 }
 
 func deleteResolverMap(name string) error {
-	cli, err := makeClient()
+	cli, err := qlooctl.MakeClient()
 	if err != nil {
 		return err
 	}

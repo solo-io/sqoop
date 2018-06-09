@@ -1,4 +1,4 @@
-package main
+package schema
 
 import (
 	"github.com/spf13/cobra"
@@ -26,7 +26,7 @@ func init() {
 }
 
 func deleteSchema(name string) error {
-	cli, err := makeClient()
+	cli, err := qlooctl.MakeClient()
 	if err != nil {
 		return err
 	}

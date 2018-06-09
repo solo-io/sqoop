@@ -1,16 +1,16 @@
-package main
+package resolvermap
 
 import (
 	"github.com/spf13/cobra"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/pkg/errors"
-	"io/ioutil"
 	"fmt"
 	"github.com/solo-io/qloo/pkg/storage/file"
+	"github.com/solo-io/qloo/pkg/qlooctl"
 )
 
 var resolverMapUpdateOpts struct {
-	FromFile       string
+	FromFile string
 }
 
 var resolverMapUpdateCmd = &cobra.Command{
@@ -35,7 +35,7 @@ func init() {
 }
 
 func updateResolverMap(name, filename string) error {
-	cli, err := makeClient()
+	cli, err := qlooctl.MakeClient()
 	if err != nil {
 		return err
 	}

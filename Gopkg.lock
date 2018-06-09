@@ -225,6 +225,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/hashicorp/go-uuid"
+  packages = ["."]
+  revision = "27454136f0364f2d44b1276c552d69105cf8c498"
+
+[[projects]]
+  branch = "master"
   name = "github.com/hashicorp/go-version"
   packages = ["."]
   revision = "23480c0665776210b5fbbac6eaaee40e3e6a96b7"
@@ -481,6 +487,24 @@
     "test/helpers/local"
   ]
   revision = "efe7170ce04af3c5e964e74353b12867f045bc5b"
+
+[[projects]]
+  name = "github.com/solo-io/glooctl"
+  packages = [
+    "pkg/config",
+    "pkg/install/docker",
+    "pkg/install/kube",
+    "pkg/install/openshift",
+    "pkg/util"
+  ]
+  revision = "d46dc8570d2328f332540d7c63718e10d2701443"
+  version = "v0.2.8"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/solo-io/go-checkpoint"
+  packages = ["."]
+  revision = "69104b1493dcf66693f3832c9641cc38631bc129"
 
 [[projects]]
   name = "github.com/spf13/cobra"
@@ -822,6 +846,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d608d2f129c9f968c6e017fd94fb0f7c050af5b9be34acaf3bb8ec3c64370fca"
+  inputs-digest = "d3e165be1411f4d454d45ed34854fcbe7c6766cdf621cfea08a4e2c9aa41e0fb"
   solver-name = "gps-cdcl"
   solver-version = 1
