@@ -4,30 +4,55 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/solo-io/glooctl/pkg/install/kube"
 	"github.com/spf13/cobra"
+	"os/exec"
 )
 
-func kubeCmd() *cobra.Command {
-	dryRun := false
-	cmd := &cobra.Command{
-		Use:   "kube",
-		Short: "install gloo on Kubernetes",
-		Long: `
-	Installs latest gloo on Kubernetes. It downloads the latest installation YAML
-	file and installs to the current Kubectl context.`,
-		Run: func(c *cobra.Command, a []string) {
-			err := kube.Install(dryRun)
-			if err != nil {
-				fmt.Printf("Unable to isntall gloo to Kubernetes %q\n", err)
-				os.Exit(1)
-			}
-			if !dryRun {
-				fmt.Println("Gloo successfully installed.")
-			}
-		},
+const glooYamlURI = "https://raw.githubusercontent.com/solo-io/gloo/master/install/kube/install.yaml"
+const qlooYamlURI = "https://raw.githubusercontent.com/solo-io/qloo/master/install/kube/install.yaml"
+
+var installKubeCmd = &cobra.Command{
+	Use:   "kube",
+	Short: "install QLoo on Kubernetes",
+	Long: `
+	Installs latest QLoo into a Kubernetes cluster. It downloads the latest installation YAML
+	file and installs to the current kubectl context.`,
+	Run: func(c *cobra.Command, a []string) {
+		err := kubeInstall(dryRun, glooYamlURI)
+		if err != nil {
+			fmt.Printf("Unable to isntall Gloo to Kubernetes %q\n", err)
+			os.Exit(1)
+		}
+		err = kubeInstall(dryRun, qlooYamlURI)
+		if err != nil {
+			fmt.Printf("Unable to isntall QLoo to Kubernetes %q\n", err)
+			os.Exit(1)
+		}
+		if !dryRun {
+			fmt.Println("QLoo successfully installed.")
+		}
 	}
-	cmd.Flags().BoolVarP(&dryRun, "dry-run", "d", false,
-		"If true, only print the objects that will be setup, without sending it")
 	return cmd
+}
+
+var dryRun bool
+
+func init() {
+	installKubeCmd.PersistentFlags().BoolVarP(&dryRun, "dry-run", "d", false, "If true, only "+
+		"print the objects that will be installed")
+	installCmd.AddCommand(installKubeCmd)
+}
+
+// Install setups Gloo on Kubernetes using kubectl and current context
+func kubeInstall(dryRun bool, uri string) error {
+	// using kubectl with latest install.yaml
+	args := []string{"apply", "--filename",
+		uri}
+	if dryRun {
+		args = append(args, "--dry-run=true")
+	}
+	cmd := exec.Command("kubectl", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

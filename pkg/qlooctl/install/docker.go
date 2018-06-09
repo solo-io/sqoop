@@ -49,6 +49,9 @@ Glooctl will configure itself to use this instance of gloo.`,
 		fmt.Printf(successMessage, installDir)
 	},
 }
+
+func init() {
+	installCmd.AddCommand(installDockerCmd)
 }
 
 const (
