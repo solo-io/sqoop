@@ -10,10 +10,10 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/hashicorp/consul/api"
+	"github.com/solo-io/gloo/test/helpers"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/storage"
 	. "github.com/solo-io/qloo/pkg/storage/consul"
-	"github.com/solo-io/gloo/test/helpers"
 )
 
 var _ = Describe("ConsulStorageClient", func() {

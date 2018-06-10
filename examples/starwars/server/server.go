@@ -3,9 +3,10 @@ package server
 import (
 	"encoding/json"
 	"net/http"
+
 	"github.com/gorilla/mux"
-	"github.com/solo-io/qloo/examples/starwars/imported/starwars"
 	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/qloo/examples/starwars/imported/starwars"
 )
 
 var baseResolvers = starwars.NewResolver()

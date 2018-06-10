@@ -5,12 +5,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/cobra"
-	"net/http"
 	"io"
+	"net/http"
+
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/bootstrap"
 	"github.com/solo-io/glooctl/pkg/config"
+	"github.com/spf13/cobra"
 )
 
 const (

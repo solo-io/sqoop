@@ -41,7 +41,7 @@ func (c *Client) V1() storage.V1 {
 }
 
 type v1client struct {
-	schemas       *schemasClient
+	schemas      *schemasClient
 	resolverMaps *resolverMapsClient
 }
 

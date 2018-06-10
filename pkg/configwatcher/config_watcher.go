@@ -7,11 +7,11 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/gloo/pkg/log"
-	"github.com/solo-io/qloo/pkg/storage"
 	"github.com/gogo/protobuf/proto"
 	"github.com/mitchellh/hashstructure"
+	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/storage"
 )
 
 type configWatcher struct {

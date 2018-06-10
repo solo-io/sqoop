@@ -1,14 +1,15 @@
 package test
 
 import (
-	"github.com/solo-io/qloo/pkg/dynamic"
-	"github.com/vektah/gqlgen/neelance/schema"
 	"time"
-	"github.com/vektah/gqlgen/neelance/common"
+
+	"github.com/fatih/structs"
 	"github.com/pkg/errors"
 	"github.com/solo-io/qloo/examples/starwars/imported/starwars"
-	"github.com/fatih/structs"
+	"github.com/solo-io/qloo/pkg/dynamic"
 	"github.com/solo-io/qloo/pkg/exec"
+	"github.com/vektah/gqlgen/neelance/common"
+	"github.com/vektah/gqlgen/neelance/schema"
 )
 
 var LukeSkywalkerParams = exec.Params{

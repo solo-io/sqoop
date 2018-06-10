@@ -1,13 +1,14 @@
 package graphql
 
 import (
-	"github.com/vektah/gqlgen/graphql"
 	"context"
-	"github.com/vektah/gqlgen/handler"
-	"github.com/solo-io/gloo/pkg/log"
-	"github.com/gorilla/mux"
 	"net/http"
 	"sync"
+
+	"github.com/gorilla/mux"
+	"github.com/solo-io/gloo/pkg/log"
+	"github.com/vektah/gqlgen/graphql"
+	"github.com/vektah/gqlgen/handler"
 )
 
 type Router struct {
@@ -33,7 +34,7 @@ type Endpoint struct {
 	ExecSchema graphql.ExecutableSchema
 }
 
-func (s *Router) UpdateEndpoints(endpoints ... *Endpoint) {
+func (s *Router) UpdateEndpoints(endpoints ...*Endpoint) {
 	m := mux.NewRouter()
 	for _, endpoint := range endpoints {
 		m.Handle(endpoint.RootPath, handler.Playground(endpoint.SchemaName, endpoint.QueryPath))

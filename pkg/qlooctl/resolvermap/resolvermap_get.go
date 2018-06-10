@@ -1,9 +1,9 @@
 package resolvermap
 
 import (
-	"github.com/spf13/cobra"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/qlooctl"
+	"github.com/spf13/cobra"
 )
 
 var resolverMapGetCmd = &cobra.Command{

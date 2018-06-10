@@ -8,11 +8,11 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
-	. "github.com/solo-io/qloo/pkg/storage/file"
 	. "github.com/solo-io/gloo/test/helpers"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
-	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
+	. "github.com/solo-io/qloo/pkg/storage/file"
 )
 
 var _ = Describe("CrdStorageClient", func() {
@@ -154,10 +154,10 @@ var _ = Describe("CrdStorageClient", func() {
 	})
 })
 
-func NewTestSchema1() *v1.Schema{
+func NewTestSchema1() *v1.Schema {
 	return &v1.Schema{
-		Name: "schema1",
-		ResolverMap: "resolvers",
+		Name:         "schema1",
+		ResolverMap:  "resolvers",
 		InlineSchema: "SOMETHING",
 		Metadata: &gloov1.Metadata{
 			Annotations: map[string]string{
@@ -167,10 +167,10 @@ func NewTestSchema1() *v1.Schema{
 	}
 }
 
-func NewTestSchema2() *v1.Schema{
+func NewTestSchema2() *v1.Schema {
 	return &v1.Schema{
-		Name: "schema2",
-		ResolverMap: "resolvers",
+		Name:         "schema2",
+		ResolverMap:  "resolvers",
 		InlineSchema: "SOMETHINGELSE",
 		Metadata: &gloov1.Metadata{
 			Annotations: map[string]string{
@@ -179,7 +179,7 @@ func NewTestSchema2() *v1.Schema{
 		},
 	}
 }
-func NewTestResolverMap(name string) *v1.ResolverMap{
+func NewTestResolverMap(name string) *v1.ResolverMap {
 	return &v1.ResolverMap{
 		Name: name,
 		Metadata: &gloov1.Metadata{

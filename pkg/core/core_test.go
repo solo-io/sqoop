@@ -1,23 +1,24 @@
 package core_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	"github.com/solo-io/qloo/pkg/bootstrap"
-	glooopts "github.com/solo-io/gloo/pkg/bootstrap"
-	"time"
-	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
-	. "github.com/onsi/gomega"
-	. "github.com/solo-io/qloo/pkg/core"
-	"math/rand"
+	"bytes"
 	"fmt"
-	"github.com/solo-io/qloo/test"
+	"io/ioutil"
+	"math/rand"
+	"net/http"
+	"time"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/pkg/errors"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
+	glooopts "github.com/solo-io/gloo/pkg/bootstrap"
+	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
 	"github.com/solo-io/gloo/pkg/coreplugins/service"
 	"github.com/solo-io/gloo/pkg/plugins/rest"
-	"net/http"
-	"bytes"
-	"io/ioutil"
-	"github.com/pkg/errors"
+	"github.com/solo-io/qloo/pkg/bootstrap"
+	. "github.com/solo-io/qloo/pkg/core"
+	"github.com/solo-io/qloo/test"
 )
 
 var qlooPort int
@@ -36,7 +37,7 @@ var _ = Describe("Core", func() {
 					ConfigDir: glooInstance.ConfigDir() + "/_gloo_config",
 				},
 			},
-			ProxyAddr:          envoyInstance.LocalAddr()+":8080",
+			ProxyAddr:          envoyInstance.LocalAddr() + ":8080",
 			BindAddr:           fmt.Sprintf(":%v", qlooPort),
 			RoleName:           "qloo-test",
 			VirtualServiceName: "qloo-test",
@@ -86,7 +87,7 @@ var _ = Describe("Core", func() {
 })
 
 func eventuallyQueryShouldRespond(queryString, expectedString string) {
-	Eventually(func() (string, error){
+	Eventually(func() (string, error) {
 		res, err := http.Post(fmt.Sprintf("http://localhost:%v/starwars-schema/query", qlooPort),
 			"",
 			bytes.NewBuffer([]byte(queryString)))
@@ -101,7 +102,7 @@ func eventuallyQueryShouldRespond(queryString, expectedString string) {
 			return "", err
 		}
 		return string(b), nil
-	}, time.Second * 5).Should(Equal(expectedString))
+	}, time.Second*5).Should(Equal(expectedString))
 }
 
 func ptr(str string) *string {

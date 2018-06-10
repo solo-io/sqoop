@@ -3,14 +3,15 @@ package main
 import (
 	"fmt"
 	"os"
-	"github.com/spf13/cobra"
-	"github.com/solo-io/qloo/pkg/bootstrap"
-	glooflags "github.com/solo-io/gloo/pkg/bootstrap/flags"
-	"github.com/solo-io/qloo/pkg/bootstrap/flags"
-	"github.com/solo-io/gloo/pkg/signals"
-	"github.com/solo-io/gloo/pkg/log"
-	"github.com/solo-io/qloo/pkg/core"
+
 	"github.com/pkg/errors"
+	glooflags "github.com/solo-io/gloo/pkg/bootstrap/flags"
+	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/gloo/pkg/signals"
+	"github.com/solo-io/qloo/pkg/bootstrap"
+	"github.com/solo-io/qloo/pkg/bootstrap/flags"
+	"github.com/solo-io/qloo/pkg/core"
+	"github.com/spf13/cobra"
 )
 
 func main() {

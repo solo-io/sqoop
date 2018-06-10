@@ -12,11 +12,11 @@ import (
 	"github.com/solo-io/qloo/pkg/storage/crd"
 	"k8s.io/client-go/tools/clientcmd"
 
-	. "github.com/solo-io/qloo/pkg/reporter"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
 	. "github.com/solo-io/gloo/test/helpers"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
+	. "github.com/solo-io/qloo/pkg/reporter"
 	"github.com/solo-io/qloo/test"
 )
 

@@ -1,12 +1,12 @@
 package test
 
 import (
-	"github.com/vektah/gqlgen/neelance/schema"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/util"
-	"github.com/vektah/gqlgen/graphql"
 	"github.com/solo-io/qloo/pkg/exec"
 	"github.com/solo-io/qloo/pkg/resolvers"
+	"github.com/solo-io/qloo/pkg/util"
+	"github.com/vektah/gqlgen/graphql"
+	"github.com/vektah/gqlgen/neelance/schema"
 )
 
 const resolversName = "starwars-resolvers"
@@ -84,8 +84,8 @@ func StarWarsResolverMap() *v1.ResolverMap {
 
 func StarWarsV1Schema() *v1.Schema {
 	return &v1.Schema{
-		Name: "starwars-schema",
-		ResolverMap: resolversName,
+		Name:         "starwars-schema",
+		ResolverMap:  resolversName,
 		InlineSchema: starWarsSchemaString,
 	}
 }

@@ -1,16 +1,17 @@
 package resolvermap
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/pkg/errors"
-	"io/ioutil"
 	"fmt"
+
+	"github.com/pkg/errors"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/qlooctl"
 	"github.com/solo-io/qloo/pkg/storage/file"
+	"github.com/spf13/cobra"
 )
 
 var resolverMapCreateOpts struct {
-	FromFile       string
+	FromFile string
 }
 
 var resolverMapCreateCmd = &cobra.Command{

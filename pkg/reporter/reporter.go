@@ -4,9 +4,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/solo-io/qloo/pkg/storage"
 
-	"github.com/solo-io/qloo/pkg/api/types/v1"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
 )
 
 type reporter struct {

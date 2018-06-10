@@ -1,9 +1,9 @@
 package template
 
 import (
-	"github.com/solo-io/qloo/pkg/exec"
 	"github.com/pkg/errors"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/exec"
 	"github.com/solo-io/qloo/pkg/util"
 )
 

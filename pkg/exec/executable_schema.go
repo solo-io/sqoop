@@ -3,14 +3,15 @@ package exec
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"strconv"
+
+	"github.com/pkg/errors"
+	"github.com/solo-io/qloo/pkg/dynamic"
 	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/neelance/introspection"
 	"github.com/vektah/gqlgen/neelance/query"
 	"github.com/vektah/gqlgen/neelance/schema"
-	"fmt"
-	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/dynamic"
 )
 
 func NewExecutableSchema(parsedSchema *schema.Schema, resolvers *ExecutableResolverMap) graphql.ExecutableSchema {

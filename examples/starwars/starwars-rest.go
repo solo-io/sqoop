@@ -1,10 +1,11 @@
 package main
 
 import (
-	"log"
-	"github.com/solo-io/qloo/examples/starwars/server"
-	"net/http"
 	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/solo-io/qloo/examples/starwars/server"
 )
 
 func main() {

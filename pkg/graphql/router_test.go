@@ -4,12 +4,13 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/solo-io/qloo/pkg/graphql"
-	"net/http/httptest"
-	"github.com/solo-io/qloo/test"
-	"net/http"
-	"io/ioutil"
 	"bytes"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+
+	. "github.com/solo-io/qloo/pkg/graphql"
+	"github.com/solo-io/qloo/test"
 )
 
 var _ = Describe("Router", func() {

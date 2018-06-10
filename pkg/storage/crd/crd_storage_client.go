@@ -13,10 +13,10 @@ import (
 	"k8s.io/client-go/rest"
 
 	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/gloo/pkg/storage/crd"
 	"github.com/solo-io/qloo/pkg/storage"
 	crdclientset "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned"
 	crdv1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
-	"github.com/solo-io/gloo/pkg/storage/crd"
 )
 
 //go:generate go run ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/generate/generate_clients.go -f ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/crd/client_template.go.tmpl -o ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/crd/

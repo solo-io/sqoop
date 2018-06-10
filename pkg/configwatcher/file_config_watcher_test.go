@@ -10,8 +10,8 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/solo-io/gloo/pkg/log"
-	"github.com/solo-io/qloo/pkg/storage/file"
 	. "github.com/solo-io/gloo/test/helpers"
+	"github.com/solo-io/qloo/pkg/storage/file"
 	"github.com/solo-io/qloo/test"
 )
 

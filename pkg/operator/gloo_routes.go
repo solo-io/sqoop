@@ -1,9 +1,10 @@
 package operator
 
 import (
-	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"fmt"
 	"sort"
+
+	"github.com/solo-io/qloo/pkg/api/types/v1"
 )
 
 func RoutePath(typeName, fieldName string) string {

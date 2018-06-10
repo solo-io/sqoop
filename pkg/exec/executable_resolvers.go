@@ -1,13 +1,14 @@
 package exec
 
 import (
-	"github.com/vektah/gqlgen/neelance/schema"
-	"github.com/vektah/gqlgen/neelance/common"
-	"github.com/pkg/errors"
 	"encoding/json"
-	"time"
 	"strconv"
+	"time"
+
+	"github.com/pkg/errors"
 	"github.com/solo-io/qloo/pkg/dynamic"
+	"github.com/vektah/gqlgen/neelance/common"
+	"github.com/vektah/gqlgen/neelance/schema"
 )
 
 // store all the user resolvers

@@ -1,10 +1,11 @@
 package resolvermap
 
 import (
-	"github.com/spf13/cobra"
 	"fmt"
+
 	"github.com/pkg/errors"
 	"github.com/solo-io/qloo/pkg/qlooctl"
+	"github.com/spf13/cobra"
 )
 
 var resolverMapDeleteCmd = &cobra.Command{

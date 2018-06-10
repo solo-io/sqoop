@@ -18,14 +18,14 @@ var _ = Describe("Values", func() {
 			val := om.Get("foo")
 			Expect(val).To(BeNil())
 			om.Keys = append(om.Keys, "foo")
-			expected := &String{Scalar: &schema.Scalar{Name: "String"}, Data: "bar" }
+			expected := &String{Scalar: &schema.Scalar{Name: "String"}, Data: "bar"}
 			om.Values = append(om.Values, expected)
 			val = om.Get("foo")
 			Expect(val).To(Equal(expected))
 		})
 		It("deletes by key", func() {
 			om.Keys = append(om.Keys, "foo")
-			expected := &String{Scalar: &schema.Scalar{Name: "String"}, Data: "bar" }
+			expected := &String{Scalar: &schema.Scalar{Name: "String"}, Data: "bar"}
 			om.Values = append(om.Values, expected)
 			val := om.Get("foo")
 			Expect(val).To(Equal(expected))
@@ -36,7 +36,7 @@ var _ = Describe("Values", func() {
 		It("inserts key/val", func() {
 			val := om.Get("foo")
 			Expect(val).To(BeNil())
-			expected := &String{Scalar: &schema.Scalar{Name: "String"}, Data: "bar" }
+			expected := &String{Scalar: &schema.Scalar{Name: "String"}, Data: "bar"}
 			om.Set("foo", expected)
 			val = om.Get("foo")
 			Expect(val).To(Equal(expected))

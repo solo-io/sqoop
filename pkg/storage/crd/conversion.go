@@ -5,9 +5,9 @@ import (
 	"github.com/pkg/errors"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/protoutil"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
 	crdv1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
 )
 
 func ConfigObjectToCrd(namespace string, item gloov1.ConfigObject) (metav1.Object, error) {

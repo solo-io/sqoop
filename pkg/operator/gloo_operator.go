@@ -1,9 +1,9 @@
 package operator
 
 import (
-	"github.com/solo-io/gloo/pkg/storage"
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/api/types/v1"
+	"github.com/solo-io/gloo/pkg/storage"
 	qloov1 "github.com/solo-io/qloo/pkg/api/types/v1"
 )
 

@@ -1,14 +1,15 @@
 package qlooctl
 
 import (
+	"fmt"
+
+	"github.com/ghodss/yaml"
+	"github.com/gogo/protobuf/proto"
 	"github.com/solo-io/gloo/pkg/bootstrap"
 	glooflags "github.com/solo-io/gloo/pkg/bootstrap/flags"
-	"github.com/gogo/protobuf/proto"
 	"github.com/solo-io/gloo/pkg/protoutil"
-	"github.com/ghodss/yaml"
-	"github.com/solo-io/qloo/pkg/storage"
 	qloostorage "github.com/solo-io/qloo/pkg/bootstrap"
-	"fmt"
+	"github.com/solo-io/qloo/pkg/storage"
 	"github.com/spf13/cobra"
 )
 

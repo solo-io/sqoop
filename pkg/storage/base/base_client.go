@@ -135,7 +135,7 @@ func (c *ConsulStorageClient) Watch(handlers ...StorableItemEventHandler) (*stor
 		}
 		var (
 			resolverMaps []*v1.ResolverMap
-			schemas       []*v1.Schema
+			schemas      []*v1.Schema
 		)
 		for _, p := range pairs {
 			item, err := itemFromKVPair(p)

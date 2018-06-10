@@ -4,15 +4,16 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/solo-io/qloo/pkg/resolvers/gloo"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"net/http/httptest"
-	"github.com/gorilla/mux"
-	"net/http"
-	"strings"
-	"github.com/solo-io/qloo/test"
-	"io"
 	"bytes"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+
+	"github.com/gorilla/mux"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
+	. "github.com/solo-io/qloo/pkg/resolvers/gloo"
+	"github.com/solo-io/qloo/test"
 )
 
 var _ = Describe("GlooResolvers", func() {
@@ -52,8 +53,8 @@ var _ = Describe("GlooResolvers", func() {
 				_, err = rawResolver(test.LukeSkywalkerParams)
 				Expect(err).NotTo(HaveOccurred())
 				str := requestBody.String()
-				Expect(str).To(Equal(`REQUEST: best scene: "cloud city" friendIds: `+
-					`{"AppearsIn":["NEWHOPE","EMPIRE","JEDI"],"FriendIds":["1002","1003","2000","2001"],`+
+				Expect(str).To(Equal(`REQUEST: best scene: "cloud city" friendIds: ` +
+					`{"AppearsIn":["NEWHOPE","EMPIRE","JEDI"],"FriendIds":["1002","1003","2000","2001"],` +
 					`"ID":"1000","Name":"Luke Skywalker","TypeName":"Human"}`))
 			})
 			It("renders the result template on the json response body", func() {

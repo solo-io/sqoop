@@ -1,10 +1,11 @@
 package dynamic
 
 import (
-	"github.com/vektah/gqlgen/neelance/common"
 	"time"
-	"github.com/vektah/gqlgen/neelance/schema"
+
 	"github.com/vektah/gqlgen/graphql"
+	"github.com/vektah/gqlgen/neelance/common"
+	"github.com/vektah/gqlgen/neelance/schema"
 )
 
 type Value interface {
@@ -77,7 +78,7 @@ type InternalOnly struct {
 func (t *InternalOnly) Kind() string   { panic("not implemented for internal-only type") }
 func (t *InternalOnly) String() string { panic("not implemented for internal-only type") }
 
-type Null struct{
+type Null struct {
 	TypeOf common.Type
 }
 
@@ -116,7 +117,7 @@ func (t *InternalOnly) Type() common.Type {
 }
 
 func (t *Object) Marshaller() graphql.Marshaler {
-	// remove 
+	// remove
 	for _, item := range t.Data.Items() {
 		if _, isInternal := item.Value.(*InternalOnly); isInternal {
 			t.Data.Delete(item.Key)
@@ -273,12 +274,12 @@ func (m *OrderedMap) Items() []struct {
 	Value Value
 } {
 	var items []struct {
-		Key   string;
+		Key   string
 		Value Value
 	}
 	for i, k := range m.Keys {
 		items = append(items, struct {
-			Key   string;
+			Key   string
 			Value Value
 		}{
 			Key:   k,

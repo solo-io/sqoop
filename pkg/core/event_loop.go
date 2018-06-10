@@ -1,24 +1,25 @@
 package core
 
 import (
-	"github.com/solo-io/qloo/pkg/bootstrap"
-	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
-	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/configwatcher"
-	"github.com/solo-io/gloo/pkg/log"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/operator"
-	"github.com/solo-io/qloo/pkg/graphql"
-	"github.com/solo-io/qloo/pkg/storage"
-	"github.com/solo-io/qloo/pkg/reporter"
-	"github.com/solo-io/qloo/pkg/resolvers"
-	"github.com/solo-io/qloo/pkg/exec"
-	"github.com/vektah/gqlgen/neelance/schema"
-	"github.com/hashicorp/go-multierror"
-	"github.com/solo-io/qloo/pkg/util"
 	"fmt"
 	"net/http"
+
+	"github.com/hashicorp/go-multierror"
+	"github.com/pkg/errors"
 	gloobootstrap "github.com/solo-io/gloo/pkg/bootstrap"
+	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
+	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/bootstrap"
+	"github.com/solo-io/qloo/pkg/configwatcher"
+	"github.com/solo-io/qloo/pkg/exec"
+	"github.com/solo-io/qloo/pkg/graphql"
+	"github.com/solo-io/qloo/pkg/operator"
+	"github.com/solo-io/qloo/pkg/reporter"
+	"github.com/solo-io/qloo/pkg/resolvers"
+	"github.com/solo-io/qloo/pkg/storage"
+	"github.com/solo-io/qloo/pkg/util"
+	"github.com/vektah/gqlgen/neelance/schema"
 )
 
 type EventLoop struct {

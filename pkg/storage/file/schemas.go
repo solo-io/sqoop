@@ -12,9 +12,9 @@ import (
 
 	"time"
 
-	"github.com/solo-io/qloo/pkg/api/types/v1"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/storage"
 )
 
@@ -144,11 +144,11 @@ func (c *schemasClient) pathsToSchemas() (map[string]*v1.Schema, error) {
 		}
 
 		schema, err := pathToSchema(path)
-        if err != nil {
-            return nil, errors.Wrap(err, "unable to parse .yml file as schema")
-        }
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to parse .yml file as schema")
+		}
 
-        schemas[path] = schema
+		schemas[path] = schema
 	}
 	return schemas, nil
 }

@@ -5,13 +5,14 @@ import (
 
 	"github.com/solo-io/gloo/test/helpers/local"
 
+	"fmt"
+	"net/http"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/solo-io/gloo/pkg/log"
 	"github.com/solo-io/gloo/test/helpers"
-	"net/http"
 	"github.com/solo-io/qloo/examples/starwars/server"
-	"fmt"
 )
 
 var (

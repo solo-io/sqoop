@@ -1,12 +1,12 @@
 package util
 
 import (
-	"github.com/vektah/gqlgen/neelance/schema"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/exec"
+	"github.com/vektah/gqlgen/neelance/schema"
 )
 
-func GenerateResolverMapSkeleton(name string, sch *schema.Schema) (*v1.ResolverMap) {
+func GenerateResolverMapSkeleton(name string, sch *schema.Schema) *v1.ResolverMap {
 	types := make(map[string]*v1.TypeResolver)
 	for _, t := range sch.Types {
 		if exec.MetaType(t.TypeName()) {
@@ -27,7 +27,7 @@ func GenerateResolverMapSkeleton(name string, sch *schema.Schema) (*v1.ResolverM
 		types[t.TypeName()] = &v1.TypeResolver{Fields: fields}
 	}
 	return &v1.ResolverMap{
-		Name: name,
+		Name:  name,
 		Types: types,
 	}
 }

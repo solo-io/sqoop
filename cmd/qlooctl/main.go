@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"github.com/spf13/cobra"
+
 	"github.com/solo-io/qloo/pkg/qlooctl"
 )
 

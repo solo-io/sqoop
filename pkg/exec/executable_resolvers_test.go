@@ -4,16 +4,17 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/solo-io/qloo/pkg/exec"
-	"github.com/solo-io/qloo/test"
-	"github.com/solo-io/qloo/pkg/resolvers"
-	"net/http/httptest"
 	"bytes"
-	"github.com/gorilla/mux"
-	"net/http"
-	"io"
-	"strings"
 	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+
+	"github.com/gorilla/mux"
+	. "github.com/solo-io/qloo/pkg/exec"
+	"github.com/solo-io/qloo/pkg/resolvers"
+	"github.com/solo-io/qloo/test"
 )
 
 var _ = Describe("ExecutableResolverMap", func() {

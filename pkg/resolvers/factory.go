@@ -1,23 +1,23 @@
 package resolvers
 
 import (
+	"github.com/pkg/errors"
 	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/exec"
-	"github.com/pkg/errors"
+	"github.com/solo-io/qloo/pkg/resolvers/gloo"
 	"github.com/solo-io/qloo/pkg/resolvers/node"
 	"github.com/solo-io/qloo/pkg/resolvers/template"
-	"github.com/solo-io/qloo/pkg/resolvers/gloo"
 )
 
 type ResolverFactory struct {
 	glooResolverFactory *gloo.ResolverFactory
-	resolverMap *v1.ResolverMap
+	resolverMap         *v1.ResolverMap
 }
 
 func NewResolverFactory(proxyAddr string, resolverMap *v1.ResolverMap) *ResolverFactory {
 	return &ResolverFactory{
 		glooResolverFactory: gloo.NewResolverFactory(proxyAddr),
-		resolverMap: resolverMap,
+		resolverMap:         resolverMap,
 	}
 }
 

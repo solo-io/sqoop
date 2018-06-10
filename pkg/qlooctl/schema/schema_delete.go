@@ -1,8 +1,10 @@
 package schema
 
 import (
-	"github.com/spf13/cobra"
 	"fmt"
+
+	"github.com/solo-io/qloo/pkg/qlooctl"
+	"github.com/spf13/cobra"
 	"github.com/vektah/gqlgen/neelance/errors"
 )
 

@@ -2,8 +2,8 @@ package base
 
 import (
 	"github.com/gogo/protobuf/proto"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/storage"
 )
 
@@ -82,7 +82,7 @@ func (item *StorableItem) GetTypeFlag() StorableItemType {
 type StorableItemType uint64
 
 const (
-	StorableItemTypeSchema      StorableItemType = iota
+	StorableItemTypeSchema StorableItemType = iota
 	StorableItemTypeResolverMap
 )
 

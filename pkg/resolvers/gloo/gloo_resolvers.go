@@ -2,15 +2,16 @@ package gloo
 
 import (
 	"bytes"
-	"net/http"
-	"io/ioutil"
 	"encoding/json"
-	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/exec"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/util"
+	"io/ioutil"
+	"net/http"
 	"text/template"
+
+	"github.com/pkg/errors"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/qloo/pkg/exec"
 	"github.com/solo-io/qloo/pkg/operator"
+	"github.com/solo-io/qloo/pkg/util"
 )
 
 type ResolverFactory struct {

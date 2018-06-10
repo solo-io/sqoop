@@ -1,12 +1,12 @@
 package util
 
 import (
-	"text/template"
-	"encoding/json"
-	"github.com/solo-io/qloo/pkg/exec"
 	"bytes"
-)
+	"encoding/json"
+	"text/template"
 
+	"github.com/solo-io/qloo/pkg/exec"
+)
 
 func Template(tmplString string) (*template.Template, error) {
 	return template.New("qloo_template").Funcs(templateFuncs).Parse(tmplString)

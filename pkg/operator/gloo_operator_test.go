@@ -1,17 +1,18 @@
 package operator_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	. "github.com/solo-io/qloo/pkg/operator"
-	"github.com/solo-io/gloo/pkg/storage/file"
 	"io/ioutil"
 	"os"
 	"time"
-	"github.com/solo-io/gloo/pkg/storage"
-	"github.com/solo-io/gloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/test"
+
 	"github.com/gogo/protobuf/types"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/solo-io/gloo/pkg/api/types/v1"
+	"github.com/solo-io/gloo/pkg/storage"
+	"github.com/solo-io/gloo/pkg/storage/file"
+	. "github.com/solo-io/qloo/pkg/operator"
+	"github.com/solo-io/qloo/test"
 )
 
 var _ = Describe("GlooOperator", func() {
