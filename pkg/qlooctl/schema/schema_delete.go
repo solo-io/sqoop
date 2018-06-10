@@ -20,6 +20,7 @@ var schemaDeleteCmd = &cobra.Command{
 			return err
 		}
 		fmt.Println("delete succesful")
+		return nil
 	},
 }
 

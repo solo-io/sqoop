@@ -151,6 +151,9 @@ func download(src, dst string) error {
 	if err != nil {
 		return err
 	}
+	if resp.StatusCode != 200 {
+		return errors.Wrapf(err, "status code %v", resp.StatusCode)
+	}
 	defer resp.Body.Close()
 	_, err = io.Copy(f, resp.Body)
 	return err

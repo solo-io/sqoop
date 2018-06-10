@@ -31,8 +31,7 @@ var installKubeCmd = &cobra.Command{
 		if !dryRun {
 			fmt.Println("QLoo successfully installed.")
 		}
-	}
-	return cmd
+	},
 }
 
 var dryRun bool
