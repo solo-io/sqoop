@@ -27,6 +27,20 @@ for security, load balancing, and more.
 * Connect Functions to your Schema's fields in a QLoo ResolverMap
 
 ## Features
+* **Codeless GraphQL API**: Instantly deploy a GraphQL server and connect it to your data sources with configuration,
+zero code required.
+* **Dynamic Load Balancing**: Load balance traffic across multiple data sources.
+* **Health Checks**: Active and passive monitoring of your data sources.
+* **OpenTracing**: Monitor GraphQL requests using the well-supported OpenTracing standard
+* **Monitoring**: Export HTTP metrics to Prometheus or Statsd
+* **Client SSL**: Communicate with Data Sources using TLS encryption 
+* **Declarative API**: QLoo features a declarative YAML-based API; store your configuration as code and commit it with your projects.
+* **Scalability**: QLoo scales independently of your data sources and scales infinitely.
+* **Performance**: QLoo leverages Envoy for its high network performance and low footprint.
+* **Plugins**: QLoo leverage's [Gloo's plugin ecosystem](https://gloo.solo.io/plugins/aws/) to enable extending the types
+of data sources QLoo can connect to.
+* **JSON-to-gRPC transcoding**: Connect GraphQL JSON clients to gRPC data sources.
+
 **Service Discovery**:
 * Kubernetes
 * OpenShift
@@ -42,21 +56,6 @@ for security, load balancing, and more.
 * ProjectFn
 * Swagger/REST
 * gRPC
-
-**Features**:
-* **Codeless GraphQL API**: Instantly deploy a GraphQL server and connect it to your data sources with configuration,
-zero code required.
-* **Dynamic Load Balancing**: Load balance traffic across multiple data sources.
-* **Health Checks**: Active and passive monitoring of your data sources.
-* **OpenTracing**: Monitor GraphQL requests using the well-supported OpenTracing standard
-* **Monitoring**: Export HTTP metrics to Prometheus or Statsd
-* **Client SSL**: Communicate with Data Sources using TLS encryption 
-* **Declarative API**: QLoo features a declarative YAML-based API; store your configuration as code and commit it with your projects.
-* **Scalability**: QLoo scales independently of your data sources and scales infinitely.
-* **Performance**: QLoo leverages Envoy for its high network performance and low footprint.
-* **Plugins**: QLoo leverage's [Gloo's plugin ecosystem](https://gloo.solo.io/plugins/aws/) to enable extending the types
-of data sources QLoo can connect to.
-* **JSON-to-gRPC transcoding**: Connect GraphQL JSON clients to gRPC data sources.
 
 ## Documentation
 

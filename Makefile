@@ -118,3 +118,29 @@ qlooctl: $(OUTPUT_DIR)/qlooctl
 $(OUTPUT_DIR)/qlooctl: $(SOURCES)
 	go build -v -o $@ cmd/qlooctl/main.go
 
+#----------------------------------------------------------------------------------
+# Docs
+#----------------------------------------------------------------------------------
+
+docs/api.json: $(PROTOS)
+	export DISABLE_SORT=1 && \
+	cd api/v1/ && \
+	mkdir -p $(ROOTDIR)/pkg/api/types/v1 && \
+	protoc \
+	-I=. \
+	-I=$(GOPATH)/src \
+	-I=$(GOPATH)/src/github.com/gogo/protobuf/ \
+	--plugin=protoc-gen-doc=$(GOPATH)/bin/protoc-gen-doc \
+    --doc_out=$(ROOTDIR)/docs/ \
+    --doc_opt=json,api.json \
+	./*.proto
+
+doc: docs/api.json
+	go run docs/gen_docs.go
+
+site: doc
+	mkdocs build
+
+docker-docs: site
+	docker build -t $(DOCKER_ORG)/qloo-docs:$(VERSION) -f Dockerfile.site .
+

@@ -1,0 +1,69 @@
+<a name="top"></a>
+
+## Contents
+{{range .Messages}}  - [{{.LongName}}](#{{.FullName}})
+{{end}}
+{{range .Enums}}  - [{{.LongName}}](#{{.FullName}})
+{{end}}
+
+<a name="{{.Name}}"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+{{.Description}}
+
+{{range .Messages}}
+<a name="{{.FullName}}"></a>
+
+### {{.LongName}}
+{{.Description}}
+
+{{if .HasFields}}
+```yaml
+{{range .Fields -}}
+{{.Name}}: {{noescape (yamlType .LongType .Label)}}
+{{end}}
+```
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+{{range .Fields -}}
+  | {{.Name}} | {{linkForType .LongType .FullType}} | {{.Label}} | {{nobr .Description}}{{if .DefaultValue}} Default: {{.DefaultValue}}{{end}} |
+{{end}}
+{{end}}
+
+{{if .HasExtensions}}
+| Extension | Type | Base | Number | Description |
+| --------- | ---- | ---- | ------ | ----------- |
+{{range .Extensions -}}
+  | {{.Name}} | {{.LongType}} | {{.ContainingLongType}} | {{.Number}} | {{nobr .Description}}{{if .DefaultValue}} Default: {{.DefaultValue}}{{end}} |
+{{end}}
+{{end}}
+
+{{end}} <!-- end messages -->
+
+{{range .Enums}}
+<a name="{{.FullName}}"></a>
+
+### {{.LongName}}
+{{.Description}}
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+{{range .Values -}}
+  | {{.Name}} | {{.Number}} | {{nobr .Description}} |
+{{end}}
+
+{{end}} <!-- end enums -->
+
+{{range .Services}}
+<a name="{{.FullName}}"></a>
+
+### {{.Name}}
+{{.Description}}
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+{{range .Methods -}}
+  | {{.Name}} | [{{.RequestLongType}}](#{{.RequestFullType}}) | [{{.ResponseLongType}}](#{{.RequestFullType}}) | {{nobr .Description}} |
+{{end}}
+{{end}} <!-- end services -->
+

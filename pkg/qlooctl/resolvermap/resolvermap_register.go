@@ -19,8 +19,7 @@ var resolverMapRegisterCmd = &cobra.Command{
 	Short: "Register a resolver for a field in your Schema",
 	Long: `Sets the resolver for a field in your schema. TypeName.FieldName will always be resolved using this resolver
 
-Resolvers must be defined in yaml format. See the documentation at https://qloo.solo.io/v1/resolvers for the API specification
-on writing resolvers`,
+Resolvers must be defined in yaml format. See the documentation at https://qloo.solo.io/v1/resolver_map/#qloo.api.v1.Resolver for the API specification for QLoo Resolvers`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 || args[0] == "" || args[1] == "" {
 			return errors.Errorf("must specify args TypeName and FieldName")

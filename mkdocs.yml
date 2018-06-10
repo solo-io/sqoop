@@ -37,11 +37,11 @@ pages:
 #      - Building Custom Gloo: thetool/custom.md
 #    - Advanced:
 #      - Bootstrap Options: advanced/bootstrap_options.md
-#    - v1 API reference:
+    - v1 API reference:
 ##      - Overview: v1/overview.md
-#      - Upstreams: v1/upstream.md
-#      - Virtual Services: v1/virtualservice.md
-#      - Metadata: v1/metadata.md
+      - Schemas: v1/schema.md
+      - ResolverMaps: v1/resolver_map.md
+      - Config: v1/config.md
 #      - Status: v1/status.md
 repo_url: https://github.com/solo-io/qloo/
 site_author: gloo Project Authors
