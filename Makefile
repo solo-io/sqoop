@@ -135,7 +135,10 @@ docs/api.json: $(PROTOS)
     --doc_opt=json,api.json \
 	./*.proto
 
-doc: docs/api.json
+docs/index.md: README.md
+	cat README.md | sed 's@docs/@@' > docs/index.md
+
+doc: docs/api.json docs/index.md
 	go run docs/gen_docs.go
 
 site: doc

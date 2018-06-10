@@ -72,7 +72,7 @@ of data sources QLoo can connect to.
 
 ### v1 API reference:
 * [Schemas](v1/schema.md): API Specification for proving your GraphQL Schemas to QLoo
-* [ResolverMaps](v1/resolvermap.md): API Reference for ResolverMaps, which map your data sources to your Schemas
+* [ResolverMaps](v1/resolver_map.md): API Reference for ResolverMaps, which map your data sources to your Schemas
 
 
 Blogs & Demos
