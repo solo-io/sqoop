@@ -218,7 +218,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel []query.Selection
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
 		default:
-			val, err := ec.resolveObject(ctx, ec.EntryPoints["mutation"].(*schema.Object), field.Selections, nil)
+			val, err := ec.resolveField(ctx, ec.EntryPoints["mutation"].(*schema.Object), field, nil)
 			if err != nil {
 				ec.Error(ctx, err)
 				out.Values[i] = graphql.Null
