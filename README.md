@@ -88,4 +88,4 @@ Join us on our slack channel: [https://slack.solo.io/](https://slack.solo.io/)
 ### Thanks
 
 **QLoo** would not be possible without the valuable open-source work of projects in the community. We would like to extend 
-a special thank-you to [Envoy](https://www.envoyproxy.io) and [gqlgen server library](https://github.com/vektah/gqlgen).
+a special thank-you to [Envoy](https://www.envoyproxy.io) and [gqlgen](https://github.com/vektah/gqlgen) server library.
