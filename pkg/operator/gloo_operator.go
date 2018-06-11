@@ -11,6 +11,7 @@ type GlooOperator struct {
 	gloo               storage.Interface
 	virtualServiceName string
 	roleName           string
+	cachedRoutes       []route
 }
 
 func NewGlooOperator(gloo storage.Interface, virtualServiceName string, roleName string) *GlooOperator {
@@ -31,23 +32,31 @@ type destination struct {
 	weight                     uint32
 }
 
-func (client *GlooOperator) ApplyResolvers(resolverMap *qloov1.ResolverMap) error {
-	routes := buildRoutes(resolverMap)
-	desiredVirtualService, err := client.desiredVirtualService(routes)
+// apply routes to Gloo and clear cache
+func (operator *GlooOperator) ConfigureGloo() error {
+	desiredVirtualService, err := operator.desiredVirtualService(operator.cachedRoutes)
 	if err != nil {
 		return errors.Wrap(err, "invalid resolver routes")
 	}
-	existingVirtualService, err := client.gloo.V1().VirtualServices().Get(client.virtualServiceName)
+	existingVirtualService, err := operator.gloo.V1().VirtualServices().Get(operator.virtualServiceName)
 	if err != nil {
-		_, err := client.gloo.V1().VirtualServices().Create(desiredVirtualService)
+		_, err := operator.gloo.V1().VirtualServices().Create(desiredVirtualService)
 		return err
 	}
 	if routesEqual(existingVirtualService.Routes, desiredVirtualService.Routes) {
 		return nil
 	}
 	desiredVirtualService.Metadata.ResourceVersion = existingVirtualService.Metadata.ResourceVersion
-	_, err = client.gloo.V1().VirtualServices().Update(desiredVirtualService)
+	_, err = operator.gloo.V1().VirtualServices().Update(desiredVirtualService)
+
+	// clear cache
+	operator.cachedRoutes = nil
+
 	return err
+}
+
+func (operator *GlooOperator) ApplyResolvers(resolverMap *qloov1.ResolverMap) {
+	operator.cachedRoutes = append(operator.cachedRoutes, buildRoutes(resolverMap)...)
 }
 
 func routesEqual(list1, list2 []*v1.Route) bool {
@@ -63,7 +72,7 @@ func routesEqual(list1, list2 []*v1.Route) bool {
 	return true
 }
 
-func (client *GlooOperator) desiredVirtualService(resolverRoutes []route) (*v1.VirtualService, error) {
+func (operator *GlooOperator) desiredVirtualService(resolverRoutes []route) (*v1.VirtualService, error) {
 	var routes []*v1.Route
 	for _, rr := range resolverRoutes {
 		route, err := resolverRoute(rr)
@@ -73,10 +82,10 @@ func (client *GlooOperator) desiredVirtualService(resolverRoutes []route) (*v1.V
 		routes = append(routes, route)
 	}
 	return &v1.VirtualService{
-		Name:     client.virtualServiceName,
+		Name:     operator.virtualServiceName,
 		Domains:  []string{"*"},
 		Routes:   routes,
-		Roles:    []string{client.roleName},
+		Roles:    []string{operator.roleName},
 		Metadata: &v1.Metadata{},
 	}, nil
 }

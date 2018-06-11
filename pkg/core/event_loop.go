@@ -102,10 +102,27 @@ func (el *EventLoop) Run(stop <-chan struct{}) {
 	}
 }
 
+func configErrs(reports []reporter.ConfigObjectReport) error {
+	var errs error
+	for _, report := range reports {
+		if report.Err != nil {
+			errs = multierror.Append(errs, report.Err)
+		}
+	}
+	return errs
+}
+
 func (el *EventLoop) update(cfg *v1.Config) error {
 	endpoints, reports := el.createGraphqlEndpoints(cfg)
 	el.router.UpdateEndpoints(endpoints...)
-	return el.reporter.WriteReports(reports)
+	errs := configErrs(reports)
+	if err := el.reporter.WriteReports(reports); err != nil {
+		errs = multierror.Append(errs, err)
+	}
+	if err := el.operator.ConfigureGloo(); err != nil {
+		errs = multierror.Append(errs, err)
+	}
+	return errs
 }
 
 func (el *EventLoop) createGraphqlEndpoints(cfg *v1.Config) ([]*graphql.Endpoint, []reporter.ConfigObjectReport) {
@@ -202,9 +219,7 @@ func (el *EventLoop) createGraphqlEndpoint(schema *v1.Schema, resolverMap *v1.Re
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to generate resolvers from map")
 	}
-	if err := el.operator.ApplyResolvers(resolverMap); err != nil {
-		return nil, nil, errors.Wrap(err, "failed to create Gloo resources from resolver map")
-	}
+	el.operator.ApplyResolvers(resolverMap)
 	executableSchema := exec.NewExecutableSchema(parsedSchema, executableResolvers)
 	return &graphql.Endpoint{
 		SchemaName: schema.Name,

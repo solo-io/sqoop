@@ -36,7 +36,8 @@ var _ = Describe("GlooOperator", func() {
 		os.RemoveAll(tmpDir)
 	})
 	It("creates the virtualservice with all the required routes", func() {
-		err := operator.ApplyResolvers(test.StarWarsResolverMap())
+		operator.ApplyResolvers(test.StarWarsResolverMap())
+		err := operator.ConfigureGloo()
 		Expect(err).NotTo(HaveOccurred())
 		virtualService, err := gloo.V1().VirtualServices().Get(vServiceName)
 		Expect(err).NotTo(HaveOccurred())
