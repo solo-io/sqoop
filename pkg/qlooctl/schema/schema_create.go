@@ -30,7 +30,7 @@ var schemaCreateCmd = &cobra.Command{
 	},
 }
 
-func Init(schemaCmd *cobra.Command) {
+func init() {
 	schemaCreateCmd.PersistentFlags().StringVarP(&schemaCreateOpts.FromFile, "from-file", "f", "", "path to a "+
 		"graphql schema file from which to create the QLoo schema object")
 	schemaCreateCmd.PersistentFlags().StringVarP(&schemaCreateOpts.UseResolverMap, "resolvermap", "r", "", "The name of a "+

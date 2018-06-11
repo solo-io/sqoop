@@ -11,6 +11,7 @@ import (
 	qloostorage "github.com/solo-io/qloo/pkg/bootstrap"
 	"github.com/solo-io/qloo/pkg/storage"
 	"github.com/spf13/cobra"
+	"github.com/solo-io/glooctl/pkg/config"
 )
 
 var Opts bootstrap.Options
@@ -33,6 +34,7 @@ func init() {
 	glooflags.AddFileFlags(RootCmd, &Opts)
 	glooflags.AddKubernetesFlags(RootCmd, &Opts)
 	glooflags.AddConsulFlags(RootCmd, &Opts)
+	config.LoadConfig(&Opts)
 }
 
 func PrintAsYaml(msg proto.Message) error {
