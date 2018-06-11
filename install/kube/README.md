@@ -32,7 +32,7 @@ kubectl apply -f example-gloo.yaml
 ```
 To access:
 ```
-export GATEWAY_URL=http://$(minikube ip):$(kubectl get svc ingress -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
+export GATEWAY_URL=http://$(minikube ip):$(kubectl get svc qloo -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
 ```
 
 
