@@ -11,12 +11,11 @@ pages:
 #      - Installing on Kubernetes: installation/kubernetes.md
 #      - Installing on OpenShift: installation/openshift.md
 ##      - Installing on Local Docker: installation/docker.md
-#    - Getting Started:
+    - Getting Started:
 #      - Docker:
 #        - Basic Routing: getting_started/docker/1.md
 #        - Function Routing: getting_started/docker/2.md
-#      - Kubernetes:
-#        - Basic Routing: getting_started/kubernetes/1.md
+      - Kubernetes: getting_started/kubernetes/1.md
 #        - Function Routing: getting_started/kubernetes/2.md
 #      - OpenShift:
 #        - Basic Routing: getting_started/openshift/1.md

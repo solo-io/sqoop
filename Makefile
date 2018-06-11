@@ -138,7 +138,11 @@ docs/api.json: $(PROTOS)
 docs/index.md: README.md
 	cat README.md | sed 's@docs/@@' > docs/index.md
 
-doc: docs/api.json docs/index.md
+docs/getting_started/kubernetes/1.md: examples/petstore/README.md
+	mkdir -p docs/getting_started/kubernetes/
+	cp examples/petstore/README.md $@
+
+doc: docs/api.json docs/index.md docs/getting_started/kubernetes/1.md
 	go run docs/gen_docs.go
 
 site: doc
