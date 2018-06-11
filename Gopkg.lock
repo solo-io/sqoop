@@ -104,6 +104,7 @@
   packages = [
     "proto",
     "protoc-gen-go/descriptor",
+    "protoc-gen-go/plugin",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
@@ -293,6 +294,12 @@
   revision = "bf9dde6d0d2c004a008c27aaee91170c786f6db8"
 
 [[projects]]
+  name = "github.com/ilackarms/protoc-gen-doc"
+  packages = ["."]
+  revision = "728a624b38e5ae90bb3e5da5f406e05138f1517c"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/imdario/mergo"
   packages = ["."]
   revision = "9d5f1277e9a8ed20c3684bda8fde67c05628518c"
@@ -448,6 +455,12 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/pseudomuto/protoc-gen-doc"
+  packages = ["parser"]
+  revision = "728a624b38e5ae90bb3e5da5f406e05138f1517c"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/radovskyb/watcher"
   packages = ["."]
   revision = "6145e1439b9de93806925353403f91d2abbad8a5"
@@ -492,9 +505,6 @@
   name = "github.com/solo-io/glooctl"
   packages = [
     "pkg/config",
-    "pkg/install/docker",
-    "pkg/install/kube",
-    "pkg/install/openshift",
     "pkg/util"
   ]
   revision = "d46dc8570d2328f332540d7c63718e10d2701443"
@@ -846,6 +856,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d3e165be1411f4d454d45ed34854fcbe7c6766cdf621cfea08a4e2c9aa41e0fb"
+  inputs-digest = "efd3cbad065a05cf22fe54711278bf2cebf1a718fa3ebb48dd86a290126bc3a8"
   solver-name = "gps-cdcl"
   solver-version = 1
