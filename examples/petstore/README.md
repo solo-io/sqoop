@@ -1,6 +1,7 @@
 ### What you'll need
 - [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [`qlooctl`](https://github.com/solo-io/qloo)
+- [`glooctl`](https://github.com/solo-io/gloo): (OPTIONAL) to see how QLoo is interacting with the underlying system
 - Kubernetes v1.8+ deployed somewhere. [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is a great way to get a cluster up quickly.
 
 
@@ -19,8 +20,7 @@
         kubectl apply \
           -f https://raw.githubusercontent.com/solo-io/gloo/master/example/petstore/petstore.yaml
 
-1. The discovery services should have already created an Upstream for the petstore service.
-Let's verify this:
+1. OPTIONAL: Verify the petstore service and its functions were discovered by Gloo, using `glooctl`:
 
         glooctl upstream get
         
@@ -44,55 +44,42 @@ Let's verify this:
     namespace to be processed by Gloo.
 
     <br/>
+
+1. The Petstore implements a Swagger-based REST API. Let's create a GraphQL Schema that contains some queries we
+can run using the Petstore as our data source.
+
+    Copy and paste the following schema into `petstore.graphql` (or wherever you like):
+
+    ```graphql
+    # The query type, represents all of the entry points into our object graph
+    type Query {
+        pets: [Pet]
+        pet(id: Int!): Pet
+    }
     
-1. Let's take a closer look at the functions that are available on this upstream (edited here to reduce verbosity):
+    type Mutation {
+        addPet(pet: InputPet!): Pet
+    }
     
-        glooctl upstream get default-petstore-8080 -o yaml
-        
-        functions:
-        - name: addPet
-          spec:
-            body: '{"tag": "{{tag}}","id": {{id}},"name": "{{name}}"}'
-            headers:
-              :method: POST
-            path: /api/pets
-        - name: deletePet
-          spec:
-            body: ""
-            headers:
-              :method: DELETE
-            path: /api/pets/{{id}}
-        - name: findPetById
-          spec:
-            body: ""
-            headers:
-              :method: GET
-            path: /api/pets/{{id}}
-        - name: findPets
-          spec:
-            body: ""
-            headers:
-              :method: GET
-            path: /api/pets?tags={{tags}}&limit={{limit}}
-        metadata:
-          annotations:
-            generated_by: kubernetes-upstream-discovery
-            gloo.solo.io/service-type: swagger
-            gloo.solo.io/swagger_url: http://petstore.default.svc.cluster.local:8080/swagger.json
-            kubectl.kubernetes.io/last-applied-configuration: |
-              {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"sevice":"petstore"},"name":"petstore","namespace":"default"},"spec":{"ports":[{"port":8080,"protocol":"TCP"}],"selector":{"app":"petstore"}}}
-          namespace: gloo-system
-          resource_version: "320962"
-        name: default-petstore-8080
-        spec:
-          labels: null
-          service_name: petstore
-          service_namespace: default
-          service_port: 8080
-        status:
-          state: Accepted
-        type: kubernetes
+    type Pet{
+        id: ID!
+        name: String!
+        status: Status!
+    }
     
+    input InputPet{
+        id: ID!
+        name: String!
+        tag: String
+    }
+    
+    enum Status {
+        pending
+        available
+    }
+    ```   
+
+
 1. Let's now use `glooctl` to create a route for this upstream.
 
         glooctl route create \
