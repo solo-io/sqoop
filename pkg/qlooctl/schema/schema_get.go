@@ -16,7 +16,7 @@ var schemaGetCmd = &cobra.Command{
 				return err
 			}
 			for _, msg := range list {
-				if err := qlooctl.PrintAsYaml(msg); err != nil {
+				if err := qlooctl.Print(msg); err != nil {
 					return err
 				}
 			}
@@ -26,7 +26,7 @@ var schemaGetCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return qlooctl.PrintAsYaml(msg)
+		return qlooctl.Print(msg)
 	},
 }
 

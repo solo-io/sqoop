@@ -6,12 +6,14 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/pkg/errors"
 	"github.com/solo-io/qloo/pkg/storage"
-	"github.com/solo-io/qloo/pkg/storage/file"
 )
 
 var (
-	resolverFile string
-	schemaName   string
+	schemaName       string
+	functionName     string
+	upstreamName     string
+	requestTemplate  string
+	responseTemplate string
 )
 
 var resolverMapRegisterCmd = &cobra.Command{
@@ -24,32 +26,43 @@ Resolvers must be defined in yaml format. See the documentation at https://qloo.
 		if len(args) != 2 || args[0] == "" || args[1] == "" {
 			return errors.Errorf("must specify args TypeName and FieldName")
 		}
-		if resolverFile == "" {
-			return errors.Errorf("must provide the path to a resolver definition yaml file")
+		if upstreamName == "" ||  functionName == "" {
+			return errors.Errorf("must provide an upstream and function to create a resolver")
 		}
-		msg, err := registerResolver(schemaName, args[0], args[1], resolverFile)
+		msg, err := registerResolver(schemaName, args[0], args[1], upstreamName, functionName, requestTemplate, responseTemplate)
 		if err != nil {
 			return err
 		}
-		return qlooctl.PrintAsYaml(msg)
+		return qlooctl.Print(msg)
 	},
 }
 
 func init() {
-	resolverMapRegisterCmd.PersistentFlags().StringVarP(&resolverFile, "file", "f", "", "path to a file "+
-		"containing the resolver definition")
+	resolverMapRegisterCmd.PersistentFlags().StringVarP(&upstreamName, "upstream", "u", "", "upstream where the function lives")
+	resolverMapRegisterCmd.PersistentFlags().StringVarP(&functionName, "function", "f", "", "function to use as resolver")
+	resolverMapRegisterCmd.PersistentFlags().StringVarP(&requestTemplate, "request-template", "b", "", "template to use for the request body")
+	resolverMapRegisterCmd.PersistentFlags().StringVarP(&responseTemplate, "response-template", "r", "", "template to use for the response body")
 	resolverMapRegisterCmd.PersistentFlags().StringVarP(&schemaName, "schema", "s", "", "name of the "+
 		"schema to connect this resolver to. this is required if more than one schema contains a definition for the "+
 		"type name.")
 	resolverMapCmd.AddCommand(resolverMapRegisterCmd)
 }
 
-func registerResolver(schemaName, typeName, fieldName, fileName string) (*v1.ResolverMap, error) {
-	var resolver v1.Resolver
-	if err := file.ReadFileInto(fileName, &resolver); err != nil {
-		return nil, err
+func registerResolver(schemaName, typeName, fieldName, upstreamName, functionName, requestTemplate, responseTemplate string) (*v1.ResolverMap, error) {
+	resolver := &v1.Resolver{
+		Resolver: &v1.Resolver_GlooResolver{
+			GlooResolver: &v1.GlooResolver{
+				RequestTemplate:  requestTemplate,
+				ResponseTemplate: responseTemplate,
+				Function: &v1.GlooResolver_SingleFunction{
+					SingleFunction: &v1.Function{
+						Upstream: upstreamName,
+						Function: functionName,
+					},
+				},
+			},
+		},
 	}
-
 	cli, err := qlooctl.MakeClient()
 	if err != nil {
 		return nil, err
@@ -59,7 +72,7 @@ func registerResolver(schemaName, typeName, fieldName, fileName string) (*v1.Res
 		return nil, err
 	}
 
-	existingResolverMap.Types[typeName].Fields[fieldName] = &resolver
+	existingResolverMap.Types[typeName].Fields[fieldName] = resolver
 
 	return cli.V1().ResolverMaps().Update(existingResolverMap)
 }
