@@ -12,9 +12,9 @@ import (
 
 	"time"
 
-	"github.com/solo-io/qloo/pkg/api/types/v1"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/qloo/pkg/api/types/v1"
 	"github.com/solo-io/qloo/pkg/storage"
 )
 
@@ -144,11 +144,11 @@ func (c *{{ .LowercasePluralName }}Client) pathsTo{{ .UppercasePluralName }}() (
 		}
 
 		{{ .LowercaseName }}, err := pathTo{{ .UppercaseName }}(path)
-        if err != nil {
-            return nil, errors.Wrap(err, "unable to parse .yml file as {{ .LowercaseName }}")
-        }
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to parse .yml file as {{ .LowercaseName }}")
+		}
 
-        {{ .LowercasePluralName }}[path] = {{ .LowercaseName }}
+		{{ .LowercasePluralName }}[path] = {{ .LowercaseName }}
 	}
 	return {{ .LowercasePluralName }}, nil
 }
