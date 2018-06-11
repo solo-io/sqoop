@@ -1,0 +1,5 @@
+gloo_resolver:
+  request_template: '{{ marshal (index .Args "pet") }}'
+  single_function:
+    function: addPet
+    upstream: default-petstore-8080

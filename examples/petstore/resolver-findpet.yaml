@@ -1,0 +1,4 @@
+gloo_resolver:
+  single_function:
+    function: findPetById
+    upstream: default-petstore-8080
