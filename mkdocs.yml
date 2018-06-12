@@ -4,7 +4,8 @@ pages:
     - Introduction:
 #      - Introduction: introduction/introduction.md
       - Concepts:
-         - Resolvers: introduction/resolvers/gloo.md
+         - API Objects: introduction/concepts/api_objects.md
+         - Resolvers: introduction/concepts/resolvers.md
       - Architecture: introduction/architecture.md
 #    - Installation:
 #      - Installing on Docker: installation/docker.md
