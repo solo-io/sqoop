@@ -118,6 +118,12 @@ qlooctl: $(OUTPUT_DIR)/qlooctl
 $(OUTPUT_DIR)/qlooctl: $(SOURCES)
 	go build -v -o $@ cmd/qlooctl/main.go
 
+$(OUTPUT_DIR)/qlooctl-linux-amd64: $(SOURCES)
+	GOOS=linux go build -v -o $@ cmd/qlooctl/main.go
+
+$(OUTPUT_DIR)/qlooctl-darwin-amd64: $(SOURCES)
+	GOOS=darwin go build -v -o $@ cmd/qlooctl/main.go
+
 #----------------------------------------------------------------------------------
 # Docs
 #----------------------------------------------------------------------------------
@@ -151,3 +157,17 @@ site: doc
 docker-docs: site
 	docker build -t $(DOCKER_ORG)/qloo-docs:$(VERSION) -f Dockerfile.site .
 
+
+#----------------------------------------------------------------------------------
+# Release
+#----------------------------------------------------------------------------------
+
+RELEASE_BINARIES := $(OUTPUT_DIR)/qlooctl-linux-amd64 $(OUTPUT_DIR)/qlooctl-darwin-amd64
+
+.PHONY: release-binaries
+release-binaries: $(RELEASE_BINARIES)
+
+.PHONY: release
+release: release-binaries
+	hack/create-release.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=qloo tag=v$(VERSION) filename=$(BINARY)
+	@$(foreach BINARY,$(RELEASE_BINARIES),hack/upload-github-release-asset.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=qloo tag=v$(VERSION) filename=$(BINARY);)
