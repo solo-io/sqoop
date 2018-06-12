@@ -2,7 +2,7 @@ site_name: QLoo
 pages:
     - Index: index.md
     - Introduction:
-#      - Introduction: introduction/introduction.md
+      - Introduction: introduction/introduction.md
       - Concepts:
          - API Objects: introduction/concepts/api_objects.md
          - Resolvers: introduction/concepts/resolvers.md

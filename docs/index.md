@@ -1,8 +1,7 @@
 
 
 <h1 align="center">
-    <img src="QLoo.png" alt="QLoo" width="200" height="242">
-  <br>
+    <img src="QLoo.png" alt="QLoo" width="242" height="242"><br>
   The Codeless GraphQL Server
 </h1>
 
@@ -17,7 +16,7 @@ for security, load balancing, and more.
 
 <BR>
 <p align="center">
-<img src="introduction/high_level_architecture.png" alt="QLoo" width="676" height="400">
+<img src="introduction/high_level_architecture.png" alt="QLoo" width="776" height="400">
 </p>    
 <BR>
     
@@ -88,4 +87,4 @@ Join us on our slack channel: [https://slack.solo.io/](https://slack.solo.io/)
 ### Thanks
 
 **QLoo** would not be possible without the valuable open-source work of projects in the community. We would like to extend 
-a special thank-you to [Envoy](https://www.envoyproxy.io) and [https://github.com/vektah/gqlgen](https://github.com/vektah/gqlgen).
+a special thank-you to [Envoy](https://www.envoyproxy.io) and [gqlgen](https://github.com/vektah/gqlgen) server library.
