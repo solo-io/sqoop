@@ -26,6 +26,8 @@ func New() *mux.Router {
 	router.HandleFunc("/api/hero", GetHero).Methods("GET")
 	router.HandleFunc("/api/character", GetCharacter).Methods("GET")
 	// needs to be POST because there's a body
+	router.HandleFunc("/api/characters", GetCharacters).Methods("POST")
+
 	router.Use(loggingMiddleware)
 
 	return router
