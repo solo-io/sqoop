@@ -127,8 +127,7 @@ Let's use `qlooctl` to register some resolvers.
 # register findPetById for Query.pets (specifying no arguments)
 qlooctl resolvermap register -u default-petstore-8080 -f findPetById Query pets
 # register a resolver for Query.pet
-# the request template tells QLoo to pass Query parameter "id" as an argument 
-qlooctl resolvermap register -u default-petstore-8080 -f findPetById Query pet --request-template '{"id": {{ index .Args "id" }}}'
+qlooctl resolvermap register -u default-petstore-8080 -f findPetById Query pet
 # register a resolver for Mutation.addPet
 # the request template tells QLoo to use the Variable "pet" as an argument 
 qlooctl resolvermap register -u default-petstore-8080 -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
