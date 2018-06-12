@@ -15,3 +15,4 @@ _output/
 _gloo_config/
 examples/starwars/starwars
 cmd/qlooctl/qlooctl
+site/

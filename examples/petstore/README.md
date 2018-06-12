@@ -1,3 +1,5 @@
+# Getting Started on Docker
+
 ### What you'll need
 - [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [`qlooctl`](https://github.com/solo-io/qloo)
@@ -5,8 +7,6 @@
 - Kubernetes v1.8+ deployed somewhere. [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is a great way to get a cluster up quickly.
 
 
-
-<br/>
 
 ### Steps
 
@@ -39,7 +39,6 @@
 The upstream we want to see is `default-petstore-8080`. The functions `addPet`, `deletePet`, `findPetById`, and `findPets`
 will become the resolvers for our GraphQL schema.  
 
-    <br/>
 
 #### Create a GraphQL Schema
 
