@@ -1,7 +1,8 @@
 
 
 <h1 align="center">
-    <img src="docs/QLoo.png" alt="QLoo" width="242" height="242"><br>
+    <img src="docs/QLoo.png" alt="QLoo" width="200" height="280">
+  <br>
   The Codeless GraphQL Server
 </h1>
 
