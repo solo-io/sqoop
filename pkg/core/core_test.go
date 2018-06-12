@@ -102,7 +102,7 @@ func eventuallyQueryShouldRespond(queryString, expectedString string) {
 			return "", err
 		}
 		return string(b), nil
-	}, time.Second*5).Should(Equal(expectedString))
+	}, time.Second*45).Should(ContainSubstring(expectedString))
 }
 
 func ptr(str string) *string {

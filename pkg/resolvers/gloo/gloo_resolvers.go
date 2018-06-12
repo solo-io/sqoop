@@ -56,14 +56,21 @@ func (rf *ResolverFactory) CreateResolver(typeName, fieldName string, glooResolv
 func (rf *ResolverFactory) newResolver(typeName, fieldName string, contentType string, requestTemplate, responseTemplate *template.Template) exec.RawResolver {
 	return func(params exec.Params) ([]byte, error) {
 		body := &bytes.Buffer{}
-		if requestTemplate != nil {
+
+		switch {
+		case requestTemplate != nil :
 			buf, err := util.ExecTemplate(requestTemplate, params)
 			if err != nil {
 				// TODO: sanitize
 				return nil, errors.Wrapf(err, "executing request template for params %v", params)
 			}
 			body = buf
+		case len(params.Args) > 0:
+			if err := json.NewEncoder(body).Encode(params.Args); err != nil {
+				return nil, errors.Wrap(err, "failed to encode args")
+			}
 		}
+
 		url := "http://" + rf.proxyAddr + operator.RoutePath(typeName, fieldName)
 		res, err := http.Post(url, contentType, body)
 		if err != nil {
