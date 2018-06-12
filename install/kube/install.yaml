@@ -17,14 +17,14 @@ spec:
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: resourcemaps.qloo.solo.io
+  name: resolvermaps.qloo.solo.io
 spec:
   group: qloo.solo.io
   names:
-    kind: ResourceMap
-    listKind: ResourceMapList
-    plural: resourcemaps
-    singular: resourcemap
+    kind: ResolverMap
+    listKind: ResolverMapList
+    plural: resolvermaps
+    singular: resolvermap
   scope: Namespaced
   version: v1
 
