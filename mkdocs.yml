@@ -7,9 +7,9 @@ pages:
          - API Objects: introduction/concepts/api_objects.md
          - Resolvers: introduction/concepts/resolvers.md
       - Architecture: introduction/architecture.md
-#    - Installation:
+    - Installation:
 #      - Installing on Docker: installation/docker.md
-#      - Installing on Kubernetes: installation/kubernetes.md
+      - Installing on Kubernetes: installation/kubernetes.md
 #      - Installing on OpenShift: installation/openshift.md
 ##      - Installing on Local Docker: installation/docker.md
     - Getting Started:
