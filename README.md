@@ -16,7 +16,7 @@ for security, load balancing, and more.
 
 <BR>
 <p align="center">
-<img src="docs/introduction/high_level_architecture.png" alt="QLoo" width="676" height="400">
+<img src="docs/introduction/high_level_architecture.png" alt="QLoo" width="776" height="400">
 </p>    
 <BR>
     
