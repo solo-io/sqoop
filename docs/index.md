@@ -3,7 +3,7 @@
 <h1 align="center">
     <img src="QLoo.png" alt="QLoo" width="200" height="280">
   <br>
-  The Codeless GraphQL Server
+  The Codeless GraphQL Engine
 </h1>
 
 ### What is QLoo?
@@ -60,11 +60,11 @@ of data sources QLoo can connect to.
 ## Documentation
 
 ### Installation:
-* [Installing locally Docker-Compose](installation/docker.md): Installation guide for Docker-Compose (easiest way to get started)
-* [Installing on Kubernetes](installation/kubernetes.md): Installation guide for Kubernetes
+* [Installing locally Docker-Compose](installation/1.md): Installation guide for Docker-Compose (easiest way to get started)
+* [Installing on Kubernetes](installation/1.md): Installation guide for Kubernetes
 
 ### Getting Started:
-* [Getting Started on Docker-Compose](getting_started/docker/1.md): Getting started with Kubernetes (recommended for first time users)
+* [Getting Started on Docker-Compose](getting_started/docker/1.md): Getting started with Docker (recommended for first time users)
 * [Getting Started on Kubernetes](getting_started/kubernetes/1.md): Getting started with Kubernetes (recommended for first time users)
 
 ### v1 API reference:
