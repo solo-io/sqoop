@@ -28,7 +28,7 @@ metadata: {gloo.api.v1.Metadata}
 ```
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | string |  | Name of the schema. Schema names must be unique Schema Names must be unique and follow the following syntax rules: One or more lowercase rfc1035/rfc1123 labels separated by &#39;.&#39; with a maximum length of 253 characters. |
+| name | string |  | Schema Names must be unique and follow the following syntax rules: One or more lowercase rfc1035/rfc1123 labels separated by &#39;.&#39; with a maximum length of 253 characters. |
 | resolver_map | string |  | name of the resolver map to use to resolve this schema. if the user leaves this empty, QLoo will generate the skeleton of a resolver map for the user |
 | inline_schema | string |  | inline the entire graphql schema as a string here |
 | status | [gloo.api.v1.Status](schema.md#gloo.api.v1.Status) |  | Status indicates the validation status of the role resource. Status is read-only by clients, and set by gloo during validation |

@@ -25,18 +25,18 @@ minikube stop; minikube start --vm-driver=kvm2          --feature-gates=Advanced
           --group=system:serviceaccounts
 ```
 
-Then just install gloo and example:
+To install QLoo and Gloo:
 ```
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo/master/install/kube/install.yaml
 kubectl apply -f install.yaml
-kubectl apply -f example-gloo.yaml
 ```
 To access:
 ```
-export GATEWAY_URL=http://$(minikube ip):$(kubectl get svc qloo -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
+export QLOO_URL=http://$(minikube ip):$(kubectl get svc qloo -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
 ```
 
 
 And open in your browser:
 ```
-xdg-open $GATEWAY_URL
+xdg-open $QLOO_URL
 ```

@@ -416,7 +416,7 @@
           "fields": [
             {
               "name": "name",
-              "description": "Name of the schema. Schema names must be unique\n\nSchema Names must be unique and follow the following syntax rules:\nOne or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters.",
+              "description": "Schema Names must be unique and follow the following syntax rules:\nOne or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters.",
               "label": "",
               "type": "string",
               "longType": "string",

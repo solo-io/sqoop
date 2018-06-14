@@ -1,7 +1,8 @@
 
 
 <h1 align="center">
-    <img src="QLoo.png" alt="QLoo" width="200" height="280"><br>
+    <img src="QLoo.png" alt="QLoo" width="200" height="280">
+  <br>
   The Codeless GraphQL Server
 </h1>
 
@@ -63,11 +64,8 @@ of data sources QLoo can connect to.
 * [Installing on Kubernetes](installation/kubernetes.md): Installation guide for Kubernetes
 
 ### Getting Started:
+* [Getting Started on Docker-Compose](getting_started/docker/1.md): Getting started with Kubernetes (recommended for first time users)
 * [Getting Started on Kubernetes](getting_started/kubernetes/1.md): Getting started with Kubernetes (recommended for first time users)
-* [Function Routing on Kubernetes](getting_started/kubernetes/2.md): Introduction to Function Routing with QLoo
-* [Getting Started on OpenShift](getting_started/openshift/1.md): Getting started with OpenShift
-* [Function Routing on OpenShift](getting_started/openshift/2.md): Introduction to Function Routing with QLoo (OpenShift version)
-* [AWS Lambda](getting_started/aws/lambda.md): Basic AWS Lambda with QLoo
 
 ### v1 API reference:
 * [Schemas](v1/schema.md): API Specification for proving your GraphQL Schemas to QLoo
@@ -76,7 +74,7 @@ of data sources QLoo can connect to.
 
 Blogs & Demos
 -----
-* [Announcement Blog](https://medium.com/solo-io/TODO)
+* [Announcement Blog](https://medium.com/solo-io/)
 
 Community
 -----

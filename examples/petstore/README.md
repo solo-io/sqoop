@@ -1,4 +1,4 @@
-# Getting Started on Docker
+# Getting Started on Kubernetes
 
 ### What you'll need
 - [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/)

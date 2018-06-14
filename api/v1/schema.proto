@@ -14,8 +14,6 @@ import "github.com/solo-io/gloo/api/v1/metadata.proto";
     * The Schema Object contains a Status field which is used by QLoo to validate the user's input schema.
 */
 message Schema {
-    // Name of the schema. Schema names must be unique
-    //
     // Schema Names must be unique and follow the following syntax rules:
     // One or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters.
     string name = 1;
