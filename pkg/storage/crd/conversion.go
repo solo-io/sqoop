@@ -36,21 +36,9 @@ func ConfigObjectToCrd(namespace string, item gloov1.ConfigObject) (metav1.Objec
 
 	// TODO: merge this with ConfigObjectToCRD in Gloo
 	// clone and remove fields
-	var clone gloov1.ConfigObject
-	switch item.(type) {
-	case *v1.Schema:
-		clone, ok = proto.Clone(item).(*v1.Schema)
-		if !ok {
-			return nil, errors.New("internal error: output of proto.Clone was not expected type")
-		}
-	case *v1.ResolverMap:
-		// clone and remove fields
-		clone, ok = proto.Clone(item).(*v1.ResolverMap)
-		if !ok {
-			return nil, errors.New("internal error: output of proto.Clone was not expected type")
-		}
-	default:
-		panic(errors.Errorf("unknown type: %v", item))
+	clone, ok := proto.Clone(item).(gloov1.ConfigObject)
+	if !ok {
+		return nil, errors.New("internal error: output of proto.Clone was not expected type")
 	}
 	clone.SetMetadata(nil)
 	clone.SetName("")

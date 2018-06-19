@@ -47,9 +47,6 @@ clientset: $(GENERATED_PROTO_FILES) $(SOURCES)
 generated-code:
 	go generate ./...
 
-$(OUTPUT):
-	mkdir -p $(OUTPUT)
-
 # Core Binaries
 
 BINARIES ?= qloo
@@ -169,5 +166,5 @@ release-binaries: $(RELEASE_BINARIES)
 
 .PHONY: release
 release: release-binaries
-	hack/create-release.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=qloo tag=v$(VERSION) filename=$(BINARY)
+	hack/create-release.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=qloo tag=v$(VERSION)
 	@$(foreach BINARY,$(RELEASE_BINARIES),hack/upload-github-release-asset.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=qloo tag=v$(VERSION) filename=$(BINARY);)
