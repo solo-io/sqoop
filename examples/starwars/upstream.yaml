@@ -1,5 +1,5 @@
 name: starwars-rest
-type: service
+type: static
 spec:
   hosts:
   - addr: localhost
