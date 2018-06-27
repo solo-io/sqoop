@@ -10,10 +10,6 @@
 Once your Kubernetes cluster is up and running, run the following command to deploy QLoo and Gloo to the `gloo-system` namespace:
 
 ```bash
-# install Gloo
-kubectl apply -f \
-    https://raw.githubusercontent.com/solo-io/gloo/master/install/kube/install.yaml
-
 # install QLoo
 kubectl apply -f \
     https://raw.githubusercontent.com/solo-io/qloo/master/install/kube/install.yaml

@@ -27,7 +27,6 @@ minikube stop; minikube start --vm-driver=kvm2          --feature-gates=Advanced
 
 To install QLoo and Gloo:
 ```
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo/master/install/kube/install.yaml
 kubectl apply -f install.yaml
 ```
 To access:

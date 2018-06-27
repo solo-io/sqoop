@@ -8,7 +8,6 @@ import (
 	"os/exec"
 )
 
-const glooYamlURI = "https://raw.githubusercontent.com/solo-io/gloo/master/install/kube/install.yaml"
 const qlooYamlURI = "https://raw.githubusercontent.com/solo-io/qloo/master/install/kube/install.yaml"
 
 var installKubeCmd = &cobra.Command{
@@ -18,12 +17,7 @@ var installKubeCmd = &cobra.Command{
 	Installs latest QLoo into a Kubernetes cluster. It downloads the latest installation YAML
 	file and installs to the current kubectl context.`,
 	Run: func(c *cobra.Command, a []string) {
-		err := kubeInstall(dryRun, glooYamlURI)
-		if err != nil {
-			fmt.Printf("Unable to isntall Gloo to Kubernetes %q\n", err)
-			os.Exit(1)
-		}
-		err = kubeInstall(dryRun, qlooYamlURI)
+		err := kubeInstall(dryRun, qlooYamlURI)
 		if err != nil {
 			fmt.Printf("Unable to isntall QLoo to Kubernetes %q\n", err)
 			os.Exit(1)

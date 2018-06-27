@@ -2,9 +2,6 @@
 
 alias qlooctl=${PWD}/_output/qlooctl
 
-echo Installing Gloo
-k apply -f ${GOPATH}/src/github.com/solo-io/gloo/install/kube/install.yaml
-
 echo Installing QLoo
 k apply -f ${GOPATH}/src/github.com/solo-io/qloo/install/kube/install.yaml
 
