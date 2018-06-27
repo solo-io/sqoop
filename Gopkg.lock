@@ -512,7 +512,7 @@
     "test/helpers",
     "test/helpers/local"
   ]
-  revision = "1ed23f9987de90edf0cb42ce95c56f36fe350e08"
+  revision = "e9dcd4fda119793d3b073d43ec9d97a0de4ef78a"
 
 [[projects]]
   name = "github.com/solo-io/glooctl"
@@ -950,6 +950,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "625e29762442c30d3d21bf1f5df268f5d2e362698a0b54427773969f183856c8"
+  inputs-digest = "af96a54030ad5cf361624b673d643462592d0ae54e9f4d3e5d6809c6c75bdeed"
   solver-name = "gps-cdcl"
   solver-version = 1
