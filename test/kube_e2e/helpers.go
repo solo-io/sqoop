@@ -19,7 +19,7 @@ const (
 	testrunner        = "testrunner"
 	envoy             = "ingress"
 	controlPlane      = "control-plane"
-	qloo              = "qloo"
+	qlooContainer              = "qloo"
 	upstreamDiscovery = "upstream-discovery"
 	funcitonDiscovery = "function-discovery"
 	starWars          = "starwars-rest"
@@ -60,7 +60,7 @@ func SetupKubeForE2eTest(namespace string, buildImages, push, debug bool) error 
 		return err
 	}
 
-	if err := GenerateKubeYaml(kubeResourcesDir,, "install.tmpl.yaml", installResources, data); err != nil {
+	if err := GenerateKubeYaml(kubeResourcesDir, "install.tmpl.yaml", installResources, data); err != nil {
 		return err
 	}
 
@@ -81,7 +81,7 @@ func SetupKubeForE2eTest(namespace string, buildImages, push, debug bool) error 
 	if err := helpers.WaitPodsRunning(
 		envoy,
 		controlPlane,
-		qloo,
+		qlooContainer,
 		upstreamDiscovery,
 		funcitonDiscovery,
 	); err != nil {

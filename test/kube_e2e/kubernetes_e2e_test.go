@@ -18,7 +18,7 @@ import (
 	"github.com/solo-io/gloo/pkg/log"
 	"github.com/solo-io/gloo/pkg/storage"
 	"github.com/solo-io/gloo/pkg/storage/crd"
-	. "github.com/solo-io/gloo/test/helpers"
+	"github.com/solo-io/gloo/test/helpers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	qloostorage "github.com/solo-io/qloo/pkg/storage"
@@ -32,7 +32,7 @@ var (
 
 func getNamespace() string {
 	rand.Seed(time.Now().UTC().UnixNano())
-	return RandString(6)
+	return helpers.RandString(6)
 }
 
 var gloo storage.Interface
@@ -40,7 +40,7 @@ var qloo qloostorage.Interface
 var kube kubernetes.Interface
 
 var _ = BeforeSuite(func() {
-	log.Printf("USING IMAGE TAG %v", ImageTag)
+	log.Printf("USING IMAGE TAG %v", helpers.ImageTag())
 
 	// are we on minikube? set docket env vars and push to false
 	push := true
@@ -55,27 +55,27 @@ var _ = BeforeSuite(func() {
 	log.Debugf("SetupKubeForE2eTest: push =  %v \t namespace = %v", push, namespace)
 
 	err := SetupKubeForE2eTest(namespace, true, push, debug)
-	Must(err)
+	helpers.Must(err)
 	kubeconfigPath := filepath.Join(os.Getenv("HOME"), ".kube", "config")
 	masterUrl := ""
-	Must(err)
+	helpers.Must(err)
 	cfg, err := clientcmd.BuildConfigFromFlags(masterUrl, kubeconfigPath)
-	Must(err)
+	helpers.Must(err)
 	gloo, err = crd.NewStorage(cfg, namespace, time.Minute)
-	Must(err)
+	helpers.Must(err)
 	qloo, err = qloocrd.NewStorage(cfg, namespace, time.Minute)
-	Must(err)
+	helpers.Must(err)
 	kube, err = kubernetes.NewForConfig(cfg)
-	Must(err)
+	helpers.Must(err)
 })
 
 var _ = AfterSuite(func() {
-	TeardownKubeE2E(namespace)
+	helpers.TeardownKubeE2E(namespace)
 })
 
 // clean up function discovery's cached upstream names
 var _ = BeforeEach(func() {
-	KubectlOut("delete", "pod", "-l", "gloo=function-discovery")
+	helpers.KubectlOut("delete", "pod", "-l", "gloo=function-discovery")
 })
 
 type curlOpts struct {
@@ -153,7 +153,7 @@ func curl(opts curlOpts) (string, error) {
 	}
 	args = append(args, fmt.Sprintf("%v://%s:%v%s", protocol, service, port, opts.path))
 	log.Debugf("running: curl %v", strings.Join(args, " "))
-	return TestRunner(args...)
+	return helpers.TestRunner(args...)
 }
 
 func setupMinikubeEnvVars() bool {

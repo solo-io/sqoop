@@ -75,7 +75,18 @@ var _ = Describe("Core", func() {
 			return virtualServices, err
 		}, time.Second*2).Should(HaveLen(1))
 		Expect(virtualServices[0].Name).To(Equal(opts.VirtualServiceName))
-		Expect(virtualServices[0].Roles[0]).To(Equal(opts.RoleName))
+
+		// it should create the role
+		var roles []*gloov1.Role
+		Eventually(func() ([]*gloov1.Role, error) {
+			roles, err = gloo.V1().Roles().List()
+			return roles, err
+		}, time.Second*2).Should(HaveLen(1))
+		Expect(roles[0].Name).To(Equal(opts.VirtualServiceName))
+		Expect(roles[0].Listeners).To(HaveLen(1))
+		Expect(roles[0].Listeners[0].BindPort).To(Equal(8080))
+		Expect(roles[0].Listeners[0].VirtualServices).To(HaveLen(1))
+		Expect(roles[0].Listeners[0].VirtualServices[0]).To(Equal(opts.VirtualServiceName))
 
 		eventuallyQueryShouldRespond(`{"query": "{hero{name}}"}`,
 			`{"data":{"hero":{"name":"R2-D2"}}}`)

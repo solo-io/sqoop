@@ -7,7 +7,7 @@ import (
 	"github.com/pborman/uuid"
 	"github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/plugins/kubernetes"
-	. "github.com/solo-io/gloo/test/helpers"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Happy Path running on Kubernetes", func() {
@@ -26,7 +26,7 @@ var _ = Describe("Happy Path running on Kubernetes", func() {
 					ServicePort:      servicePort,
 				}),
 			})
-			Must(err)
+			Expect(err).To(BeNil())
 			_, err = gloo.V1().VirtualServices().Create(&v1.VirtualService{
 				Name: vServiceName,
 				Routes: []*v1.Route{{
@@ -47,7 +47,7 @@ var _ = Describe("Happy Path running on Kubernetes", func() {
 					},
 				}},
 			})
-			Must(err)
+			Expect(err).To(BeNil())
 		})
 		AfterEach(func() {
 			gloo.V1().Upstreams().Delete(helloService)

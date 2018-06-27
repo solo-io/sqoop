@@ -7,6 +7,8 @@ import (
 	qloov1 "github.com/solo-io/qloo/pkg/api/types/v1"
 )
 
+const listenerPort = uint32(8080)
+
 type GlooOperator struct {
 	gloo               storage.Interface
 	virtualServiceName string
@@ -34,6 +36,7 @@ type destination struct {
 
 // apply routes to Gloo and clear cache
 func (operator *GlooOperator) ConfigureGloo() error {
+	// VirtualService
 	desiredVirtualService, err := operator.desiredVirtualService(operator.cachedRoutes)
 	if err != nil {
 		return errors.Wrap(err, "invalid resolver routes")
@@ -43,11 +46,26 @@ func (operator *GlooOperator) ConfigureGloo() error {
 		_, err := operator.gloo.V1().VirtualServices().Create(desiredVirtualService)
 		return err
 	}
-	if routesEqual(existingVirtualService.Routes, desiredVirtualService.Routes) {
-		return nil
+	if !routesEqual(existingVirtualService.Routes, desiredVirtualService.Routes) {
+		desiredVirtualService.Metadata.ResourceVersion = existingVirtualService.Metadata.ResourceVersion
+		if _, err = operator.gloo.V1().VirtualServices().Update(desiredVirtualService); err != nil {
+			return err
+		}
 	}
-	desiredVirtualService.Metadata.ResourceVersion = existingVirtualService.Metadata.ResourceVersion
-	_, err = operator.gloo.V1().VirtualServices().Update(desiredVirtualService)
+
+	// Role
+	desiredRole := operator.desiredRole()
+	existingRole, err := operator.gloo.V1().Roles().Get(operator.roleName)
+	if err != nil {
+		_, err := operator.gloo.V1().Roles().Create(desiredRole)
+		return err
+	}
+	if listenersEqual(existingRole.Listeners, desiredRole.Listeners) {
+		desiredRole.Metadata.ResourceVersion = existingRole.Metadata.ResourceVersion
+		if _, err = operator.gloo.V1().Roles().Update(desiredRole); err != nil {
+			return err
+		}
+	}
 
 	// clear cache
 	operator.cachedRoutes = nil
@@ -72,6 +90,19 @@ func routesEqual(list1, list2 []*v1.Route) bool {
 	return true
 }
 
+func listenersEqual(list1, list2 []*v1.Listener) bool {
+	if len(list1) != len(list2) {
+		return false
+	}
+	for i := range list1 {
+		r1, r2 := list1[i], list2[i]
+		if !r1.Equal(r2) {
+			return false
+		}
+	}
+	return true
+}
+
 func (operator *GlooOperator) desiredVirtualService(resolverRoutes []route) (*v1.VirtualService, error) {
 	var routes []*v1.Route
 	for _, rr := range resolverRoutes {
@@ -82,12 +113,27 @@ func (operator *GlooOperator) desiredVirtualService(resolverRoutes []route) (*v1
 		routes = append(routes, route)
 	}
 	return &v1.VirtualService{
-		Name:     operator.virtualServiceName,
-		Domains:  []string{"*"},
-		Routes:   routes,
-		Roles:    []string{operator.roleName},
-		Metadata: &v1.Metadata{},
+		Name:               operator.virtualServiceName,
+		Domains:            []string{"*"},
+		Routes:             routes,
+		Metadata:           &v1.Metadata{},
+		DisableForGateways: true,
 	}, nil
+}
+
+func (operator *GlooOperator) desiredRole() *v1.Role {
+	return &v1.Role{
+		Name: operator.roleName,
+		Listeners: []*v1.Listener{
+			{
+				Name:            "graphql-port",
+				BindAddress:     "::",
+				BindPort:        listenerPort,
+				VirtualServices: []string{operator.virtualServiceName},
+			},
+		},
+		Metadata: &v1.Metadata{},
+	}
 }
 
 func resolverRoute(route route) (*v1.Route, error) {

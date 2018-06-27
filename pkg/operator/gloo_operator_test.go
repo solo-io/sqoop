@@ -150,7 +150,11 @@ var _ = Describe("GlooOperator", func() {
 		}))
 		Expect(virtualService.Domains).To(HaveLen(1))
 		Expect(virtualService.Domains[0]).To(Equal("*"))
-		Expect(virtualService.Roles).To(HaveLen(1))
-		Expect(virtualService.Roles[0]).To(Equal(roleName))
+
+		role, err := gloo.V1().Roles().Get(roleName)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(role.Listeners).To(HaveLen(1))
+		Expect(role.Listeners[0].VirtualServices).To(HaveLen(1))
+		Expect(role.Listeners[0].VirtualServices[0]).To(Equal(vServiceName))
 	})
 })
