@@ -43,13 +43,15 @@ func (operator *GlooOperator) ConfigureGloo() error {
 	}
 	existingVirtualService, err := operator.gloo.V1().VirtualServices().Get(operator.virtualServiceName)
 	if err != nil {
-		_, err := operator.gloo.V1().VirtualServices().Create(desiredVirtualService)
-		return err
-	}
-	if !routesEqual(existingVirtualService.Routes, desiredVirtualService.Routes) {
-		desiredVirtualService.Metadata.ResourceVersion = existingVirtualService.Metadata.ResourceVersion
-		if _, err = operator.gloo.V1().VirtualServices().Update(desiredVirtualService); err != nil {
+		if _, err := operator.gloo.V1().VirtualServices().Create(desiredVirtualService); err != nil {
 			return err
+		}
+	} else {
+		if !routesEqual(existingVirtualService.Routes, desiredVirtualService.Routes) {
+			desiredVirtualService.Metadata.ResourceVersion = existingVirtualService.Metadata.ResourceVersion
+			if _, err = operator.gloo.V1().VirtualServices().Update(desiredVirtualService); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -57,20 +59,22 @@ func (operator *GlooOperator) ConfigureGloo() error {
 	desiredRole := operator.desiredRole()
 	existingRole, err := operator.gloo.V1().Roles().Get(operator.roleName)
 	if err != nil {
-		_, err := operator.gloo.V1().Roles().Create(desiredRole)
-		return err
-	}
-	if listenersEqual(existingRole.Listeners, desiredRole.Listeners) {
-		desiredRole.Metadata.ResourceVersion = existingRole.Metadata.ResourceVersion
-		if _, err = operator.gloo.V1().Roles().Update(desiredRole); err != nil {
+		if _, err := operator.gloo.V1().Roles().Create(desiredRole); err != nil {
 			return err
+		}
+	} else {
+		if !listenersEqual(existingRole.Listeners, desiredRole.Listeners) {
+			desiredRole.Metadata.ResourceVersion = existingRole.Metadata.ResourceVersion
+			if _, err = operator.gloo.V1().Roles().Update(desiredRole); err != nil {
+				return err
+			}
 		}
 	}
 
 	// clear cache
 	operator.cachedRoutes = nil
 
-	return err
+	return nil
 }
 
 func (operator *GlooOperator) ApplyResolvers(resolverMap *qloov1.ResolverMap) {
