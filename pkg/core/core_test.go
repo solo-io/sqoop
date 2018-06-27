@@ -34,7 +34,7 @@ var _ = Describe("Core", func() {
 					SyncFrequency: time.Millisecond,
 				},
 				FileOptions: glooopts.FileOptions{
-					ConfigDir: glooInstance.ConfigDir() + "/_gloo_config",
+					ConfigDir: glooInstance.ConfigDir(),
 				},
 			},
 			ProxyAddr:          envoyInstance.LocalAddr() + ":8080",
@@ -84,7 +84,7 @@ var _ = Describe("Core", func() {
 		}, time.Second*2).Should(HaveLen(1))
 		Expect(roles[0].Name).To(Equal(opts.VirtualServiceName))
 		Expect(roles[0].Listeners).To(HaveLen(1))
-		Expect(roles[0].Listeners[0].BindPort).To(Equal(8080))
+		Expect(roles[0].Listeners[0].BindPort).To(Equal(uint32(8080)))
 		Expect(roles[0].Listeners[0].VirtualServices).To(HaveLen(1))
 		Expect(roles[0].Listeners[0].VirtualServices[0]).To(Equal(opts.VirtualServiceName))
 

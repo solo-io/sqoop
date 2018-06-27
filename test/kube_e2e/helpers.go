@@ -111,7 +111,7 @@ func BuildPushContainers(push, debug bool) error {
 	os.Setenv("IMAGE_TAG", imageTag)
 
 	// make the gloo containers
-	for _, component := range []string{"control-plane", "function-discovery", "kube-ingress-controller", "upstream-discovery"} {
+	for _, component := range []string{"qloo"} {
 		target := component
 		target += "-docker"
 		if push {
