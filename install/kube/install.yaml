@@ -327,7 +327,7 @@ spec:
     spec:
       containers:
       - name: control-plane
-        image: "soloio/control-plane:0.3.0"
+        image: "soloio/control-plane:0.3.1"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8081
@@ -383,7 +383,7 @@ spec:
     spec:
       containers:
       - name: function-discovery
-        image: "soloio/function-discovery:0.3.0"
+        image: "soloio/function-discovery:0.3.1"
         imagePullPolicy: IfNotPresent
         env:
         - name: GRPC_TRACE

@@ -19,8 +19,6 @@ var _ = math.Inf
 // The Schema object wraps the user's GraphQL Schema, which is stored as an inline string.
 // The Schema Object contains a Status field which is used by QLoo to validate the user's input schema.
 type Schema struct {
-	// Name of the schema. Schema names must be unique
-	//
 	// Schema Names must be unique and follow the following syntax rules:
 	// One or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`

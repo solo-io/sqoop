@@ -16,3 +16,5 @@ _gloo_config/
 examples/starwars/starwars
 cmd/qlooctl/qlooctl
 site/
+test/kube_e2e/kube_resources/test-install.yaml
+test/kube_e2e/kube_resources/testing-resources.yaml

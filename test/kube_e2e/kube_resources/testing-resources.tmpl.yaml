@@ -68,7 +68,7 @@ spec:
        body: ""
        path: /api/character/
        headers:
-         "x-id": "{{id}}"
+         "x-id": "{{ "{{" }}id {{ "}}" }}"
          :method: GET
    - name: GetCharacters
      spec:

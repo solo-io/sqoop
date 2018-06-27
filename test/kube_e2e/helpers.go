@@ -64,8 +64,10 @@ func SetupKubeForE2eTest(namespace string, buildImages, push, debug bool) error 
 		return err
 	}
 
-	// test stuff first
-	if err := helpers.Kubectl("apply", "-f", filepath.Join(kubeResourcesDir, "testing-resources.yml")); err != nil {
+	if err := helpers.Kubectl("apply", "-f", filepath.Join(kubeResourcesDir, installResources)); err != nil {
+		return errors.Wrapf(err, "creating kube resource from install.yml")
+	}
+	if err := helpers.Kubectl("apply", "-f", filepath.Join(kubeResourcesDir, testingResources)); err != nil {
 		return errors.Wrapf(err, "creating kube resource from testing-resources.yml")
 	}
 	if err := helpers.WaitPodsRunning(
@@ -75,9 +77,6 @@ func SetupKubeForE2eTest(namespace string, buildImages, push, debug bool) error 
 		return errors.Wrap(err, "waiting for pods to start")
 	}
 
-	if err := helpers.Kubectl("apply", "-f", filepath.Join(kubeResourcesDir, "install.yml")); err != nil {
-		return errors.Wrapf(err, "creating kube resource from install.yml")
-	}
 	if err := helpers.WaitPodsRunning(
 		envoy,
 		controlPlane,
