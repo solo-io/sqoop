@@ -34,7 +34,7 @@
 
 [[override]]
   name = "github.com/solo-io/gloo"
-  revision = "efe7170ce04af3c5e964e74353b12867f045bc5b"
+  revision = "1ed23f9987de90edf0cb42ce95c56f36fe350e08"
 
 [[constraint]]
   name = "github.com/onsi/ginkgo"
