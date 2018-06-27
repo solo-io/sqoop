@@ -77,6 +77,7 @@ spec:
        headers:
          :method: POST
        path: /api/characters
+
 ---
 
 apiVersion: qloo.solo.io/v1
@@ -287,35 +288,3 @@ spec:
         id: {}
         length: {}
         name: {}
----
-apiVersion: gloo.solo.io/v1
-kind: Upstream
-metadata:
-  name: starwars-rest
-  namespace: gloo-system
-spec:
-  spec:
-    service_name: starwars
-    service_namespace: default
-    service_port: 1234
-  type: kubernetes
-  service_info:
-    type: REST
-  functions:
-   - name: GetHero
-     spec:
-       headers:
-         :method: GET
-       path: /api/hero
-   - name: GetCharacter
-     spec:
-       body: ""
-       path: /api/character/
-       headers:
-         "x-id": "{{id}}"
-         :method: GET
-   - name: GetCharacters
-     spec:
-       headers:
-         :method: POST
-       path: /api/characters

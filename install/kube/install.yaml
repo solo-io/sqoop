@@ -189,3 +189,246 @@ data:
         socket_address:
           address: 0.0.0.0
           port_value: 19000
+
+
+### Gloo
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: upstreams.gloo.solo.io
+spec:
+  group: gloo.solo.io
+  names:
+    kind: Upstream
+    listKind: UpstreamList
+    plural: upstreams
+    singular: upstream
+  scope: Namespaced
+  version: v1
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: virtualservices.gloo.solo.io
+spec:
+  group: gloo.solo.io
+  names:
+    kind: VirtualService
+    listKind: VirtualServiceList
+    plural: virtualservices
+    singular: virtualservice
+  scope: Namespaced
+  version: v1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: roles.gloo.solo.io
+spec:
+  group: gloo.solo.io
+  names:
+    kind: Role
+    listKind: RoleList
+    plural: roles
+    singular: role
+  scope: Namespaced
+  version: v1
+
+---
+# Source: gloo/templates/rbac.yaml
+---
+#rbac for control-plane
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: gloo-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "secrets", "endpoints", "configmaps"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "create"]
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["get", "create"]
+- apiGroups: ["gloo.solo.io"]
+  resources: ["upstreams", "virtualservices", "roles"]
+  verbs: ["*"]
+---
+#rbac for function-discovery
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: gloo-discovery-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: [""]
+  resources: ["secrets", "configmaps"]
+  verbs: ["*"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["gloo.solo.io"]
+  resources: ["upstreams", "virtualservices"]
+  verbs: ["*"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: gloo-cluster-admin-binding
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: gloo-system
+roleRef:
+  kind: ClusterRole
+  name: gloo-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: gloo-discovery-cluster-admin-binding
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: gloo-system
+roleRef:
+  kind: ClusterRole
+  name: gloo-discovery-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Source: gloo/templates/control-plane.yaml
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: control-plane
+  namespace: gloo-system
+  labels:
+    gloo: control-plane
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      gloo: control-plane
+  template:
+    metadata:
+      labels:
+        gloo: control-plane
+    spec:
+      containers:
+      - name: control-plane
+        image: "soloio/control-plane:0.3.0"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8081
+          name: http
+        env:
+        - name: GRPC_TRACE
+          value: "all"
+        - name: DEBUG
+          value: "1"
+        args:
+        - "--storage.type=kube"
+        - "--storage.refreshrate=1m"
+        - "--secrets.type=kube"
+        - "--secrets.refreshrate=1m"
+        - "--files.type=kube"
+        - "--files.refreshrate=1m"
+        - "--xds.port=8081"
+        - "--kube.namespace=gloo-system"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: control-plane
+  namespace: gloo-system
+  labels:
+    gloo: control-plane
+spec:
+  ports:
+    - port: 8081
+      protocol: TCP
+      name: http
+  selector:
+    gloo: control-plane
+---
+# Source: gloo/templates/function-discovery.yaml
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: function-discovery
+  namespace: gloo-system
+  labels:
+    gloo: function-discovery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      gloo: function-discovery
+  template:
+    metadata:
+      labels:
+        gloo: function-discovery
+    spec:
+      containers:
+      - name: function-discovery
+        image: "soloio/function-discovery:0.3.0"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: GRPC_TRACE
+          value: "all"
+        - name: DEBUG
+          value: "1"
+        args:
+        - "--storage.type=kube"
+        - "--storage.refreshrate=30m"
+        - "--secrets.type=kube"
+        - "--secrets.refreshrate=30m"
+        - "--files.type=kube"
+        - "--files.refreshrate=30m"
+        - "--kube.namespace=gloo-system"
+
+---
+# Source: gloo/templates/upstream-discovery.yaml
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    gloo: upstream-discovery
+  name: upstream-discovery
+  namespace: gloo-system
+spec:
+  selector:
+    matchLabels:
+      gloo: upstream-discovery
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        gloo: upstream-discovery
+    spec:
+      containers:
+      - image: soloio/upstream-discovery:0.3.0
+        imagePullPolicy: IfNotPresent
+        name: upstream-discovery
+        env:
+        - name: GRPC_TRACE
+          value: "all"
+        - name: DEBUG
+          value: "1"
+        args:
+        - "--storage.type=kube"
+        - "--storage.refreshrate=30m"
+        - "--kube.namespace=gloo-system"

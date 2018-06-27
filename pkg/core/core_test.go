@@ -14,7 +14,7 @@ import (
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	glooopts "github.com/solo-io/gloo/pkg/bootstrap"
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
-	"github.com/solo-io/gloo/pkg/coreplugins/service"
+	"github.com/solo-io/gloo/pkg/coreplugins/static"
 	"github.com/solo-io/gloo/pkg/plugins/rest"
 	"github.com/solo-io/qloo/pkg/bootstrap"
 	. "github.com/solo-io/qloo/pkg/core"
@@ -112,9 +112,9 @@ func ptr(str string) *string {
 func starWarsUpstream() *gloov1.Upstream {
 	return &gloov1.Upstream{
 		Name: "starwars-rest",
-		Type: service.UpstreamTypeService,
-		Spec: service.EncodeUpstreamSpec(service.UpstreamSpec{
-			Hosts: []service.Host{
+		Type: static.UpstreamTypeService,
+		Spec: static.EncodeUpstreamSpec(static.UpstreamSpec{
+			Hosts: []static.Host{
 				{
 					Addr: "localhost",
 					Port: starWarsPort,
