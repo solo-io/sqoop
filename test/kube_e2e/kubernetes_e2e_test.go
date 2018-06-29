@@ -149,7 +149,7 @@ func curl(opts curlOpts) (string, error) {
 	}
 	service := opts.service
 	if service == "" {
-		service = "test-ingress"
+		service = "qloo"
 	}
 	args = append(args, fmt.Sprintf("%v://%s:%v%s", protocol, service, port, opts.path))
 	log.Debugf("running: curl %v", strings.Join(args, " "))

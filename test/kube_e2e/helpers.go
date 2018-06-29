@@ -10,19 +10,17 @@ import (
 	"bytes"
 	"github.com/pkg/errors"
 	"io/ioutil"
-	"time"
 	"text/template"
 )
 
 const (
 	// gloo labels
 	testrunner        = "testrunner"
-	envoy             = "ingress"
 	controlPlane      = "control-plane"
-	qlooContainer              = "qloo"
+	qlooContainer     = "qloo"
 	upstreamDiscovery = "upstream-discovery"
 	funcitonDiscovery = "function-discovery"
-	starWars          = "starwars-rest"
+	starWars          = "starwars"
 )
 
 func SetupKubeForE2eTest(namespace string, buildImages, push, debug bool) error {
@@ -78,17 +76,12 @@ func SetupKubeForE2eTest(namespace string, buildImages, push, debug bool) error 
 	}
 
 	if err := helpers.WaitPodsRunning(
-		envoy,
 		controlPlane,
 		qlooContainer,
 		upstreamDiscovery,
 		funcitonDiscovery,
 	); err != nil {
 		return errors.Wrap(err, "waiting for pods to start")
-	}
-	time.Sleep(time.Second * 3)
-	if _, err := helpers.TestRunner("curl", "test-ingress:19000/logging?level=debug"); err != nil {
-		return err
 	}
 	return nil
 }
