@@ -60,8 +60,8 @@ of data sources QLoo can connect to.
 ## Documentation
 
 ### Installation:
-* [Installing locally Docker-Compose](docs/installation/1.md): Installation guide for Docker-Compose (easiest way to get started)
-* [Installing on Kubernetes](docs/installation/1.md): Installation guide for Kubernetes
+* [Installing locally Docker-Compose](docs/installation/docker.md): Installation guide for Docker-Compose (easiest way to get started)
+* [Installing on Kubernetes](docs/installation/kubernetes.md): Installation guide for Kubernetes
 
 ### Getting Started:
 * [Getting Started on Docker-Compose](docs/getting_started/docker/1.md): Getting started with Docker (recommended for first time users)
