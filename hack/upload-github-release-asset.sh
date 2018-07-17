@@ -17,7 +17,7 @@
 #
 # Example:
 #
-# upload-github-release-asset.sh github_api_token=TOKEN owner=stefanbuck repo=playground tag=v0.1.0 filename=./build.zip
+# upload-github-release-asset.sh github_api_token=TOKEN owner=stefanbuck repo=playground tag=v0.1.1 filename=./build.zip
 #
 
 # Check dependencies.
