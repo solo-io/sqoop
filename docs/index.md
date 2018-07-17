@@ -12,8 +12,8 @@ QLoo is a GraphQL Server built on top of [Gloo](https://github.com/solo-io/gloo)
 
 QLoo leverages Gloo's function registry and Envoy's advanced HTTP routing features to provide a GraphQL frontend
 for REST/gRPC applications and serverless functions. QLoo routes requests to data sources via Envoy, leveraging 
-Envoy [HTTP filters](https://www.envoyproxy.io/envoy/latest/api-v2/config/filter/filter.html?highlight=http%20filter) 
-for security, load balancing, and more.
+Envoy [HTTP filters](https://envoyproxy.io/docs/envoy/latest/intro/arch_overview/http_filters.html) 
+for security, load balancing, and [more](https://gloo.solo.io/#features).
 
 <BR>
 <p align="center">
@@ -60,8 +60,8 @@ of data sources QLoo can connect to.
 ## Documentation
 
 ### Installation:
-* [Installing locally Docker-Compose](installation/1.md): Installation guide for Docker-Compose (easiest way to get started)
-* [Installing on Kubernetes](installation/1.md): Installation guide for Kubernetes
+* [Installing locally Docker-Compose](installation/docker.md): Installation guide for Docker-Compose (easiest way to get started)
+* [Installing on Kubernetes](installation/kubernetes.md): Installation guide for Kubernetes
 
 ### Getting Started:
 * [Getting Started on Docker-Compose](getting_started/docker/1.md): Getting started with Docker (recommended for first time users)
