@@ -185,8 +185,8 @@
 [[projects]]
   name = "github.com/hashicorp/consul"
   packages = ["api"]
-  revision = "5174058f0d2bda63fa5198ab96c33d9a909c58ed"
-  version = "v1.1.0"
+  revision = "39f93f011e591c842acc8053a7f5972aa6e592fd"
+  version = "v1.2.1"
 
 [[projects]]
   branch = "master"
@@ -376,6 +376,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  revision = "f15292f7a699fcc1a38a80977f80a046874ba8ac"
+
+[[projects]]
+  branch = "master"
   name = "github.com/mitchellh/reflectwalk"
   packages = ["."]
   revision = "63d60e9d0dbc60cf9164e6510889b0db6683d98c"
@@ -467,15 +473,14 @@
   version = "v1.0.2"
 
 [[projects]]
-  branch = "fix-kube-plugin"
   name = "github.com/solo-io/gloo"
   packages = [
-    "internal/control-plane/filewatcher",
     "pkg/api/types/v1",
     "pkg/backoff",
     "pkg/bootstrap",
     "pkg/bootstrap/configstorage",
     "pkg/bootstrap/flags",
+    "pkg/control-plane/filewatcher",
     "pkg/coreplugins/common",
     "pkg/coreplugins/static",
     "pkg/endpointdiscovery",
@@ -497,10 +502,11 @@
     "pkg/storage/crud",
     "pkg/storage/dependencies",
     "pkg/storage/file",
+    "pkg/utils/kube",
     "test/helpers",
     "test/helpers/local"
   ]
-  revision = "d6f228a5dc825fb5a455f8871d3dcc044bfb11d9"
+  revision = "4f06039f2a3cf4ae684de8e854c5eefb6448177a"
 
 [[projects]]
   name = "github.com/solo-io/glooctl"
@@ -857,6 +863,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e723a04faa066d643e195e3a1a46a207cdabfc8cf972582b5af25bd7df01eb84"
+  inputs-digest = "6ca1505fc6c92c39a50dc422c603353cd5806e5ef736e4b86d613a6c119f35b9"
   solver-name = "gps-cdcl"
   solver-version = 1

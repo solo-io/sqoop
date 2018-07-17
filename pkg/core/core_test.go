@@ -19,6 +19,7 @@ import (
 	"github.com/solo-io/qloo/pkg/bootstrap"
 	. "github.com/solo-io/qloo/pkg/core"
 	"github.com/solo-io/qloo/test"
+	"github.com/gogo/protobuf/types"
 )
 
 var qlooPort int
@@ -116,16 +117,16 @@ func eventuallyQueryShouldRespond(queryString, expectedString string) {
 	}, time.Second*45).Should(ContainSubstring(expectedString))
 }
 
-func ptr(str string) *string {
-	return &str
+func ptr(str string) *types.StringValue {
+	return &types.StringValue{Value: str}
 }
 
 func starWarsUpstream() *gloov1.Upstream {
 	return &gloov1.Upstream{
 		Name: "starwars-rest",
 		Type: static.UpstreamTypeService,
-		Spec: static.EncodeUpstreamSpec(static.UpstreamSpec{
-			Hosts: []static.Host{
+		Spec: static.EncodeUpstreamSpec(&static.UpstreamSpec{
+			Hosts: []*static.Host{
 				{
 					Addr: "localhost",
 					Port: starWarsPort,
@@ -138,16 +139,16 @@ func starWarsUpstream() *gloov1.Upstream {
 		Functions: []*gloov1.Function{
 			{
 				Name: "GetHero",
-				Spec: rest.EncodeFunctionSpec(rest.Template{
-					Header: map[string]string{":method": "GET"},
+				Spec: rest.EncodeFunctionSpec(rest.TransformationSpec{
+					Headers: map[string]string{":method": "GET"},
 					Path:   "/api/hero",
 				}),
 			},
 			{
 				Name: "GetCharacter",
-				Spec: rest.EncodeFunctionSpec(rest.Template{
+				Spec: rest.EncodeFunctionSpec(rest.TransformationSpec{
 					Body: ptr(""),
-					Header: map[string]string{
+					Headers: map[string]string{
 						"x-id":    "{{id}}",
 						":method": "GET",
 					},
@@ -156,8 +157,8 @@ func starWarsUpstream() *gloov1.Upstream {
 			},
 			{
 				Name: "GetCharacters",
-				Spec: rest.EncodeFunctionSpec(rest.Template{
-					Header: map[string]string{
+				Spec: rest.EncodeFunctionSpec(rest.TransformationSpec{
+					Headers: map[string]string{
 						":method": "POST",
 					},
 					Path: "/api/characters",
