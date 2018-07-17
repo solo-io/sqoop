@@ -100,12 +100,6 @@
   revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/golang/groupcache"
-  packages = ["lru"]
-  revision = "24b0969c4cb722950103eed87108c8d291a8df00"
-
-[[projects]]
   name = "github.com/golang/protobuf"
   packages = [
     "proto",
@@ -443,12 +437,6 @@
   version = "v1.4.0"
 
 [[projects]]
-  name = "github.com/pborman/uuid"
-  packages = ["."]
-  revision = "e790cca94e6cc75c7064b1332e63811d4aae1a53"
-  version = "v1.1"
-
-[[projects]]
   branch = "master"
   name = "github.com/petar/GoLLRB"
   packages = ["llrb"]
@@ -479,6 +467,7 @@
   version = "v1.0.2"
 
 [[projects]]
+  branch = "fix-kube-plugin"
   name = "github.com/solo-io/gloo"
   packages = [
     "internal/control-plane/filewatcher",
@@ -493,7 +482,6 @@
     "pkg/log",
     "pkg/plugins",
     "pkg/plugins/common/transformation",
-    "pkg/plugins/kubernetes",
     "pkg/plugins/rest",
     "pkg/protoutil",
     "pkg/secretwatcher",
@@ -512,7 +500,7 @@
     "test/helpers",
     "test/helpers/local"
   ]
-  revision = "e9dcd4fda119793d3b073d43ec9d97a0de4ef78a"
+  revision = "d6f228a5dc825fb5a455f8871d3dcc044bfb11d9"
 
 [[projects]]
   name = "github.com/solo-io/glooctl"
@@ -528,12 +516,6 @@
   name = "github.com/solo-io/go-checkpoint"
   packages = ["."]
   revision = "69104b1493dcf66693f3832c9641cc38631bc129"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/solo-io/kubecontroller"
-  packages = ["."]
-  revision = "ee1645fc146af77ffcdd004a8b34b56fff216188"
 
 [[projects]]
   name = "github.com/spf13/cobra"
@@ -794,18 +776,15 @@
     "pkg/util/framer",
     "pkg/util/intstr",
     "pkg/util/json",
-    "pkg/util/mergepatch",
     "pkg/util/net",
     "pkg/util/runtime",
     "pkg/util/sets",
-    "pkg/util/strategicpatch",
     "pkg/util/validation",
     "pkg/util/validation/field",
     "pkg/util/wait",
     "pkg/util/yaml",
     "pkg/version",
     "pkg/watch",
-    "third_party/forked/golang/json",
     "third_party/forked/golang/reflect"
   ]
   revision = "31dade610c053669d8054bfd847da657251e8c1a"
@@ -815,46 +794,6 @@
   packages = [
     "discovery",
     "discovery/fake",
-    "informers",
-    "informers/admissionregistration",
-    "informers/admissionregistration/v1alpha1",
-    "informers/admissionregistration/v1beta1",
-    "informers/apps",
-    "informers/apps/v1",
-    "informers/apps/v1beta1",
-    "informers/apps/v1beta2",
-    "informers/autoscaling",
-    "informers/autoscaling/v1",
-    "informers/autoscaling/v2beta1",
-    "informers/batch",
-    "informers/batch/v1",
-    "informers/batch/v1beta1",
-    "informers/batch/v2alpha1",
-    "informers/certificates",
-    "informers/certificates/v1beta1",
-    "informers/core",
-    "informers/core/v1",
-    "informers/events",
-    "informers/events/v1beta1",
-    "informers/extensions",
-    "informers/extensions/v1beta1",
-    "informers/internalinterfaces",
-    "informers/networking",
-    "informers/networking/v1",
-    "informers/policy",
-    "informers/policy/v1beta1",
-    "informers/rbac",
-    "informers/rbac/v1",
-    "informers/rbac/v1alpha1",
-    "informers/rbac/v1beta1",
-    "informers/scheduling",
-    "informers/scheduling/v1alpha1",
-    "informers/settings",
-    "informers/settings/v1alpha1",
-    "informers/storage",
-    "informers/storage/v1",
-    "informers/storage/v1alpha1",
-    "informers/storage/v1beta1",
     "kubernetes",
     "kubernetes/scheme",
     "kubernetes/typed/admissionregistration/v1alpha1",
@@ -885,30 +824,6 @@
     "kubernetes/typed/storage/v1",
     "kubernetes/typed/storage/v1alpha1",
     "kubernetes/typed/storage/v1beta1",
-    "listers/admissionregistration/v1alpha1",
-    "listers/admissionregistration/v1beta1",
-    "listers/apps/v1",
-    "listers/apps/v1beta1",
-    "listers/apps/v1beta2",
-    "listers/autoscaling/v1",
-    "listers/autoscaling/v2beta1",
-    "listers/batch/v1",
-    "listers/batch/v1beta1",
-    "listers/batch/v2alpha1",
-    "listers/certificates/v1beta1",
-    "listers/core/v1",
-    "listers/events/v1beta1",
-    "listers/extensions/v1beta1",
-    "listers/networking/v1",
-    "listers/policy/v1beta1",
-    "listers/rbac/v1",
-    "listers/rbac/v1alpha1",
-    "listers/rbac/v1beta1",
-    "listers/scheduling/v1alpha1",
-    "listers/settings/v1alpha1",
-    "listers/storage/v1",
-    "listers/storage/v1alpha1",
-    "listers/storage/v1beta1",
     "pkg/version",
     "plugin/pkg/client/auth",
     "plugin/pkg/client/auth/azure",
@@ -927,7 +842,6 @@
     "tools/clientcmd/api/v1",
     "tools/metrics",
     "tools/pager",
-    "tools/record",
     "tools/reference",
     "transport",
     "util/buffer",
@@ -935,21 +849,14 @@
     "util/flowcontrol",
     "util/homedir",
     "util/integer",
-    "util/jsonpath",
-    "util/workqueue"
+    "util/jsonpath"
   ]
   revision = "78700dec6369ba22221b72770783300f143df150"
   version = "v6.0.0"
 
-[[projects]]
-  branch = "master"
-  name = "k8s.io/kube-openapi"
-  packages = ["pkg/util/proto"]
-  revision = "4cac20de16b951c103aa40c4bafbc8cefdd18a12"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "af96a54030ad5cf361624b673d643462592d0ae54e9f4d3e5d6809c6c75bdeed"
+  inputs-digest = "e723a04faa066d643e195e3a1a46a207cdabfc8cf972582b5af25bd7df01eb84"
   solver-name = "gps-cdcl"
   solver-version = 1

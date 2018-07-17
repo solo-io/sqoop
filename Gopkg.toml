@@ -33,10 +33,6 @@
   revision = "e14a70c556c8e0db173358d1a903dca345a8e75e"
 
 [[constraint]]
-  name = "github.com/solo-io/gloo"
-  revision = "e9dcd4fda119793d3b073d43ec9d97a0de4ef78a"
-
-[[constraint]]
   name = "github.com/onsi/ginkgo"
   version = "1.5.0"
 
