@@ -100,7 +100,7 @@ spec:
               fieldPath: metadata.namespace
       containers:
       - name: proxy
-        image: "soloio/envoy:0.4.1"
+        image: "soloio/envoy:0.4.4"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -327,7 +327,7 @@ spec:
     spec:
       containers:
       - name: control-plane
-        image: "soloio/control-plane:0.4.1"
+        image: "soloio/control-plane:0.4.4"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8081
@@ -383,7 +383,7 @@ spec:
     spec:
       containers:
       - name: function-discovery
-        image: "soloio/function-discovery:0.4.1"
+        image: "soloio/function-discovery:0.4.4"
         imagePullPolicy: IfNotPresent
         env:
         - name: GRPC_TRACE
@@ -420,7 +420,7 @@ spec:
         gloo: upstream-discovery
     spec:
       containers:
-      - image: soloio/upstream-discovery:0.4.1
+      - image: soloio/upstream-discovery:0.4.4
         imagePullPolicy: IfNotPresent
         name: upstream-discovery
         env:
