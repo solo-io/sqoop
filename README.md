@@ -1,7 +1,7 @@
 
 
 <h1 align="center">
-    <img src="docs/Sqoop.png" alt="Sqoop" width="200" height="280">
+    <img src="docs/Sqoop.png" alt="Sqoop" width="306" height="280">
   <br>
   The Codeless GraphQL Engine
 </h1>
