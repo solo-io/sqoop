@@ -11,8 +11,8 @@ import (
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
 	. "github.com/solo-io/gloo/test/helpers"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	. "github.com/solo-io/qloo/pkg/storage/file"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	. "github.com/solo-io/sqoop/pkg/storage/file"
 )
 
 var _ = Describe("CrdStorageClient", func() {

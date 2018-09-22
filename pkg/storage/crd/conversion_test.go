@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/gomega"
 
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
-	. "github.com/solo-io/qloo/pkg/storage/crd"
-	crdv1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
+	. "github.com/solo-io/sqoop/pkg/storage/crd"
+	crdv1 "github.com/solo-io/sqoop/pkg/storage/crd/solo.io/v1"
 )
 
 var _ = Describe("Conversion", func() {

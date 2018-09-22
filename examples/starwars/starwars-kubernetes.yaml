@@ -80,7 +80,7 @@ spec:
 
 ---
 
-apiVersion: qloo.solo.io/v1
+apiVersion: sqoop.solo.io/v1
 kind: Schema
 metadata:
   name: starwars-rest
@@ -221,7 +221,7 @@ spec:
     scalar Time
 ---
 
-apiVersion: qloo.solo.io/v1
+apiVersion: sqoop.solo.io/v1
 kind: ResolverMap
 metadata:
   name: starwars-rest-resolvers

@@ -1,10 +1,10 @@
 package test
 
 import (
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/exec"
-	"github.com/solo-io/qloo/pkg/resolvers"
-	"github.com/solo-io/qloo/pkg/util"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/exec"
+	"github.com/solo-io/sqoop/pkg/resolvers"
+	"github.com/solo-io/sqoop/pkg/util"
 	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/neelance/schema"
 )

@@ -41,13 +41,13 @@ services:
     volumes:
     - ./:/config/
 
-  qloo:
-    image: "soloio/qloo:0.1.1"
+  sqoop:
+    image: "soloio/sqoop:0.1.1"
     working_dir: /config/
     command:
     - "--storage.type=file"
     - "--storage.refreshrate=1s"
-    - "--qloo.proxy-addr=proxy:8080"
+    - "--sqoop.proxy-addr=proxy:8080"
     volumes:
     - ./:/config/
     ports:

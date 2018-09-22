@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	. "github.com/solo-io/qloo/pkg/graphql"
-	"github.com/solo-io/qloo/test"
+	. "github.com/solo-io/sqoop/pkg/graphql"
+	"github.com/solo-io/sqoop/test"
 )
 
 var _ = Describe("Router", func() {

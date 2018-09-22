@@ -3,10 +3,10 @@ package bootstrap
 import (
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/bootstrap"
-	"github.com/solo-io/qloo/pkg/storage"
-	"github.com/solo-io/qloo/pkg/storage/consul"
-	"github.com/solo-io/qloo/pkg/storage/crd"
-	"github.com/solo-io/qloo/pkg/storage/file"
+	"github.com/solo-io/sqoop/pkg/storage"
+	"github.com/solo-io/sqoop/pkg/storage/consul"
+	"github.com/solo-io/sqoop/pkg/storage/crd"
+	"github.com/solo-io/sqoop/pkg/storage/file"
 	"k8s.io/client-go/tools/clientcmd"
 )
 

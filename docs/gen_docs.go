@@ -16,9 +16,9 @@ import (
 )
 
 func main() {
-	f := flag.String("f", os.Getenv("GOPATH")+"/src/github.com/solo-io/qloo/docs/"+"api.json", "input json file")
-	tmplFile := flag.String("t", os.Getenv("GOPATH")+"/src/github.com/solo-io/qloo/docs/markdown.tmpl", "template to build from")
-	outDir := flag.String("o", os.Getenv("GOPATH")+"/src/github.com/solo-io/qloo/docs/v1/", "output dir")
+	f := flag.String("f", os.Getenv("GOPATH")+"/src/github.com/solo-io/sqoop/docs/"+"api.json", "input json file")
+	tmplFile := flag.String("t", os.Getenv("GOPATH")+"/src/github.com/solo-io/sqoop/docs/markdown.tmpl", "template to build from")
+	outDir := flag.String("o", os.Getenv("GOPATH")+"/src/github.com/solo-io/sqoop/docs/v1/", "output dir")
 	flag.Parse()
 	if err := run(*f, *tmplFile, *outDir); err != nil {
 		log.Fatal(err)

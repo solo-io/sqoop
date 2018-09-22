@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/solo-io/qloo/pkg/qlooctl/install"
-	_ "github.com/solo-io/qloo/pkg/qlooctl/resolvermap"
-	_ "github.com/solo-io/qloo/pkg/qlooctl/schema"
-	"github.com/solo-io/qloo/pkg/qlooctl"
+	_ "github.com/solo-io/sqoop/pkg/sqoopctl/install"
+	_ "github.com/solo-io/sqoop/pkg/sqoopctl/resolvermap"
+	_ "github.com/solo-io/sqoop/pkg/sqoopctl/schema"
+	"github.com/solo-io/sqoop/pkg/sqoopctl"
 )
 
 func main() {
-	if err := qlooctl.RootCmd.Execute(); err != nil {
+	if err := sqoopctl.RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

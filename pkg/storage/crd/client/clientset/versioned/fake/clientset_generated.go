@@ -19,9 +19,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned"
-	qloov1 "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned/typed/solo.io/v1"
-	fakeqloov1 "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned/typed/solo.io/v1/fake"
+	clientset "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned"
+	sqoopv1 "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned/typed/solo.io/v1"
+	fakesqoopv1 "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned/typed/solo.io/v1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
@@ -71,12 +71,12 @@ func (c *Clientset) Discovery() discovery.DiscoveryInterface {
 
 var _ clientset.Interface = &Clientset{}
 
-// QlooV1 retrieves the QlooV1Client
-func (c *Clientset) QlooV1() qloov1.QlooV1Interface {
-	return &fakeqloov1.FakeQlooV1{Fake: &c.Fake}
+// SqoopV1 retrieves the SqoopV1Client
+func (c *Clientset) SqoopV1() sqoopv1.SqoopV1Interface {
+	return &fakesqoopv1.FakeSqoopV1{Fake: &c.Fake}
 }
 
-// Qloo retrieves the QlooV1Client
-func (c *Clientset) Qloo() qloov1.QlooV1Interface {
-	return &fakeqloov1.FakeQlooV1{Fake: &c.Fake}
+// Sqoop retrieves the SqoopV1Client
+func (c *Clientset) Sqoop() sqoopv1.SqoopV1Interface {
+	return &fakesqoopv1.FakeSqoopV1{Fake: &c.Fake}
 }

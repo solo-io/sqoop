@@ -25,13 +25,13 @@ minikube stop; minikube start --vm-driver=kvm2          --feature-gates=Advanced
           --group=system:serviceaccounts
 ```
 
-To install QLoo and Gloo:
+To install Sqoop and Gloo:
 ```
 kubectl apply -f install.yaml
 ```
 To access:
 ```
-export QLOO_URL=http://$(minikube ip):$(kubectl get svc qloo -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
+export QLOO_URL=http://$(minikube ip):$(kubectl get svc sqoop -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
 ```
 
 

@@ -1,7 +1,7 @@
 package resolvermap
 
 import (
-	"github.com/solo-io/qloo/pkg/qlooctl"
+	"github.com/solo-io/sqoop/pkg/sqoopctl"
 	"github.com/spf13/cobra"
 )
 
@@ -10,10 +10,10 @@ var resolverMapCmd = &cobra.Command{
 	Aliases: []string{
 		"resolvermaps", "rms",
 	},
-	Short: "Create, read, update, and delete QLoo Resolver Maps",
+	Short: "Create, read, update, and delete Sqoop Resolver Maps",
 	Long:  `Use these commands to define resolvers for your GraphQL Schemas`,
 }
 
 func init() {
-	qlooctl.RootCmd.AddCommand(resolverMapCmd)
+	sqoopctl.RootCmd.AddCommand(resolverMapCmd)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	GroupName = "qloo.solo.io"
+	GroupName = "sqoop.solo.io"
 	Version   = "v1"
 )
 

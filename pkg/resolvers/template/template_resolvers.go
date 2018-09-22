@@ -2,9 +2,9 @@ package template
 
 import (
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/exec"
-	"github.com/solo-io/qloo/pkg/util"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/exec"
+	"github.com/solo-io/sqoop/pkg/util"
 )
 
 func NewTemplateResolver(resolver *v1.TemplateResolver) (exec.RawResolver, error) {

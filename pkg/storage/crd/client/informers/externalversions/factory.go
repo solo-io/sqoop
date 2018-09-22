@@ -23,9 +23,9 @@ import (
 	sync "sync"
 	time "time"
 
-	versioned "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned"
-	internalinterfaces "github.com/solo-io/qloo/pkg/storage/crd/client/informers/externalversions/internalinterfaces"
-	solo_io "github.com/solo-io/qloo/pkg/storage/crd/client/informers/externalversions/solo.io"
+	versioned "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned"
+	internalinterfaces "github.com/solo-io/sqoop/pkg/storage/crd/client/informers/externalversions/internalinterfaces"
+	solo_io "github.com/solo-io/sqoop/pkg/storage/crd/client/informers/externalversions/solo.io"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -172,9 +172,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Qloo() solo_io.Interface
+	Sqoop() solo_io.Interface
 }
 
-func (f *sharedInformerFactory) Qloo() solo_io.Interface {
+func (f *sharedInformerFactory) Sqoop() solo_io.Interface {
 	return solo_io.New(f, f.namespace, f.tweakListOptions)
 }

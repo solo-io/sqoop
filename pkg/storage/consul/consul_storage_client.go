@@ -5,11 +5,11 @@ import (
 
 	"github.com/hashicorp/consul/api"
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/storage"
-	"github.com/solo-io/qloo/pkg/storage/base"
+	"github.com/solo-io/sqoop/pkg/storage"
+	"github.com/solo-io/sqoop/pkg/storage/base"
 )
 
-//go:generate go run ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/generate/generate_clients.go -f ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/consul/client_template.go.tmpl -o ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/consul/
+//go:generate go run ${GOPATH}/src/github.com/solo-io/sqoop/pkg/storage/generate/generate_clients.go -f ${GOPATH}/src/github.com/solo-io/sqoop/pkg/storage/consul/client_template.go.tmpl -o ${GOPATH}/src/github.com/solo-io/sqoop/pkg/storage/consul/
 type Client struct {
 	v1 *v1client
 }

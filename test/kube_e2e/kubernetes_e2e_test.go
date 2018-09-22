@@ -21,8 +21,8 @@ import (
 	"github.com/solo-io/gloo/test/helpers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	qloostorage "github.com/solo-io/qloo/pkg/storage"
-	qloocrd "github.com/solo-io/qloo/pkg/storage/crd"
+	sqoopstorage "github.com/solo-io/sqoop/pkg/storage"
+	sqoopcrd "github.com/solo-io/sqoop/pkg/storage/crd"
 )
 
 var (
@@ -36,7 +36,7 @@ func getNamespace() string {
 }
 
 var gloo storage.Interface
-var qloo qloostorage.Interface
+var sqoop sqoopstorage.Interface
 var kube kubernetes.Interface
 
 var _ = BeforeSuite(func() {
@@ -63,7 +63,7 @@ var _ = BeforeSuite(func() {
 	helpers.Must(err)
 	gloo, err = crd.NewStorage(cfg, namespace, time.Minute)
 	helpers.Must(err)
-	qloo, err = qloocrd.NewStorage(cfg, namespace, time.Minute)
+	sqoop, err = sqoopcrd.NewStorage(cfg, namespace, time.Minute)
 	helpers.Must(err)
 	kube, err = kubernetes.NewForConfig(cfg)
 	helpers.Must(err)
@@ -149,7 +149,7 @@ func curl(opts curlOpts) (string, error) {
 	}
 	service := opts.service
 	if service == "" {
-		service = "qloo"
+		service = "sqoop"
 	}
 	args = append(args, fmt.Sprintf("%v://%s:%v%s", protocol, service, port, opts.path))
 	log.Debugf("running: curl %v", strings.Join(args, " "))

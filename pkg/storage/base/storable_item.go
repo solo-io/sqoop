@@ -3,8 +3,8 @@ package base
 import (
 	"github.com/gogo/protobuf/proto"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/storage"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/storage"
 )
 
 type StorableItem struct {

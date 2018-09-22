@@ -1,4 +1,4 @@
 FROM ubuntu
-COPY qloo-debug /qloo
+COPY sqoop-debug /sqoop
 EXPOSE 9090
-ENTRYPOINT ["/qloo"]
+ENTRYPOINT ["/sqoop"]

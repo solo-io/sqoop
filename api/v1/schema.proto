@@ -1,6 +1,6 @@
 syntax = "proto3";
-package qloo.api.v1;
-option go_package = "github.com/solo-io/qloo/pkg/api/types/v1";
+package sqoop.api.v1;
+option go_package = "github.com/solo-io/sqoop/pkg/api/types/v1";
 
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all) = true;
@@ -11,7 +11,7 @@ import "github.com/solo-io/gloo/api/v1/metadata.proto";
 
 /*
     * The Schema object wraps the user's GraphQL Schema, which is stored as an inline string.
-    * The Schema Object contains a Status field which is used by QLoo to validate the user's input schema.
+    * The Schema Object contains a Status field which is used by Sqoop to validate the user's input schema.
 */
 message Schema {
     // Schema Names must be unique and follow the following syntax rules:
@@ -19,7 +19,7 @@ message Schema {
     string name = 1;
 
     // name of the resolver map to use to resolve this schema.
-    // if the user leaves this empty, QLoo will generate the skeleton of a resolver map for the user
+    // if the user leaves this empty, Sqoop will generate the skeleton of a resolver map for the user
     string resolver_map = 2;
 
     // inline the entire graphql schema as a string here

@@ -5,8 +5,8 @@ import (
 	"github.com/pkg/errors"
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/protoutil"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	crdv1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	crdv1 "github.com/solo-io/sqoop/pkg/storage/crd/solo.io/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

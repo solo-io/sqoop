@@ -4,16 +4,16 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/storage"
-	crdclientset "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned"
-	crdv1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/storage"
+	crdclientset "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned"
+	crdv1 "github.com/solo-io/sqoop/pkg/storage/crd/solo.io/v1"
 	apiexts "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 
 	"github.com/solo-io/gloo/pkg/log"
-	"github.com/solo-io/qloo/pkg/storage/crud"
+	"github.com/solo-io/sqoop/pkg/storage/crud"
 	kuberrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/tools/cache"
 )
@@ -21,7 +21,7 @@ import (
 type schemasClient struct {
 	crds    crdclientset.Interface
 	apiexts apiexts.Interface
-	// write and read objects to this namespace if not specified on the QlooObjects
+	// write and read objects to this namespace if not specified on the SqoopObjects
 	namespace     string
 	syncFrequency time.Duration
 }
@@ -35,11 +35,11 @@ func (c *schemasClient) Update(item *v1.Schema) (*v1.Schema, error) {
 }
 
 func (c *schemasClient) Delete(name string) error {
-	return c.crds.QlooV1().Schemas(c.namespace).Delete(name, nil)
+	return c.crds.SqoopV1().Schemas(c.namespace).Delete(name, nil)
 }
 
 func (c *schemasClient) Get(name string) (*v1.Schema, error) {
-	crdSchema, err := c.crds.QlooV1().Schemas(c.namespace).Get(name, metav1.GetOptions{})
+	crdSchema, err := c.crds.SqoopV1().Schemas(c.namespace).Get(name, metav1.GetOptions{})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed performing get api request")
 	}
@@ -55,7 +55,7 @@ func (c *schemasClient) Get(name string) (*v1.Schema, error) {
 }
 
 func (c *schemasClient) List() ([]*v1.Schema, error) {
-	crdList, err := c.crds.QlooV1().Schemas(c.namespace).List(metav1.ListOptions{})
+	crdList, err := c.crds.SqoopV1().Schemas(c.namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed performing list api request")
 	}
@@ -75,7 +75,7 @@ func (c *schemasClient) List() ([]*v1.Schema, error) {
 }
 
 func (u *schemasClient) Watch(handlers ...storage.SchemaEventHandler) (*storage.Watcher, error) {
-	lw := cache.NewListWatchFromClient(u.crds.QlooV1().RESTClient(), crdv1.SchemaCRD.Plural, u.namespace, fields.Everything())
+	lw := cache.NewListWatchFromClient(u.crds.SqoopV1().RESTClient(), crdv1.SchemaCRD.Plural, u.namespace, fields.Everything())
 	sw := cache.NewSharedInformer(lw, new(crdv1.Schema), u.syncFrequency)
 	for _, h := range handlers {
 		sw.AddEventHandler(&schemaEventHandler{handler: h, store: sw.GetStore()})
@@ -88,9 +88,9 @@ func (u *schemasClient) Watch(handlers ...storage.SchemaEventHandler) (*storage.
 func (c *schemasClient) createOrUpdateSchemaCrd(schema *v1.Schema, op crud.Operation) (*v1.Schema, error) {
 	schemaCrd, err := ConfigObjectToCrd(c.namespace, schema)
 	if err != nil {
-		return nil, errors.Wrap(err, "converting qloo object to crd")
+		return nil, errors.Wrap(err, "converting sqoop object to crd")
 	}
-	schemas := c.crds.QlooV1().Schemas(schemaCrd.GetNamespace())
+	schemas := c.crds.SqoopV1().Schemas(schemaCrd.GetNamespace())
 	var returnedCrd *crdv1.Schema
 	switch op {
 	case crud.OperationCreate:

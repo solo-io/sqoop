@@ -16,18 +16,18 @@ import (
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
 	"github.com/solo-io/gloo/pkg/coreplugins/static"
 	"github.com/solo-io/gloo/pkg/plugins/rest"
-	"github.com/solo-io/qloo/pkg/bootstrap"
-	. "github.com/solo-io/qloo/pkg/core"
-	"github.com/solo-io/qloo/test"
+	"github.com/solo-io/sqoop/pkg/bootstrap"
+	. "github.com/solo-io/sqoop/pkg/core"
+	"github.com/solo-io/sqoop/test"
 	"github.com/gogo/protobuf/types"
 )
 
-var qlooPort int
+var sqoopPort int
 
 var _ = Describe("Core", func() {
 	It("does the happy path", func() {
 		rand.Seed(time.Now().Unix())
-		qlooPort = 9090
+		sqoopPort = 9090
 		opts := bootstrap.Options{
 			Options: glooopts.Options{
 				ConfigStorageOptions: glooopts.StorageOptions{
@@ -39,9 +39,9 @@ var _ = Describe("Core", func() {
 				},
 			},
 			ProxyAddr:          envoyInstance.LocalAddr() + ":8080",
-			BindAddr:           fmt.Sprintf(":%v", qlooPort),
-			RoleName:           "qloo-test",
-			VirtualServiceName: "qloo-test",
+			BindAddr:           fmt.Sprintf(":%v", sqoopPort),
+			RoleName:           "sqoop-test",
+			VirtualServiceName: "sqoop-test",
 		}
 		eventLoop, err := Setup(opts)
 		Expect(err).NotTo(HaveOccurred())
@@ -60,13 +60,13 @@ var _ = Describe("Core", func() {
 		_, err = gloo.V1().Upstreams().Create(starWarsUpstream())
 		Expect(err).NotTo(HaveOccurred())
 
-		qloo, err := bootstrap.Bootstrap(opts.Options)
+		sqoop, err := bootstrap.Bootstrap(opts.Options)
 		Expect(err).NotTo(HaveOccurred())
 
-		_, err = qloo.V1().Schemas().Create(test.StarWarsV1Schema())
+		_, err = sqoop.V1().Schemas().Create(test.StarWarsV1Schema())
 		Expect(err).NotTo(HaveOccurred())
 
-		_, err = qloo.V1().ResolverMaps().Create(test.StarWarsResolverMap())
+		_, err = sqoop.V1().ResolverMaps().Create(test.StarWarsResolverMap())
 		Expect(err).NotTo(HaveOccurred())
 
 		// it should create the virtual service
@@ -100,7 +100,7 @@ var _ = Describe("Core", func() {
 
 func eventuallyQueryShouldRespond(queryString, expectedString string) {
 	Eventually(func() (string, error) {
-		res, err := http.Post(fmt.Sprintf("http://localhost:%v/starwars-schema/query", qlooPort),
+		res, err := http.Post(fmt.Sprintf("http://localhost:%v/starwars-schema/query", sqoopPort),
 			"",
 			bytes.NewBuffer([]byte(queryString)))
 		if err != nil {

@@ -15,16 +15,16 @@ import (
 )
 
 const (
-	successMessage = `QLoo installed successfully.
+	successMessage = `Sqoop installed successfully.
 Please switch to directory '%s', and run "docker-compose up"
-to start QLoo.
+to start Sqoop.
 
 `
 )
 
 var installDockerCmd = &cobra.Command{
 	Use:   "docker [folder]",
-	Short: "install QLoo with Docker and file-based storage",
+	Short: "install Sqoop with Docker and file-based storage",
 	Long: `
 Installs gloo to run with Docker Compose in the given install folder.
 If the folder doesn't exist glooctl will create it.
@@ -56,8 +56,8 @@ func init() {
 }
 
 const (
-	envoyYamlURL         = "https://raw.githubusercontent.com/solo-io/qloo/master/install/docker-compose/envoy-config.yaml"
-	dockerComposeYamlURL = "https://raw.githubusercontent.com/solo-io/qloo/master/install/docker-compose/docker-compose.yaml"
+	envoyYamlURL         = "https://raw.githubusercontent.com/solo-io/sqoop/master/install/docker-compose/envoy-config.yaml"
+	dockerComposeYamlURL = "https://raw.githubusercontent.com/solo-io/sqoop/master/install/docker-compose/docker-compose.yaml"
 )
 
 func dockerInstall(folder string) error {
@@ -79,7 +79,7 @@ func dockerInstall(folder string) error {
 		return err
 	}
 
-	return updateQLooctlConfig(folder)
+	return updateSqoopctlConfig(folder)
 }
 
 func createInstallFolder(folder string) error {
@@ -122,7 +122,7 @@ func createStorageFolders(folder string) error {
 	return nil
 }
 
-func updateQLooctlConfig(folder string) error {
+func updateSqoopctlConfig(folder string) error {
 	opts := &bootstrap.Options{}
 
 	opts.ConfigStorageOptions.Type = "file"

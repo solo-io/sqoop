@@ -11,9 +11,9 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	. "github.com/solo-io/qloo/pkg/resolvers/gloo"
-	"github.com/solo-io/qloo/test"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	. "github.com/solo-io/sqoop/pkg/resolvers/gloo"
+	"github.com/solo-io/sqoop/test"
 )
 
 var _ = Describe("GlooResolvers", func() {

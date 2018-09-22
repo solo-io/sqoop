@@ -1,6 +1,6 @@
 package storage
 
-import "github.com/solo-io/qloo/pkg/api/types/v1"
+import "github.com/solo-io/sqoop/pkg/api/types/v1"
 
 type Watcher struct {
 	runFunc func(stop <-chan struct{}, errs chan error)

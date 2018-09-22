@@ -1,6 +1,6 @@
 package configwatcher
 
-import "github.com/solo-io/qloo/pkg/api/types/v1"
+import "github.com/solo-io/sqoop/pkg/api/types/v1"
 
 type Interface interface {
 	Run(stop <-chan struct{})

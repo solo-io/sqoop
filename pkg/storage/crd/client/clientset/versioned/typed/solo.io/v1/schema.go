@@ -19,8 +19,8 @@ limitations under the License.
 package v1
 
 import (
-	scheme "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned/scheme"
-	v1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
+	scheme "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned/scheme"
+	v1 "github.com/solo-io/sqoop/pkg/storage/crd/solo.io/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
@@ -53,7 +53,7 @@ type schemas struct {
 }
 
 // newSchemas returns a Schemas
-func newSchemas(c *QlooV1Client, namespace string) *schemas {
+func newSchemas(c *SqoopV1Client, namespace string) *schemas {
 	return &schemas{
 		client: c.RESTClient(),
 		ns:     namespace,

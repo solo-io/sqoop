@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/qlooctl"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/sqoopctl"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +17,7 @@ var schemaCreateOpts struct {
 
 var schemaCreateCmd = &cobra.Command{
 	Use:   "create NAME --from-file <path/to/your/graphql/schema>",
-	Short: "upload a schema to QLoo from a local GraphQL Schema file",
+	Short: "upload a schema to Sqoop from a local GraphQL Schema file",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return errors.Errorf("requires exactly 1 argument")
@@ -32,10 +32,10 @@ var schemaCreateCmd = &cobra.Command{
 
 func init() {
 	schemaCreateCmd.PersistentFlags().StringVarP(&schemaCreateOpts.FromFile, "from-file", "f", "", "path to a "+
-		"graphql schema file from which to create the QLoo schema object")
+		"graphql schema file from which to create the Sqoop schema object")
 	schemaCreateCmd.PersistentFlags().StringVarP(&schemaCreateOpts.UseResolverMap, "resolvermap", "r", "", "The name of a "+
 		"ResolverMap to connect to this Schema. If none is specified, an empty ResolverMap will be generated for you, which "+
-		"you can then configure with qlooctl")
+		"you can then configure with sqoopctl")
 	schemaCmd.AddCommand(schemaCreateCmd)
 }
 
@@ -46,7 +46,7 @@ func createSchema(name, filename, resolvermap string) error {
 	if filename == "" {
 		return errors.Errorf("filename must be set")
 	}
-	cli, err := qlooctl.MakeClient()
+	cli, err := sqoopctl.MakeClient()
 	if err != nil {
 		return err
 	}

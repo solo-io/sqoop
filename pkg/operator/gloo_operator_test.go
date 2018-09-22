@@ -11,8 +11,8 @@ import (
 	"github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/storage"
 	"github.com/solo-io/gloo/pkg/storage/file"
-	. "github.com/solo-io/qloo/pkg/operator"
-	"github.com/solo-io/qloo/test"
+	. "github.com/solo-io/sqoop/pkg/operator"
+	"github.com/solo-io/sqoop/test"
 )
 
 var _ = Describe("GlooOperator", func() {

@@ -4,26 +4,27 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
 	"os/exec"
+
+	"github.com/spf13/cobra"
 )
 
-const qlooYamlURI = "https://raw.githubusercontent.com/solo-io/qloo/master/install/kube/install.yaml"
+const sqoopYamlURI = "https://raw.githubusercontent.com/solo-io/sqoop/master/install/kube/install.yaml"
 
 var installKubeCmd = &cobra.Command{
 	Use:   "kube",
-	Short: "install QLoo on Kubernetes",
+	Short: "install Sqoop on Kubernetes",
 	Long: `
-	Installs latest QLoo into a Kubernetes cluster. It downloads the latest installation YAML
+	Installs latest Sqoop into a Kubernetes cluster. It downloads the latest installation YAML
 	file and installs to the current kubectl context.`,
 	Run: func(c *cobra.Command, a []string) {
-		err := kubeInstall(dryRun, qlooYamlURI)
+		err := kubeInstall(dryRun, sqoopYamlURI)
 		if err != nil {
-			fmt.Printf("Unable to isntall QLoo to Kubernetes %q\n", err)
+			fmt.Printf("Unable to isntall Sqoop to Kubernetes %q\n", err)
 			os.Exit(1)
 		}
 		if !dryRun {
-			fmt.Println("QLoo successfully installed.")
+			fmt.Println("Sqoop successfully installed.")
 		}
 	},
 }

@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/qlooctl"
-	"github.com/solo-io/qloo/pkg/storage/file"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/sqoopctl"
+	"github.com/solo-io/sqoop/pkg/storage/file"
 	"github.com/spf13/cobra"
 )
 
@@ -15,8 +15,8 @@ var resolverMapUpdateOpts struct {
 }
 
 var resolverMapUpdateCmd = &cobra.Command{
-	Use:   "update NAME --from-file <path/to/your/qloo/resolver map>",
-	Short: "upload a resolver map to QLoo from a local QLoo ResolverMap yaml file",
+	Use:   "update NAME --from-file <path/to/your/sqoop/resolver map>",
+	Short: "upload a resolver map to Sqoop from a local Sqoop ResolverMap yaml file",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return errors.Errorf("requires exactly 1 argument")
@@ -31,12 +31,12 @@ var resolverMapUpdateCmd = &cobra.Command{
 
 func init() {
 	resolverMapUpdateCmd.PersistentFlags().StringVarP(&resolverMapUpdateOpts.FromFile, "from-file", "f", "", "path to a "+
-		"graphql resolver map file from which to update the QLoo resolver map object")
+		"graphql resolver map file from which to update the Sqoop resolver map object")
 	resolverMapCmd.AddCommand(resolverMapUpdateCmd)
 }
 
 func updateResolverMap(name, filename string) error {
-	cli, err := qlooctl.MakeClient()
+	cli, err := sqoopctl.MakeClient()
 	if err != nil {
 		return err
 	}

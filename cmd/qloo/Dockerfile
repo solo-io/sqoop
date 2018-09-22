@@ -1,4 +1,4 @@
 FROM alpine:3.7
-COPY qloo /qloo
+COPY sqoop /sqoop
 EXPOSE 9090
-ENTRYPOINT ["/qloo"]
+ENTRYPOINT ["/sqoop"]

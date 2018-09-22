@@ -2,33 +2,33 @@
 
 ### Storage-Based API
 
-QLoo, like [Gloo](https://gloo.solo.io), features a storage-based API. Inspired by Kubernetes, QLoo's API is accessed 
-by applications and users by reading and writing API objects to a storage layer QLoo is configured (at boot-time) to monitor
+Sqoop, like [Gloo](https://gloo.solo.io), features a storage-based API. Inspired by Kubernetes, Sqoop's API is accessed 
+by applications and users by reading and writing API objects to a storage layer Sqoop is configured (at boot-time) to monitor
 for changes. Currently supported storage backends are [Kubernetes CRDs](https://kubernetes.io/docs/tasks/access-kubernetes-api/extend-api-custom-resource-definitions/), 
-[Consul Key-Value Pairs](https://www.consul.io/), or QLoo's local filesystem. 
+[Consul Key-Value Pairs](https://www.consul.io/), or Sqoop's local filesystem. 
 
 
 ### API Objects
 
-QLoo's API Objects take two forms:
+Sqoop's API Objects take two forms:
 
 0. [Schemas](../../v1/schema.md)
     * Schemas are made up of three pieces of information:
       - A name for the schema. This can be anything, but must be uniquee
       - An inline string containing the entire [GraphQL Schema](https://graphql.org/learn/schema/)
-      - The name of a ResolverMap object which contains QLoo-specific instructions
+      - The name of a ResolverMap object which contains Sqoop-specific instructions
       on how to resolve the fields of the schema. 
       - If the user leaves this empty,
-      QLoo will attempt to generate an empty ResolverMap skeleton for the user, 
-      which the user can edit using `qlooctl`.
+      Sqoop will attempt to generate an empty ResolverMap skeleton for the user, 
+      which the user can edit using `sqoopctl`.
 
-    * GraphQL Schemas can be uploaded to QLoo using `qlooctl`
+    * GraphQL Schemas can be uploaded to Sqoop using `sqoopctl`
 
 1. [ResolverMaps](../../v1/resolver_map.md)
     * ResolverMaps represent a mapping between the fields in a GraphQL schema 
-    and the [Resolvers](resolvers.md) that QLoo will use to resolve them.
+    and the [Resolvers](resolvers.md) that Sqoop will use to resolve them.
     
-    * Resolvers define the action QLoo will perform when executing a GraphQL Query. QLoo leverages
+    * Resolvers define the action Sqoop will perform when executing a GraphQL Query. Sqoop leverages
     [Gloo's function registry](https://gloo.solo.io/introduction/concepts/#Functions) to generate resolvers, 
     allowing users to define GraphQL resolvers using configuration rather than code. 
     Read more about GraphQL Resolvers here: https://graphql.org/learn/execution/   

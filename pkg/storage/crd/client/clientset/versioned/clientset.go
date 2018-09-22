@@ -19,7 +19,7 @@ limitations under the License.
 package versioned
 
 import (
-	qloov1 "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned/typed/solo.io/v1"
+	sqoopv1 "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned/typed/solo.io/v1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
@@ -27,27 +27,27 @@ import (
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
-	QlooV1() qloov1.QlooV1Interface
+	SqoopV1() sqoopv1.SqoopV1Interface
 	// Deprecated: please explicitly pick a version if possible.
-	Qloo() qloov1.QlooV1Interface
+	Sqoop() sqoopv1.SqoopV1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	qlooV1 *qloov1.QlooV1Client
+	sqoopV1 *sqoopv1.SqoopV1Client
 }
 
-// QlooV1 retrieves the QlooV1Client
-func (c *Clientset) QlooV1() qloov1.QlooV1Interface {
-	return c.qlooV1
+// SqoopV1 retrieves the SqoopV1Client
+func (c *Clientset) SqoopV1() sqoopv1.SqoopV1Interface {
+	return c.sqoopV1
 }
 
-// Deprecated: Qloo retrieves the default version of QlooClient.
+// Deprecated: Sqoop retrieves the default version of SqoopClient.
 // Please explicitly pick a version.
-func (c *Clientset) Qloo() qloov1.QlooV1Interface {
-	return c.qlooV1
+func (c *Clientset) Sqoop() sqoopv1.SqoopV1Interface {
+	return c.sqoopV1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -66,7 +66,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	}
 	var cs Clientset
 	var err error
-	cs.qlooV1, err = qloov1.NewForConfig(&configShallowCopy)
+	cs.sqoopV1, err = sqoopv1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
-	cs.qlooV1 = qloov1.NewForConfigOrDie(c)
+	cs.sqoopV1 = sqoopv1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -91,7 +91,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.qlooV1 = qloov1.New(c)
+	cs.sqoopV1 = sqoopv1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

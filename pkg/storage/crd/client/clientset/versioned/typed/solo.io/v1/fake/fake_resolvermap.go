@@ -19,7 +19,7 @@ limitations under the License.
 package fake
 
 import (
-	solo_io_v1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
+	solo_io_v1 "github.com/solo-io/sqoop/pkg/storage/crd/solo.io/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -30,13 +30,13 @@ import (
 
 // FakeResolverMaps implements ResolverMapInterface
 type FakeResolverMaps struct {
-	Fake *FakeQlooV1
+	Fake *FakeSqoopV1
 	ns   string
 }
 
-var resolvermapsResource = schema.GroupVersionResource{Group: "qloo.solo.io", Version: "v1", Resource: "resolvermaps"}
+var resolvermapsResource = schema.GroupVersionResource{Group: "sqoop.solo.io", Version: "v1", Resource: "resolvermaps"}
 
-var resolvermapsKind = schema.GroupVersionKind{Group: "qloo.solo.io", Version: "v1", Kind: "ResolverMap"}
+var resolvermapsKind = schema.GroupVersionKind{Group: "sqoop.solo.io", Version: "v1", Kind: "ResolverMap"}
 
 // Get takes name of the resolverMap, and returns the corresponding resolverMap object, and an error if there is any.
 func (c *FakeResolverMaps) Get(name string, options v1.GetOptions) (result *solo_io_v1.ResolverMap, err error) {

@@ -2,17 +2,17 @@
 
 ### What you'll need
 - [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [`qlooctl`](https://github.com/solo-io/qloo)
-- [`glooctl`](https://github.com/solo-io/gloo): (OPTIONAL) to see how QLoo is interacting with the underlying system
+- [`sqoopctl`](https://github.com/solo-io/sqoop)
+- [`glooctl`](https://github.com/solo-io/gloo): (OPTIONAL) to see how Sqoop is interacting with the underlying system
 - Kubernetes v1.8+ deployed somewhere. [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is a great way to get a cluster up quickly.
 
 
 
 ### Steps
 
-#### Deploy QLoo and Gloo
+#### Deploy Sqoop and Gloo
 
-        qlooctl install kube
+        sqoopctl install kube
 
 
 ####  Deploy the Pet Store
@@ -75,22 +75,22 @@ enum Status {
 
 #### Upload the Schema
 
-Upload the schema to QLoo using `qlooctl`:
+Upload the schema to Sqoop using `sqoopctl`:
 
 ```bash
-qlooctl schema create petstore -f petstore.graphql
+sqoopctl schema create petstore -f petstore.graphql
 ```
 
 
 #### OPTIONAL: View the Generated Resolvers
 
-A QLoo [**ResolverMap**](https://qloo.solo.io/v1/resolver_map/) will have been generated
+A Sqoop [**ResolverMap**](https://sqoop.solo.io/v1/resolver_map/) will have been generated
 for the new schema.
 
 Take a look at its structure:
 
 ```bash
-qlooctl resolvermap get petstore-resolvers -o yaml
+sqoopctl resolvermap get petstore-resolvers -o yaml
 
 metadata:
   namespace: gloo-system
@@ -113,40 +113,40 @@ types:
       pets: {}
 ```
 
-The empty `{}`'s are QLoo [**Resolver**](https://qloo.solo.io/v1/resolver_map/#qloo.api.v1.Resolver)
-objects, waiting to be filled in. QLoo supports a variety of Resolver types (and supports extension to its
+The empty `{}`'s are Sqoop [**Resolver**](https://sqoop.solo.io/v1/resolver_map/#sqoop.api.v1.Resolver)
+objects, waiting to be filled in. Sqoop supports a variety of Resolver types (and supports extension to its
 resolution system). In this tutorial, we will create Gloo resolvers, which allow you to connect schema fields
 to REST APIs, serverless functions and other Gloo functions. 
  
 #### Register some Resolvers
 
-Let's use `qlooctl` to register some resolvers.
+Let's use `sqoopctl` to register some resolvers.
 
 ```bash
 # register findPetById for Query.pets (specifying no arguments)
-qlooctl resolvermap register -u default-petstore-8080 -f findPetById Query pets
+sqoopctl resolvermap register -u default-petstore-8080 -f findPetById Query pets
 # register a resolver for Query.pet
-qlooctl resolvermap register -u default-petstore-8080 -f findPetById Query pet
+sqoopctl resolvermap register -u default-petstore-8080 -f findPetById Query pet
 # register a resolver for Mutation.addPet
-# the request template tells QLoo to use the Variable "pet" as an argument 
-qlooctl resolvermap register -u default-petstore-8080 -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
+# the request template tells Sqoop to use the Variable "pet" as an argument 
+sqoopctl resolvermap register -u default-petstore-8080 -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
 ```
 
 That's it! Now we should have a functioning GraphQL frontend for our REST service.
 
 #### Visit the Playground
 
-Visit the exposed address of the `qloo` service in your browser.
+Visit the exposed address of the `sqoop` service in your browser.
 
 If you're running in minkube, you can get this address with the command
 
 ```bash
-echo http://$(minikube ip):$(kubectl get svc qloo -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
+echo http://$(minikube ip):$(kubectl get svc sqoop -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
 
 http://192.168.39.47:30935/
 ```
 
-You should see a landing page for QLoo which contains a link to the GraphQL Playground for our
+You should see a landing page for Sqoop which contains a link to the GraphQL Playground for our
 Pet Store. Visit it and try out some queries!
 
 examples:

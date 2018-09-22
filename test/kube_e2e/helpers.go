@@ -1,23 +1,24 @@
 package kube_e2e
 
 import (
-	"path/filepath"
-	"os"
-	"github.com/solo-io/gloo/test/helpers"
-	"os/exec"
-	"github.com/onsi/ginkgo"
-	"github.com/solo-io/gloo/pkg/log"
 	"bytes"
-	"github.com/pkg/errors"
 	"io/ioutil"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"text/template"
+
+	"github.com/onsi/ginkgo"
+	"github.com/pkg/errors"
+	"github.com/solo-io/gloo/pkg/log"
+	"github.com/solo-io/gloo/test/helpers"
 )
 
 const (
 	// gloo labels
 	testrunner        = "testrunner"
 	controlPlane      = "control-plane"
-	qlooContainer     = "qloo"
+	sqoopContainer    = "sqoop"
 	upstreamDiscovery = "upstream-discovery"
 	funcitonDiscovery = "function-discovery"
 	starWars          = "starwars"
@@ -77,7 +78,7 @@ func SetupKubeForE2eTest(namespace string, buildImages, push, debug bool) error 
 
 	if err := helpers.WaitPodsRunning(
 		controlPlane,
-		qlooContainer,
+		sqoopContainer,
 		upstreamDiscovery,
 		funcitonDiscovery,
 	); err != nil {
@@ -86,12 +87,12 @@ func SetupKubeForE2eTest(namespace string, buildImages, push, debug bool) error 
 	return nil
 }
 
-func QlooSDirectory() string {
-	return filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "solo-io", "qloo")
+func SqoopSDirectory() string {
+	return filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "solo-io", "sqoop")
 }
 
 func KubeE2eDirectory() string {
-	return filepath.Join(QlooSDirectory(), "test", "kube_e2e")
+	return filepath.Join(SqoopSDirectory(), "test", "kube_e2e")
 }
 
 // builds and pushes all docker containers needed for test
@@ -103,7 +104,7 @@ func BuildPushContainers(push, debug bool) error {
 	os.Setenv("IMAGE_TAG", imageTag)
 
 	// make the gloo containers
-	for _, component := range []string{"qloo"} {
+	for _, component := range []string{"sqoop"} {
 		target := component
 		target += "-docker"
 		if push {
@@ -115,7 +116,7 @@ func BuildPushContainers(push, debug bool) error {
 		}
 
 		cmd := exec.Command("make", target)
-		cmd.Dir = QlooSDirectory()
+		cmd.Dir = SqoopSDirectory()
 		cmd.Stdout = ginkgo.GinkgoWriter
 		cmd.Stderr = ginkgo.GinkgoWriter
 		if err := cmd.Run(); err != nil {

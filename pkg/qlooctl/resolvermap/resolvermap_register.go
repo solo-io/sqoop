@@ -1,11 +1,11 @@
 package resolvermap
 
 import (
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/qlooctl"
-	"github.com/spf13/cobra"
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/storage"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/sqoopctl"
+	"github.com/solo-io/sqoop/pkg/storage"
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -21,19 +21,19 @@ var resolverMapRegisterCmd = &cobra.Command{
 	Short: "Register a resolver for a field in your Schema",
 	Long: `Sets the resolver for a field in your schema. TypeName.FieldName will always be resolved using this resolver
 
-Resolvers must be defined in yaml format. See the documentation at https://qloo.solo.io/v1/resolver_map/#qloo.api.v1.Resolver for the API specification for QLoo Resolvers`,
+Resolvers must be defined in yaml format. See the documentation at https://sqoop.solo.io/v1/resolver_map/#sqoop.api.v1.Resolver for the API specification for Sqoop Resolvers`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 || args[0] == "" || args[1] == "" {
 			return errors.Errorf("must specify args TypeName and FieldName")
 		}
-		if upstreamName == "" ||  functionName == "" {
+		if upstreamName == "" || functionName == "" {
 			return errors.Errorf("must provide an upstream and function to create a resolver")
 		}
 		msg, err := registerResolver(schemaName, args[0], args[1], upstreamName, functionName, requestTemplate, responseTemplate)
 		if err != nil {
 			return err
 		}
-		return qlooctl.Print(msg)
+		return sqoopctl.Print(msg)
 	},
 }
 
@@ -63,7 +63,7 @@ func registerResolver(schemaName, typeName, fieldName, upstreamName, functionNam
 			},
 		},
 	}
-	cli, err := qlooctl.MakeClient()
+	cli, err := sqoopctl.MakeClient()
 	if err != nil {
 		return nil, err
 	}

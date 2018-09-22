@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
 )
 
 func RoutePath(typeName, fieldName string) string {

@@ -7,7 +7,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/hashicorp/consul/api"
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
 )
 
 func key(rootPath, itemName string) string {

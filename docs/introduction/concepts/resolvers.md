@@ -1,12 +1,12 @@
 # Gloo Resolvers
 
-Gloo resolvers are the primary means of resolving schema fields using QLoo. This 
+Gloo resolvers are the primary means of resolving schema fields using Sqoop. This 
 document explains the structure of a Gloo resolver and how to write one.
 
 ## Request Templates
 
 Let's take a look at the structure of a Gloo resolver (usually written by users as YAML,
-stored by QLoo as Proto).
+stored by Sqoop as Proto).
 
 ```yaml
 gloo_resolver:
@@ -17,13 +17,13 @@ gloo_resolver:
     function: ListPets
 ```
 
-* `request_template` is optional. If provided, QLoo will use the provided template
+* `request_template` is optional. If provided, Sqoop will use the provided template
 to construct the request body sent to the resolver function.
 
 Request templates follow the conventions of [Go templates](https://golang.org/pkg/text/template/).
 
 Available parameters for use in Request Templates come from the 
-[`Params`](https://github.com/solo-io/qloo/blob/master/pkg/exec/executable_resolvers.go) object.
+[`Params`](https://github.com/solo-io/sqoop/blob/master/pkg/exec/executable_resolvers.go) object.
 
 The Params Object has the following structure (defined in Go):
 
@@ -34,12 +34,12 @@ type Params struct {
 }
 ```
 
-`Args` represent arguments that were passed to QLoo as part of the Client Query.
+`Args` represent arguments that were passed to Sqoop as part of the Client Query.
 
 `Parent` represents the root object the field under query belongs to. `Parent` 
 is `nil` for root types (`Query` and `Mutation` type).
 
-The `marshal` function is available for use in QLoo templates. 
+The `marshal` function is available for use in Sqoop templates. 
 `marshal` will encode any value into JSON.
 
 Here's an example of a Gloo Resolver using multiple destinations, with load balancing:
