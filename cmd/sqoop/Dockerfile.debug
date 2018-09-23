@@ -1,0 +1,4 @@
+FROM ubuntu
+COPY sqoop-debug /sqoop
+EXPOSE 9090
+ENTRYPOINT ["/sqoop"]

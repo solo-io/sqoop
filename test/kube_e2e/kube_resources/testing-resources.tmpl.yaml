@@ -76,7 +76,7 @@ spec:
          :method: POST
        path: /api/characters
 ---
-apiVersion: qloo.solo.io/v1
+apiVersion: sqoop.solo.io/v1
 kind: Schema
 metadata:
   name: starwars
@@ -217,7 +217,7 @@ spec:
     scalar Time
 ---
 
-apiVersion: qloo.solo.io/v1
+apiVersion: sqoop.solo.io/v1
 kind: ResolverMap
 metadata:
   name: starwars-resolvers

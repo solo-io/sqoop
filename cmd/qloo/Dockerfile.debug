@@ -1,4 +1,0 @@
-FROM ubuntu
-COPY qloo-debug /qloo
-EXPOSE 9090
-ENTRYPOINT ["/qloo"]

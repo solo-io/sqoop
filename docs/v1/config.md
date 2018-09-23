@@ -1,7 +1,7 @@
 <a name="top"></a>
 
 ## Contents
-  - [Config](#qloo.api.v1.Config)
+  - [Config](#sqoop.api.v1.Config)
 
 
 
@@ -11,10 +11,10 @@
 
 
 
-<a name="qloo.api.v1.Config"></a>
+<a name="sqoop.api.v1.Config"></a>
 
 ### Config
-Config is a top-level config object. It is used internally by QLoo as a container for the entire set of config objects.
+Config is a top-level config object. It is used internally by Sqoop as a container for the entire set of config objects.
 
 
 ```yaml
@@ -24,8 +24,8 @@ resolver_maps: [{ResolverMap}]
 ```
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| schemas | [Schema](schema.md#qloo.api.v1.Schema) | repeated | the set of all schemas defined by the user |
-| resolver_maps | [ResolverMap](resolver_map.md#qloo.api.v1.ResolverMap) | repeated | the set of all resolver maps defined by the user |
+| schemas | [Schema](schema.md#sqoop.api.v1.Schema) | repeated | the set of all schemas defined by the user |
+| resolver_maps | [ResolverMap](resolver_map.md#sqoop.api.v1.ResolverMap) | repeated | the set of all resolver maps defined by the user |
 
 
 

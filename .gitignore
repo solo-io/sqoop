@@ -14,7 +14,7 @@ vendor/
 _output/
 _gloo_config/
 examples/starwars/starwars
-cmd/qlooctl/qlooctl
+cmd/sqoopctl/sqoopctl
 site/
 test/kube_e2e/kube_resources/test-install.yaml
 test/kube_e2e/kube_resources/testing-resources.yaml

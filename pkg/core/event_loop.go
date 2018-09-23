@@ -9,16 +9,16 @@ import (
 	gloobootstrap "github.com/solo-io/gloo/pkg/bootstrap"
 	"github.com/solo-io/gloo/pkg/bootstrap/configstorage"
 	"github.com/solo-io/gloo/pkg/log"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/bootstrap"
-	"github.com/solo-io/qloo/pkg/configwatcher"
-	"github.com/solo-io/qloo/pkg/exec"
-	"github.com/solo-io/qloo/pkg/graphql"
-	"github.com/solo-io/qloo/pkg/operator"
-	"github.com/solo-io/qloo/pkg/reporter"
-	"github.com/solo-io/qloo/pkg/resolvers"
-	"github.com/solo-io/qloo/pkg/storage"
-	"github.com/solo-io/qloo/pkg/util"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/bootstrap"
+	"github.com/solo-io/sqoop/pkg/configwatcher"
+	"github.com/solo-io/sqoop/pkg/exec"
+	"github.com/solo-io/sqoop/pkg/graphql"
+	"github.com/solo-io/sqoop/pkg/operator"
+	"github.com/solo-io/sqoop/pkg/reporter"
+	"github.com/solo-io/sqoop/pkg/resolvers"
+	"github.com/solo-io/sqoop/pkg/storage"
+	"github.com/solo-io/sqoop/pkg/util"
 	"github.com/vektah/gqlgen/neelance/schema"
 )
 
@@ -26,7 +26,7 @@ type EventLoop struct {
 	cfgWatcher configwatcher.Interface
 	operator   *operator.GlooOperator
 	router     *graphql.Router
-	qloo       storage.Interface
+	sqoop       storage.Interface
 	reporter   reporter.Interface
 	proxyAddr  string
 	bindAddr   string
@@ -37,36 +37,36 @@ func Setup(opts bootstrap.Options) (*EventLoop, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "creating gloo client")
 	}
-	qloo, err := bootstrap.Bootstrap(opts.Options)
+	sqoop, err := bootstrap.Bootstrap(opts.Options)
 	if err != nil {
-		return nil, errors.Wrap(err, "creating qloo client")
+		return nil, errors.Wrap(err, "creating sqoop client")
 	}
 	switch opts.ConfigStorageOptions.Type {
 	case gloobootstrap.WatcherTypeFile:
-		log.Printf("QLoo storage options: %v", opts.FileOptions)
+		log.Printf("Sqoop storage options: %v", opts.FileOptions)
 	case gloobootstrap.WatcherTypeConsul:
-		log.Printf("QLoo storage options: %v", opts.ConsulOptions)
+		log.Printf("Sqoop storage options: %v", opts.ConsulOptions)
 	case gloobootstrap.WatcherTypeKube:
-		log.Printf("QLoo storage options: %v", opts.KubeOptions)
+		log.Printf("Sqoop storage options: %v", opts.KubeOptions)
 	}
 	if err := gloo.V1().Register(); err != nil {
 		return nil, errors.Wrap(err, "registering gloo client")
 	}
-	if err := qloo.V1().Register(); err != nil {
-		return nil, errors.Wrap(err, "registering qloo storage client")
+	if err := sqoop.V1().Register(); err != nil {
+		return nil, errors.Wrap(err, "registering sqoop storage client")
 	}
-	cfgWatcher, err := configwatcher.NewConfigWatcher(qloo)
+	cfgWatcher, err := configwatcher.NewConfigWatcher(sqoop)
 	if err != nil {
-		return nil, errors.Wrap(err, "starting watch for QLoo config")
+		return nil, errors.Wrap(err, "starting watch for Sqoop config")
 	}
 	op := operator.NewGlooOperator(gloo, opts.VirtualServiceName, opts.RoleName)
 	router := graphql.NewRouter()
-	rep := reporter.NewReporter(qloo)
+	rep := reporter.NewReporter(sqoop)
 	return &EventLoop{
 		cfgWatcher: cfgWatcher,
 		operator:   op,
 		router:     router,
-		qloo:       qloo,
+		sqoop:       sqoop,
 		reporter:   rep,
 		proxyAddr:  opts.ProxyAddr,
 		bindAddr:   opts.BindAddr,
@@ -82,7 +82,7 @@ func sendErr(errs chan error, err error) {
 func (el *EventLoop) Run(stop <-chan struct{}) {
 	go el.cfgWatcher.Run(stop)
 	go func() {
-		log.Printf("QLoo server started and listening on %v", el.bindAddr)
+		log.Printf("Sqoop server started and listening on %v", el.bindAddr)
 		log.Fatalf("failed to start server: %v", http.ListenAndServe(el.bindAddr, el.router))
 	}()
 	errs := make(chan error)
@@ -194,16 +194,16 @@ func (el *EventLoop) createEmptyResolverMap(schema *v1.Schema) error {
 
 	// update existing schema with the new schema name
 	// important to do this first or we may retry creating the resolver map in a race
-	schemaToUpdate, err := el.qloo.V1().Schemas().Get(schema.Name)
+	schemaToUpdate, err := el.sqoop.V1().Schemas().Get(schema.Name)
 	if err != nil {
 		return errors.Wrapf(err, "retrieving schema %v from storage", schema.Name)
 	}
 	schemaToUpdate.ResolverMap = resolverName
-	if _, err := el.qloo.V1().Schemas().Update(schemaToUpdate); err != nil {
+	if _, err := el.sqoop.V1().Schemas().Update(schemaToUpdate); err != nil {
 		return errors.Wrapf(err, "updating schema %v in storage", schema.Name)
 	}
 
-	if _, err := el.qloo.V1().ResolverMaps().Create(generatedResolvers); err != nil {
+	if _, err := el.sqoop.V1().ResolverMaps().Create(generatedResolvers); err != nil {
 		return errors.Wrapf(err, "writing resolver map %v to storage", resolverName)
 	}
 	return nil

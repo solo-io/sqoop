@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/solo-io/qloo/pkg/storage"
+	"github.com/solo-io/sqoop/pkg/storage"
 )
 
-//go:generate go run ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/generate/generate_clients.go -f ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/file/client_template.go.tmpl -o ${GOPATH}/src/github.com/solo-io/qloo/pkg/storage/file/
+//go:generate go run ${GOPATH}/src/github.com/solo-io/sqoop/pkg/storage/generate/generate_clients.go -f ${GOPATH}/src/github.com/solo-io/sqoop/pkg/storage/file/client_template.go.tmpl -o ${GOPATH}/src/github.com/solo-io/sqoop/pkg/storage/file/
 
 type Client struct {
 	v1 *v1client

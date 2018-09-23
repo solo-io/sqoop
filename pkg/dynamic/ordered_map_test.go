@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/solo-io/qloo/pkg/dynamic"
+	. "github.com/solo-io/sqoop/pkg/dynamic"
 	"github.com/vektah/gqlgen/neelance/schema"
 )
 

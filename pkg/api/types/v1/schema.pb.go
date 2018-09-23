@@ -17,13 +17,13 @@ var _ = math.Inf
 
 //
 // The Schema object wraps the user's GraphQL Schema, which is stored as an inline string.
-// The Schema Object contains a Status field which is used by QLoo to validate the user's input schema.
+// The Schema Object contains a Status field which is used by Sqoop to validate the user's input schema.
 type Schema struct {
 	// Schema Names must be unique and follow the following syntax rules:
 	// One or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// name of the resolver map to use to resolve this schema.
-	// if the user leaves this empty, QLoo will generate the skeleton of a resolver map for the user
+	// if the user leaves this empty, Sqoop will generate the skeleton of a resolver map for the user
 	ResolverMap string `protobuf:"bytes,2,opt,name=resolver_map,json=resolverMap,proto3" json:"resolver_map,omitempty"`
 	// inline the entire graphql schema as a string here
 	InlineSchema string `protobuf:"bytes,3,opt,name=inline_schema,json=inlineSchema,proto3" json:"inline_schema,omitempty"`
@@ -75,7 +75,7 @@ func (m *Schema) GetMetadata() *gloo_api_v11.Metadata {
 }
 
 func init() {
-	proto.RegisterType((*Schema)(nil), "qloo.api.v1.Schema")
+	proto.RegisterType((*Schema)(nil), "sqoop.api.v1.Schema")
 }
 func (this *Schema) Equal(that interface{}) bool {
 	if that == nil {

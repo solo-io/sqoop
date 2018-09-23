@@ -2,11 +2,11 @@ package resolvers
 
 import (
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/exec"
-	"github.com/solo-io/qloo/pkg/resolvers/gloo"
-	"github.com/solo-io/qloo/pkg/resolvers/node"
-	"github.com/solo-io/qloo/pkg/resolvers/template"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/exec"
+	"github.com/solo-io/sqoop/pkg/resolvers/gloo"
+	"github.com/solo-io/sqoop/pkg/resolvers/node"
+	"github.com/solo-io/sqoop/pkg/resolvers/template"
 )
 
 type ResolverFactory struct {

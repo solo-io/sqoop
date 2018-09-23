@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/dynamic"
+	"github.com/solo-io/sqoop/pkg/dynamic"
 	"github.com/vektah/gqlgen/neelance/common"
 	"github.com/vektah/gqlgen/neelance/schema"
 )

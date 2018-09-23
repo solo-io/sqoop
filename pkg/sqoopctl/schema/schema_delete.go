@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"github.com/solo-io/qloo/pkg/qlooctl"
+	"github.com/solo-io/sqoop/pkg/sqoopctl"
 	"github.com/spf13/cobra"
 	"github.com/vektah/gqlgen/neelance/errors"
 )
@@ -29,7 +29,7 @@ func init() {
 }
 
 func deleteSchema(name string) error {
-	cli, err := qlooctl.MakeClient()
+	cli, err := sqoopctl.MakeClient()
 	if err != nil {
 		return err
 	}

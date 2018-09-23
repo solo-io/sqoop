@@ -8,9 +8,9 @@ import (
 	glooflags "github.com/solo-io/gloo/pkg/bootstrap/flags"
 	"github.com/solo-io/gloo/pkg/log"
 	"github.com/solo-io/gloo/pkg/signals"
-	"github.com/solo-io/qloo/pkg/bootstrap"
-	"github.com/solo-io/qloo/pkg/bootstrap/flags"
-	"github.com/solo-io/qloo/pkg/core"
+	"github.com/solo-io/sqoop/pkg/bootstrap"
+	"github.com/solo-io/sqoop/pkg/bootstrap/flags"
+	"github.com/solo-io/sqoop/pkg/core"
 	"github.com/spf13/cobra"
 )
 
@@ -24,8 +24,8 @@ func main() {
 var opts bootstrap.Options
 
 var rootCmd = &cobra.Command{
-	Use:   "qloo",
-	Short: "runs qloo",
+	Use:   "sqoop",
+	Short: "runs sqoop",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		eventLoop, err := core.Setup(opts)
 		if err != nil {
@@ -35,7 +35,7 @@ var rootCmd = &cobra.Command{
 		stop := signals.SetupSignalHandler()
 		eventLoop.Run(stop)
 
-		log.Printf("shutting down QLoo")
+		log.Printf("shutting down Sqoop")
 		return nil
 	},
 }
@@ -45,5 +45,5 @@ func init() {
 	glooflags.AddFileFlags(rootCmd, &opts.Options)
 	glooflags.AddKubernetesFlags(rootCmd, &opts.Options)
 	glooflags.AddConsulFlags(rootCmd, &opts.Options)
-	flags.AddQLooFlags(rootCmd, &opts)
+	flags.AddSqoopFlags(rootCmd, &opts)
 }

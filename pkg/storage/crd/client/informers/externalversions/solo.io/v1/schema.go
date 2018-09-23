@@ -21,10 +21,10 @@ package v1
 import (
 	time "time"
 
-	versioned "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned"
-	internalinterfaces "github.com/solo-io/qloo/pkg/storage/crd/client/informers/externalversions/internalinterfaces"
-	v1 "github.com/solo-io/qloo/pkg/storage/crd/client/listers/solo.io/v1"
-	solo_io_v1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
+	versioned "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned"
+	internalinterfaces "github.com/solo-io/sqoop/pkg/storage/crd/client/informers/externalversions/internalinterfaces"
+	v1 "github.com/solo-io/sqoop/pkg/storage/crd/client/listers/solo.io/v1"
+	solo_io_v1 "github.com/solo-io/sqoop/pkg/storage/crd/solo.io/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"
@@ -61,13 +61,13 @@ func NewFilteredSchemaInformer(client versioned.Interface, namespace string, res
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.QlooV1().Schemas(namespace).List(options)
+				return client.SqoopV1().Schemas(namespace).List(options)
 			},
 			WatchFunc: func(options meta_v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.QlooV1().Schemas(namespace).Watch(options)
+				return client.SqoopV1().Schemas(namespace).Watch(options)
 			},
 		},
 		&solo_io_v1.Schema{},

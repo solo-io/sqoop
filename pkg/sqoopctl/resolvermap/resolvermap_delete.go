@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/qlooctl"
+	"github.com/solo-io/sqoop/pkg/sqoopctl"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +29,7 @@ func init() {
 }
 
 func deleteResolverMap(name string) error {
-	cli, err := qlooctl.MakeClient()
+	cli, err := sqoopctl.MakeClient()
 	if err != nil {
 		return err
 	}

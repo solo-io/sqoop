@@ -19,26 +19,26 @@ limitations under the License.
 package fake
 
 import (
-	v1 "github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned/typed/solo.io/v1"
+	v1 "github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned/typed/solo.io/v1"
 	rest "k8s.io/client-go/rest"
 	testing "k8s.io/client-go/testing"
 )
 
-type FakeQlooV1 struct {
+type FakeSqoopV1 struct {
 	*testing.Fake
 }
 
-func (c *FakeQlooV1) ResolverMaps(namespace string) v1.ResolverMapInterface {
+func (c *FakeSqoopV1) ResolverMaps(namespace string) v1.ResolverMapInterface {
 	return &FakeResolverMaps{c, namespace}
 }
 
-func (c *FakeQlooV1) Schemas(namespace string) v1.SchemaInterface {
+func (c *FakeSqoopV1) Schemas(namespace string) v1.SchemaInterface {
 	return &FakeSchemas{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *FakeQlooV1) RESTClient() rest.Interface {
+func (c *FakeSqoopV1) RESTClient() rest.Interface {
 	var ret *rest.RESTClient
 	return ret
 }

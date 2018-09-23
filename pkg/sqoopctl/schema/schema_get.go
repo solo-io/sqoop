@@ -1,8 +1,8 @@
 package schema
 
 import (
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	"github.com/solo-io/qloo/pkg/qlooctl"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	"github.com/solo-io/sqoop/pkg/sqoopctl"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +16,7 @@ var schemaGetCmd = &cobra.Command{
 				return err
 			}
 			for _, msg := range list {
-				if err := qlooctl.Print(msg); err != nil {
+				if err := sqoopctl.Print(msg); err != nil {
 					return err
 				}
 			}
@@ -26,7 +26,7 @@ var schemaGetCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		return qlooctl.Print(msg)
+		return sqoopctl.Print(msg)
 	},
 }
 
@@ -35,7 +35,7 @@ func init() {
 }
 
 func getSchema(name string) (*v1.Schema, error) {
-	cli, err := qlooctl.MakeClient()
+	cli, err := sqoopctl.MakeClient()
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func getSchema(name string) (*v1.Schema, error) {
 }
 
 func listSchemas() ([]*v1.Schema, error) {
-	cli, err := qlooctl.MakeClient()
+	cli, err := sqoopctl.MakeClient()
 	if err != nil {
 		return nil, err
 	}

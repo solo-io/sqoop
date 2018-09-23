@@ -7,7 +7,7 @@ SOURCES := $(shell find . -name "*.go" | grep -v test)
 GENERATED_PROTO_FILES := $(shell find pkg/api/types/v1 -name "*.pb.go")
 OUTPUT_DIR ?= _output
 
-PACKAGE_PATH:=github.com/solo-io/qloo
+PACKAGE_PATH:=github.com/solo-io/sqoop
 
 #----------------------------------------------------------------------------------
 # Build
@@ -49,7 +49,7 @@ generated-code:
 
 # Core Binaries
 
-BINARIES ?= qloo
+BINARIES ?= sqoop
 DEBUG_BINARIES = $(foreach BINARY,$(BINARIES),$(BINARY)-debug)
 
 DOCKER_ORG=soloio
@@ -106,20 +106,20 @@ clean:
 	rm -rf $(OUTPUT_DIR)
 
 #----------------------------------------------------------------------------------
-# qlooctl
+# sqoopctl
 #----------------------------------------------------------------------------------
 
-.PHONY: qlooctl
-qlooctl: $(OUTPUT_DIR)/qlooctl
+.PHONY: sqoopctl
+sqoopctl: $(OUTPUT_DIR)/sqoopctl
 
-$(OUTPUT_DIR)/qlooctl: $(SOURCES)
-	go build -v -o $@ cmd/qlooctl/main.go
+$(OUTPUT_DIR)/sqoopctl: $(SOURCES)
+	go build -v -o $@ cmd/sqoopctl/main.go
 
-$(OUTPUT_DIR)/qlooctl-linux-amd64: $(SOURCES)
-	GOOS=linux go build -v -o $@ cmd/qlooctl/main.go
+$(OUTPUT_DIR)/sqoopctl-linux-amd64: $(SOURCES)
+	GOOS=linux go build -v -o $@ cmd/sqoopctl/main.go
 
-$(OUTPUT_DIR)/qlooctl-darwin-amd64: $(SOURCES)
-	GOOS=darwin go build -v -o $@ cmd/qlooctl/main.go
+$(OUTPUT_DIR)/sqoopctl-darwin-amd64: $(SOURCES)
+	GOOS=darwin go build -v -o $@ cmd/sqoopctl/main.go
 
 #----------------------------------------------------------------------------------
 # Docs
@@ -152,19 +152,19 @@ site: doc
 	mkdocs build
 
 docker-docs: site
-	docker build -t $(DOCKER_ORG)/qloo-docs:$(VERSION) -f Dockerfile.site .
+	docker build -t $(DOCKER_ORG)/sqoop-docs:$(VERSION) -f Dockerfile.site .
 
 
 #----------------------------------------------------------------------------------
 # Release
 #----------------------------------------------------------------------------------
 
-RELEASE_BINARIES := $(OUTPUT_DIR)/qlooctl-linux-amd64 $(OUTPUT_DIR)/qlooctl-darwin-amd64
+RELEASE_BINARIES := $(OUTPUT_DIR)/sqoopctl-linux-amd64 $(OUTPUT_DIR)/sqoopctl-darwin-amd64
 
 .PHONY: release-binaries
 release-binaries: $(RELEASE_BINARIES)
 
 .PHONY: release
 release: release-binaries
-	hack/create-release.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=qloo tag=v$(VERSION)
-	@$(foreach BINARY,$(RELEASE_BINARIES),hack/upload-github-release-asset.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=qloo tag=v$(VERSION) filename=$(BINARY);)
+	hack/create-release.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=sqoop tag=v$(VERSION)
+	@$(foreach BINARY,$(RELEASE_BINARIES),hack/upload-github-release-asset.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=sqoop tag=v$(VERSION) filename=$(BINARY);)

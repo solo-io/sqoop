@@ -8,16 +8,16 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"
-	"github.com/solo-io/qloo/pkg/storage"
-	"github.com/solo-io/qloo/pkg/storage/crd"
+	"github.com/solo-io/sqoop/pkg/storage"
+	"github.com/solo-io/sqoop/pkg/storage/crd"
 	"k8s.io/client-go/tools/clientcmd"
 
 	gloov1 "github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/log"
 	. "github.com/solo-io/gloo/test/helpers"
-	"github.com/solo-io/qloo/pkg/api/types/v1"
-	. "github.com/solo-io/qloo/pkg/reporter"
-	"github.com/solo-io/qloo/test"
+	"github.com/solo-io/sqoop/pkg/api/types/v1"
+	. "github.com/solo-io/sqoop/pkg/reporter"
+	"github.com/solo-io/sqoop/test"
 )
 
 var _ = Describe("CrdReporter", func() {

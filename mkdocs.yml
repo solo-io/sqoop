@@ -1,4 +1,4 @@
-site_name: QLoo
+site_name: Sqoop
 pages:
     - Index: index.md
     - Introduction:
@@ -26,10 +26,10 @@ pages:
       - Schemas: v1/schema.md
       - ResolverMaps: v1/resolver_map.md
       - Config: v1/config.md
-repo_url: https://github.com/solo-io/qloo/
+repo_url: https://github.com/solo-io/sqoop/
 site_author: gloo Project Authors
 copyright: © Copyright 2018, solo.io Inc.
-google_analytics: ['UA-101654320-1', 'qloo.solo.io']
+google_analytics: ['UA-101654320-1', 'sqoop.solo.io']
 theme:
   name: 'material'
   favicon: 'img/favicon.ico'

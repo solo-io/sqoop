@@ -19,33 +19,33 @@ limitations under the License.
 package v1
 
 import (
-	"github.com/solo-io/qloo/pkg/storage/crd/client/clientset/versioned/scheme"
-	v1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
+	"github.com/solo-io/sqoop/pkg/storage/crd/client/clientset/versioned/scheme"
+	v1 "github.com/solo-io/sqoop/pkg/storage/crd/solo.io/v1"
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	rest "k8s.io/client-go/rest"
 )
 
-type QlooV1Interface interface {
+type SqoopV1Interface interface {
 	RESTClient() rest.Interface
 	ResolverMapsGetter
 	SchemasGetter
 }
 
-// QlooV1Client is used to interact with features provided by the qloo.solo.io group.
-type QlooV1Client struct {
+// SqoopV1Client is used to interact with features provided by the sqoop.solo.io group.
+type SqoopV1Client struct {
 	restClient rest.Interface
 }
 
-func (c *QlooV1Client) ResolverMaps(namespace string) ResolverMapInterface {
+func (c *SqoopV1Client) ResolverMaps(namespace string) ResolverMapInterface {
 	return newResolverMaps(c, namespace)
 }
 
-func (c *QlooV1Client) Schemas(namespace string) SchemaInterface {
+func (c *SqoopV1Client) Schemas(namespace string) SchemaInterface {
 	return newSchemas(c, namespace)
 }
 
-// NewForConfig creates a new QlooV1Client for the given config.
-func NewForConfig(c *rest.Config) (*QlooV1Client, error) {
+// NewForConfig creates a new SqoopV1Client for the given config.
+func NewForConfig(c *rest.Config) (*SqoopV1Client, error) {
 	config := *c
 	if err := setConfigDefaults(&config); err != nil {
 		return nil, err
@@ -54,12 +54,12 @@ func NewForConfig(c *rest.Config) (*QlooV1Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &QlooV1Client{client}, nil
+	return &SqoopV1Client{client}, nil
 }
 
-// NewForConfigOrDie creates a new QlooV1Client for the given config and
+// NewForConfigOrDie creates a new SqoopV1Client for the given config and
 // panics if there is an error in the config.
-func NewForConfigOrDie(c *rest.Config) *QlooV1Client {
+func NewForConfigOrDie(c *rest.Config) *SqoopV1Client {
 	client, err := NewForConfig(c)
 	if err != nil {
 		panic(err)
@@ -67,9 +67,9 @@ func NewForConfigOrDie(c *rest.Config) *QlooV1Client {
 	return client
 }
 
-// New creates a new QlooV1Client for the given RESTClient.
-func New(c rest.Interface) *QlooV1Client {
-	return &QlooV1Client{c}
+// New creates a new SqoopV1Client for the given RESTClient.
+func New(c rest.Interface) *SqoopV1Client {
+	return &SqoopV1Client{c}
 }
 
 func setConfigDefaults(config *rest.Config) error {
@@ -87,7 +87,7 @@ func setConfigDefaults(config *rest.Config) error {
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *QlooV1Client) RESTClient() rest.Interface {
+func (c *SqoopV1Client) RESTClient() rest.Interface {
 	if c == nil {
 		return nil
 	}

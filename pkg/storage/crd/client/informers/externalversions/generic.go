@@ -21,7 +21,7 @@ package externalversions
 import (
 	"fmt"
 
-	v1 "github.com/solo-io/qloo/pkg/storage/crd/solo.io/v1"
+	v1 "github.com/solo-io/sqoop/pkg/storage/crd/solo.io/v1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 )
@@ -52,11 +52,11 @@ func (f *genericInformer) Lister() cache.GenericLister {
 // TODO extend this to unknown resources with a client pool
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
-	// Group=qloo.solo.io, Version=v1
+	// Group=sqoop.solo.io, Version=v1
 	case v1.SchemeGroupVersion.WithResource("resolvermaps"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Qloo().V1().ResolverMaps().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Sqoop().V1().ResolverMaps().Informer()}, nil
 	case v1.SchemeGroupVersion.WithResource("schemas"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Qloo().V1().Schemas().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Sqoop().V1().Schemas().Informer()}, nil
 
 	}
 

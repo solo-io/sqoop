@@ -41,7 +41,7 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
 // *
-// Config is a top-level config object. It is used internally by QLoo as a container for the entire set of config objects.
+// Config is a top-level config object. It is used internally by Sqoop as a container for the entire set of config objects.
 type Config struct {
 	Schemas      []*Schema      `protobuf:"bytes,3,rep,name=schemas" json:"schemas,omitempty"`
 	ResolverMaps []*ResolverMap `protobuf:"bytes,4,rep,name=resolver_maps,json=resolverMaps" json:"resolver_maps,omitempty"`
@@ -67,7 +67,7 @@ func (m *Config) GetResolverMaps() []*ResolverMap {
 }
 
 func init() {
-	proto.RegisterType((*Config)(nil), "qloo.api.v1.Config")
+	proto.RegisterType((*Config)(nil), "sqoop.api.v1.Config")
 }
 func (this *Config) Equal(that interface{}) bool {
 	if that == nil {

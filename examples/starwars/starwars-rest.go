@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/solo-io/qloo/examples/starwars/server"
+	"github.com/solo-io/sqoop/examples/starwars/server"
 )
 
 func main() {

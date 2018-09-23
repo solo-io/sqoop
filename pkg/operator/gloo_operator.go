@@ -4,7 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/api/types/v1"
 	"github.com/solo-io/gloo/pkg/storage"
-	qloov1 "github.com/solo-io/qloo/pkg/api/types/v1"
+	sqoopv1 "github.com/solo-io/sqoop/pkg/api/types/v1"
 )
 
 const listenerPort = uint32(8080)
@@ -77,7 +77,7 @@ func (operator *GlooOperator) ConfigureGloo() error {
 	return nil
 }
 
-func (operator *GlooOperator) ApplyResolvers(resolverMap *qloov1.ResolverMap) {
+func (operator *GlooOperator) ApplyResolvers(resolverMap *sqoopv1.ResolverMap) {
 	operator.cachedRoutes = append(operator.cachedRoutes, buildRoutes(resolverMap)...)
 }
 

@@ -28,7 +28,7 @@ BODY=$(cat <<EOF
   "tag_name": "${tag}",
   "target_commitish": "master",
   "name": "${tag}",
-  "body": "${tag} release of qlooctl binaries",
+  "body": "${tag} release of sqoopctl binaries",
   "draft": false,
   "prerelease": false
 }
