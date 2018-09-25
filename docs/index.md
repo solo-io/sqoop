@@ -1,14 +1,14 @@
 
 
 <h1 align="center">
-    <img src="Sqoop.png" alt="Sqoop" width="200" height="280">
+    <img src="Sqoop.png" alt="Sqoop" width="200" height="183">
   <br>
-  The Codeless GraphQL Engine
+  GraphQL for Monolith, Microservices, and Serverless
 </h1>
 
 ### What is Sqoop?
 
-Sqoop is a GraphQL Server built on top of [Gloo](https://github.com/solo-io/gloo) and the [Envoy Proxy](https://envoyproxy.io).
+Sqoop (formerly QLoo) is a GraphQL Server built on top of [Gloo](https://github.com/solo-io/gloo) and the [Envoy Proxy](https://envoyproxy.io).
 
 Sqoop leverages Gloo's function registry and Envoy's advanced HTTP routing features to provide a GraphQL frontend
 for REST/gRPC applications and serverless functions. Sqoop routes requests to data sources via Envoy, leveraging 
