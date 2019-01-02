@@ -151,9 +151,8 @@ doc: docs/api.json docs/index.md docs/getting_started/kubernetes/1.md
 site: doc
 	mkdocs build
 
-docker-docs: site
-	docker build -t $(DOCKER_ORG)/sqoop-docs:$(VERSION) -f Dockerfile.site .
-
+deploy-site: site
+	firebase deploy --only hosting:sqoop-site
 
 #----------------------------------------------------------------------------------
 # Release

@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "target": "sqoop-site",
+    "public": "site",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
