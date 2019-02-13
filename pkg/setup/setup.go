@@ -6,8 +6,8 @@ import (
 	check "github.com/solo-io/go-checkpoint"
 
 	"github.com/solo-io/gloo/pkg/utils/setuputils"
-	"github.com/solo-io/sqoop/pkg/version"
 	"github.com/solo-io/sqoop/pkg/syncer"
+	"github.com/solo-io/sqoop/pkg/version"
 )
 
 func Main() error {
