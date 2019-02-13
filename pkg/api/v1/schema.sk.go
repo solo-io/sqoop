@@ -118,14 +118,6 @@ func (list SchemaList) AsInterfaces() []interface{} {
 	return asInterfaces
 }
 
-func (list SchemaList) ByNamespace() SchemasByNamespace {
-	byNamespace := make(SchemasByNamespace)
-	for _, schema := range list {
-		byNamespace.Add(schema)
-	}
-	return byNamespace
-}
-
 func (byNamespace SchemasByNamespace) Add(schema ...*Schema) {
 	for _, item := range schema {
 		byNamespace[item.Metadata.Namespace] = append(byNamespace[item.Metadata.Namespace], item)
@@ -145,7 +137,11 @@ func (byNamespace SchemasByNamespace) List() SchemaList {
 }
 
 func (byNamespace SchemasByNamespace) Clone() SchemasByNamespace {
-	return byNamespace.List().Clone().ByNamespace()
+	cloned := make(SchemasByNamespace)
+	for ns, list := range byNamespace {
+		cloned[ns] = list.Clone()
+	}
+	return cloned
 }
 
 var _ resources.Resource = &Schema{}

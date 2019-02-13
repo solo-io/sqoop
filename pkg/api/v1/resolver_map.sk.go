@@ -118,14 +118,6 @@ func (list ResolverMapList) AsInterfaces() []interface{} {
 	return asInterfaces
 }
 
-func (list ResolverMapList) ByNamespace() ResolverMapsByNamespace {
-	byNamespace := make(ResolverMapsByNamespace)
-	for _, resolverMap := range list {
-		byNamespace.Add(resolverMap)
-	}
-	return byNamespace
-}
-
 func (byNamespace ResolverMapsByNamespace) Add(resolverMap ...*ResolverMap) {
 	for _, item := range resolverMap {
 		byNamespace[item.Metadata.Namespace] = append(byNamespace[item.Metadata.Namespace], item)
@@ -145,7 +137,11 @@ func (byNamespace ResolverMapsByNamespace) List() ResolverMapList {
 }
 
 func (byNamespace ResolverMapsByNamespace) Clone() ResolverMapsByNamespace {
-	return byNamespace.List().Clone().ByNamespace()
+	cloned := make(ResolverMapsByNamespace)
+	for ns, list := range byNamespace {
+		cloned[ns] = list.Clone()
+	}
+	return cloned
 }
 
 var _ resources.Resource = &ResolverMap{}

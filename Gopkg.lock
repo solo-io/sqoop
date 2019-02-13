@@ -132,13 +132,14 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:63dfa0378013bdefa3afabd8d4170af1d3b741204d4798563023b2f1b13e871b"
+  digest = "1:dc9cbd16a546ee8d4a9f4823c9c91f0825e294fc085493a5a3937183d5f17b84"
   name = "github.com/gogo/protobuf"
   packages = [
     "gogoproto",
     "jsonpb",
     "proto",
     "protoc-gen-gogo/descriptor",
+    "protoc-gen-gogo/plugin",
     "sortkeys",
     "types",
   ]
@@ -386,12 +387,27 @@
   revision = "a1dbeea552b7c8df4b542c66073e393de198a800"
 
 [[projects]]
+  branch = "master"
+  digest = "1:89cd2208bdeb192cc83ee287216af3c987fc87a90b9087718ad6631b636cefcf"
+  name = "github.com/iancoleman/strcase"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3605ed457bf7f8caa1371b4fafadadc026673479"
+
+[[projects]]
   digest = "1:5258ca648f4cf40b7bc7c52b85009546699332616f9ed23d89b6798baca6f707"
   name = "github.com/ilackarms/protoc-gen-doc"
   packages = ["."]
   pruneopts = "UT"
   revision = "728a624b38e5ae90bb3e5da5f406e05138f1517c"
   version = "v1.0.0"
+
+[[projects]]
+  digest = "1:99bafffd60368afd17d11302671600e044137f5c6ba9babb950a47c84ed5a71d"
+  name = "github.com/ilackarms/protokit"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ee2393f3bbf04700fc5d611077496c47ec1937ed"
 
 [[projects]]
   digest = "1:3e260afa138eab6492b531a3b3d10ab4cb70512d423faa78b8949dec76e66a21"
@@ -607,8 +623,8 @@
     "projects/gloo/pkg/defaults",
   ]
   pruneopts = "UT"
-  revision = "505f27ff6e4fc27d8c96a5bf29cf96631dd82cf9"
-  version = "v0.6.21"
+  revision = "d965f76238a2b9062c084269d84399d0665c301f"
+  version = "v0.6.23"
 
 [[projects]]
   digest = "1:699918466a9758902a14923851a7fbd230500f93da6982dae7c79959afb0a664"
@@ -630,7 +646,7 @@
   version = "v0.1.3"
 
 [[projects]]
-  digest = "1:3542e2defa9de5bcaa6a6f103ddef0e3d6213110549b3747bb644c19fc9307bb"
+  digest = "1:322e64a9a03b0f2d4a16e5205a093cd12d824b2c0f6385c7a9bba29c320445a3"
   name = "github.com/solo-io/solo-kit"
   packages = [
     "pkg/api/v1/clients",
@@ -639,6 +655,7 @@
     "pkg/api/v1/clients/factory",
     "pkg/api/v1/clients/file",
     "pkg/api/v1/clients/kube",
+    "pkg/api/v1/clients/kube/cache",
     "pkg/api/v1/clients/kube/controller",
     "pkg/api/v1/clients/kube/crd",
     "pkg/api/v1/clients/kube/crd/client/clientset/versioned",
@@ -646,7 +663,6 @@
     "pkg/api/v1/clients/kube/crd/client/clientset/versioned/typed/solo.io/v1",
     "pkg/api/v1/clients/kube/crd/solo.io/v1",
     "pkg/api/v1/clients/kubesecret",
-    "pkg/api/v1/clients/kubesecretplain",
     "pkg/api/v1/clients/memory",
     "pkg/api/v1/clients/vault",
     "pkg/api/v1/control-plane/cache",
@@ -656,6 +672,15 @@
     "pkg/api/v1/reporter",
     "pkg/api/v1/resources",
     "pkg/api/v1/resources/core",
+    "pkg/code-generator",
+    "pkg/code-generator/cmd",
+    "pkg/code-generator/codegen",
+    "pkg/code-generator/codegen/funcs",
+    "pkg/code-generator/codegen/templates",
+    "pkg/code-generator/docgen",
+    "pkg/code-generator/docgen/templates",
+    "pkg/code-generator/model",
+    "pkg/code-generator/parser",
     "pkg/errors",
     "pkg/utils/contextutils",
     "pkg/utils/errutils",
@@ -670,8 +695,8 @@
     "test/tests/typed",
   ]
   pruneopts = "UT"
-  revision = "a8be3a112d249730039280d9f50f50fd8b453099"
-  version = "v0.2.24"
+  revision = "3152f9f329ed57cda1d3400f2d6890d47ba1e7e5"
+  version = "v0.2.25"
 
 [[projects]]
   digest = "1:9424f440bba8f7508b69414634aef3b2b3a877e522d8a4624692412805407bb7"
@@ -801,6 +826,14 @@
   ]
   pruneopts = "UT"
   revision = "8f65e3013ebad444f13bc19536f7865efc793816"
+
+[[projects]]
+  branch = "master"
+  digest = "1:b521f10a2d8fa85c04a8ef4e62f2d1e14d303599a55d64dabf9f5a02f84d35eb"
+  name = "golang.org/x/sync"
+  packages = ["errgroup"]
+  pruneopts = "UT"
+  revision = "37e7f081c4d4c64e13b10787722085407fe5d15f"
 
 [[projects]]
   branch = "master"
@@ -1052,10 +1085,56 @@
   version = "kubernetes-1.13.0"
 
 [[projects]]
-  digest = "1:e4ae55798577d0d7f877f4cc319f8deddc99161b7f9bc6826ba002991ed75239"
+  digest = "1:6d475c1fcb2dfc1fda05e662a93d3fcb0d8f6ad21f6bc0cd21d82a79f58fd2a3"
   name = "k8s.io/client-go"
   packages = [
     "discovery",
+    "informers",
+    "informers/admissionregistration",
+    "informers/admissionregistration/v1alpha1",
+    "informers/admissionregistration/v1beta1",
+    "informers/apps",
+    "informers/apps/v1",
+    "informers/apps/v1beta1",
+    "informers/apps/v1beta2",
+    "informers/auditregistration",
+    "informers/auditregistration/v1alpha1",
+    "informers/autoscaling",
+    "informers/autoscaling/v1",
+    "informers/autoscaling/v2beta1",
+    "informers/autoscaling/v2beta2",
+    "informers/batch",
+    "informers/batch/v1",
+    "informers/batch/v1beta1",
+    "informers/batch/v2alpha1",
+    "informers/certificates",
+    "informers/certificates/v1beta1",
+    "informers/coordination",
+    "informers/coordination/v1beta1",
+    "informers/core",
+    "informers/core/v1",
+    "informers/events",
+    "informers/events/v1beta1",
+    "informers/extensions",
+    "informers/extensions/v1beta1",
+    "informers/internalinterfaces",
+    "informers/networking",
+    "informers/networking/v1",
+    "informers/policy",
+    "informers/policy/v1beta1",
+    "informers/rbac",
+    "informers/rbac/v1",
+    "informers/rbac/v1alpha1",
+    "informers/rbac/v1beta1",
+    "informers/scheduling",
+    "informers/scheduling/v1alpha1",
+    "informers/scheduling/v1beta1",
+    "informers/settings",
+    "informers/settings/v1alpha1",
+    "informers/storage",
+    "informers/storage/v1",
+    "informers/storage/v1alpha1",
+    "informers/storage/v1beta1",
     "kubernetes",
     "kubernetes/scheme",
     "kubernetes/typed/admissionregistration/v1alpha1",
@@ -1090,6 +1169,34 @@
     "kubernetes/typed/storage/v1",
     "kubernetes/typed/storage/v1alpha1",
     "kubernetes/typed/storage/v1beta1",
+    "listers/admissionregistration/v1alpha1",
+    "listers/admissionregistration/v1beta1",
+    "listers/apps/v1",
+    "listers/apps/v1beta1",
+    "listers/apps/v1beta2",
+    "listers/auditregistration/v1alpha1",
+    "listers/autoscaling/v1",
+    "listers/autoscaling/v2beta1",
+    "listers/autoscaling/v2beta2",
+    "listers/batch/v1",
+    "listers/batch/v1beta1",
+    "listers/batch/v2alpha1",
+    "listers/certificates/v1beta1",
+    "listers/coordination/v1beta1",
+    "listers/core/v1",
+    "listers/events/v1beta1",
+    "listers/extensions/v1beta1",
+    "listers/networking/v1",
+    "listers/policy/v1beta1",
+    "listers/rbac/v1",
+    "listers/rbac/v1alpha1",
+    "listers/rbac/v1beta1",
+    "listers/scheduling/v1alpha1",
+    "listers/scheduling/v1beta1",
+    "listers/settings/v1alpha1",
+    "listers/storage/v1",
+    "listers/storage/v1alpha1",
+    "listers/storage/v1beta1",
     "pkg/apis/clientauthentication",
     "pkg/apis/clientauthentication/v1alpha1",
     "pkg/apis/clientauthentication/v1beta1",
@@ -1175,6 +1282,7 @@
     "github.com/solo-io/solo-kit/pkg/api/v1/reporter",
     "github.com/solo-io/solo-kit/pkg/api/v1/resources",
     "github.com/solo-io/solo-kit/pkg/api/v1/resources/core",
+    "github.com/solo-io/solo-kit/pkg/code-generator/cmd",
     "github.com/solo-io/solo-kit/pkg/errors",
     "github.com/solo-io/solo-kit/pkg/utils/contextutils",
     "github.com/solo-io/solo-kit/pkg/utils/errutils",

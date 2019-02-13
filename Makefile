@@ -1,125 +1,83 @@
-# Change this if your googleapis is in a different directory
-export GOOGLE_PROTOS_HOME=$(HOME)/workspace/googleapis
+#----------------------------------------------------------------------------------
+# Base
+#----------------------------------------------------------------------------------
 
 ROOTDIR := $(shell pwd)
-PROTOS := $(shell find api/v1 -name "*.proto")
-SOURCES := $(shell find . -name "*.go" | grep -v test)
-GENERATED_PROTO_FILES := $(shell find pkg/api/types/v1 -name "*.pb.go")
-OUTPUT_DIR ?= _output
+OUTPUT_DIR ?= $(ROOTDIR)/_output
+SOURCES := $(shell find . -name "*.go" | grep -v test.go | grep -v '\.\#*')
+RELEASE := "true"
+ifeq ($(TAGGED_VERSION),)
+	# TAGGED_VERSION := $(shell git describe --tags)
+	# This doesn't work in CI, need to find another way...
+	TAGGED_VERSION := vdev
+	RELEASE := "false"
+endif
+VERSION ?= $(shell echo $(TAGGED_VERSION) | cut -c 2-)
 
-PACKAGE_PATH:=github.com/solo-io/sqoop
+LDFLAGS := "-X github.com/solo-io/sqoop/version.Version=$(VERSION)"
+GCFLAGS := all="-N -l"
 
 #----------------------------------------------------------------------------------
-# Build
+# Repo setup
 #----------------------------------------------------------------------------------
 
-# Generated code
+# https://www.viget.com/articles/two-ways-to-share-git-hooks-with-your-team/
+.PHONY: init
+init:
+	git config core.hooksPath .githooks
 
-.PHONY: all
-all: build
+.PHONY: update-deps
+update-deps:
+	go get -u golang.org/x/tools/cmd/goimports
+	go get -u github.com/gogo/protobuf/gogoproto
+	go get -u github.com/gogo/protobuf/protoc-gen-gogo
+	go get -u github.com/lyft/protoc-gen-validate
+	go get -u github.com/paulvollmer/2gobytes
 
-.PHONY: proto
-proto: $(GENERATED_PROTO_FILES)
+.PHONY: pin-repos
+pin-repos:
+	go run pin_repos.go
 
-$(GENERATED_PROTO_FILES): $(PROTOS)
-	cd api/v1/ && \
-	mkdir -p $(ROOTDIR)/pkg/api/types/v1 && \
-	protoc \
-	-I=. \
-	-I=$(GOPATH)/src \
-	-I=$(GOPATH)/src/github.com/gogo/protobuf/ \
-	--gogo_out=$(GOPATH)/src \
-	./*.proto
+.PHONY: check-format
+check-format:
+	NOT_FORMATTED=$$(gofmt -l ./pkg/ ./test/) && if [ -n "$$NOT_FORMATTED" ]; then echo These files are not formatted: $$NOT_FORMATTED; exit 1; fi
 
-$(OUTPUT_DIR):
-	mkdir -p $@
+check-spelling:
+	./ci/spell.sh check
 
-# kubernetes custom clientsets
-.PHONY: clientset
-clientset: $(GENERATED_PROTO_FILES) $(SOURCES)
-	cd ${GOPATH}/src/k8s.io/code-generator && \
-	./generate-groups.sh all \
-		$(PACKAGE_PATH)/pkg/storage/crd/client \
-		$(PACKAGE_PATH)/pkg/storage/crd \
-		"solo.io:v1"
 
 .PHONY: generated-code
 generated-code:
 	go generate ./...
 
-# Core Binaries
+#----------------------------------------------------------------------------------
+# Clean
+#----------------------------------------------------------------------------------
 
-BINARIES ?= sqoop
-DEBUG_BINARIES = $(foreach BINARY,$(BINARIES),$(BINARY)-debug)
-
-DOCKER_ORG=soloio
-
-.PHONY: build
-build: $(BINARIES)
-
-.PHONY: debug-build
-debug-build: $(DEBUG_BINARIES)
-
-docker: $(foreach BINARY,$(BINARIES),$(shell echo $(BINARY)-docker))
-docker-push: $(foreach BINARY,$(BINARIES),$(shell echo $(BINARY)-docker-push))
-
-define BINARY_TARGETS
-$(eval VERSION := $(shell cat version))
-$(eval IMAGE_TAG ?= $(VERSION))
-$(eval OUTPUT_BINARY := $(OUTPUT_DIR)/$(BINARY))
-
-.PHONY: $(BINARY)
-.PHONY: $(BINARY)-debug
-.PHONY: $(BINARY)-docker
-.PHONY: $(BINARY)-docker-debug
-.PHONY: $(BINARY)-docker-push
-.PHONY: $(BINARY)-docker-push-debug
-
-# nice targets for the binaries
-$(BINARY): $(OUTPUT_BINARY)
-$(BINARY)-debug: $(OUTPUT_BINARY)-debug
-
-# go build
-$(OUTPUT_BINARY): $(OUTPUT_DIR) $(PREREQUISITES)
-	CGO_ENABLED=0 GOOS=linux go build -v -o $(OUTPUT_BINARY) cmd/$(BINARY)/main.go
-$(OUTPUT_BINARY)-debug: $(OUTPUT_DIR) $(PREREQUISITES)
-	go build -i -gcflags "all=-N -l" -o $(OUTPUT_BINARY)-debug cmd/$(BINARY)/main.go
-
-# docker
-$(BINARY)-docker: $(OUTPUT_BINARY)
-	docker build -t $(DOCKER_ORG)/$(BINARY):$(IMAGE_TAG) $(OUTPUT_DIR) -f - < cmd/$(BINARY)/Dockerfile
-$(BINARY)-docker-debug: $(OUTPUT_BINARY)-debug
-	docker build -t $(DOCKER_ORG)/$(BINARY)-debug:$(IMAGE_TAG) $(OUTPUT_DIR) -f - < cmd/$(BINARY)/Dockerfile.debug
-$(BINARY)-docker-push: $(BINARY)-docker
-	docker push $(DOCKER_ORG)/$(BINARY):$(IMAGE_TAG)
-$(BINARY)-docker-push-debug: $(BINARY)-docker-debug
-	docker push $(DOCKER_ORG)/$(BINARY)-debug:$(IMAGE_TAG)
-
-endef
-
-PREREQUISITES := $(SOURCES) $(GENERATED_PROTO_FILES) generated-code clientset
-$(foreach BINARY,$(BINARIES),$(eval $(BINARY_TARGETS)))
-
-# clean
-
+# Important to clean before pushing new releases. Dockerfiles and binaries may not update properly
+.PHONY: clean
 clean:
-	rm -rf $(OUTPUT_DIR)
+	rm -rf _output
+	rm -fr site
+
+
+
 
 #----------------------------------------------------------------------------------
 # sqoopctl
 #----------------------------------------------------------------------------------
 
-.PHONY: sqoopctl
-sqoopctl: $(OUTPUT_DIR)/sqoopctl
-
-$(OUTPUT_DIR)/sqoopctl: $(SOURCES)
-	go build -v -o $@ cmd/sqoopctl/main.go
-
-$(OUTPUT_DIR)/sqoopctl-linux-amd64: $(SOURCES)
-	GOOS=linux go build -v -o $@ cmd/sqoopctl/main.go
-
-$(OUTPUT_DIR)/sqoopctl-darwin-amd64: $(SOURCES)
-	GOOS=darwin go build -v -o $@ cmd/sqoopctl/main.go
+#.PHONY: sqoopctl
+#sqoopctl: $(OUTPUT_DIR)/sqoopctl
+#
+#$(OUTPUT_DIR)/sqoopctl: $(SOURCES)
+#	go build -v -o $@ cmd/sqoopctl/main.go
+#
+#$(OUTPUT_DIR)/sqoopctl-linux-amd64: $(SOURCES)
+#	GOOS=linux go build -v -o $@ cmd/sqoopctl/main.go
+#
+#$(OUTPUT_DIR)/sqoopctl-darwin-amd64: $(SOURCES)
+#	GOOS=darwin go build -v -o $@ cmd/sqoopctl/main.go
 
 #----------------------------------------------------------------------------------
 # Docs

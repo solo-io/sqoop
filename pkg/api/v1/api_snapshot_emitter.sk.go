@@ -83,6 +83,18 @@ func (c *apiEmitter) Schema() SchemaClient {
 }
 
 func (c *apiEmitter) Snapshots(watchNamespaces []string, opts clients.WatchOpts) (<-chan *ApiSnapshot, <-chan error, error) {
+
+	if len(watchNamespaces) == 0 {
+		watchNamespaces = []string{""}
+	}
+
+	for _, ns := range watchNamespaces {
+		if ns == "" && len(watchNamespaces) > 1 {
+			return nil, nil, errors.Errorf("the \"\" namespace is used to watch all namespaces. Snapshots can either be tracked for " +
+				"specific namespaces or \"\" AllNamespaces, but not both.")
+		}
+	}
+
 	errs := make(chan error)
 	var done sync.WaitGroup
 	ctx := opts.Ctx
@@ -162,21 +174,6 @@ func (c *apiEmitter) Snapshots(watchNamespaces []string, opts clients.WatchOpts)
 			snapshots <- &sentSnapshot
 		}
 
-		/* TODO (yuval-k): figure out how to make this work to avoid a stale snapshot.
-		   		// construct the first snapshot from all the configs that are currently there
-		   		// that guarantees that the first snapshot contains all the data.
-		   		for range watchNamespaces {
-		      resolverMapNamespacedList := <- resolverMapChan
-		      currentSnapshot.ResolverMaps.Clear(resolverMapNamespacedList.namespace)
-		      resolverMapList := resolverMapNamespacedList.list
-		   	currentSnapshot.ResolverMaps.Add(resolverMapList...)
-		      schemaNamespacedList := <- schemaChan
-		      currentSnapshot.Schemas.Clear(schemaNamespacedList.namespace)
-		      schemaList := schemaNamespacedList.list
-		   	currentSnapshot.Schemas.Add(schemaList...)
-		   		}
-		*/
-
 		for {
 			record := func() { stats.Record(ctx, mApiSnapshotIn.M(1)) }
 
@@ -197,16 +194,14 @@ func (c *apiEmitter) Snapshots(watchNamespaces []string, opts clients.WatchOpts)
 				namespace := resolverMapNamespacedList.namespace
 				resolverMapList := resolverMapNamespacedList.list
 
-				currentSnapshot.ResolverMaps.Clear(namespace)
-				currentSnapshot.ResolverMaps.Add(resolverMapList...)
+				currentSnapshot.ResolverMaps[namespace] = resolverMapList
 			case schemaNamespacedList := <-schemaChan:
 				record()
 
 				namespace := schemaNamespacedList.namespace
 				schemaList := schemaNamespacedList.list
 
-				currentSnapshot.Schemas.Clear(namespace)
-				currentSnapshot.Schemas.Add(schemaList...)
+				currentSnapshot.Schemas[namespace] = schemaList
 			}
 		}
 	}()
