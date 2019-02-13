@@ -1,0 +1,15 @@
+steps:
+- name: 'gcr.io/$PROJECT_ID/dep'
+  args: ['ensure']
+  env:
+  - 'PROJECT_ROOT=github.com/solo-io/sqoop'
+
+- name: 'gcr.io/$PROJECT_ID/go-make'
+  entrypoint: 'bash'
+  args: ['-c', 'tar -zvcf sqoop-dep.tar.gz ./gopath/pkg/dep']
+  env:
+  - 'PROJECT_ROOT=github.com/solo-io/sqoop'
+  - 'GOPATH=/workspace/gopath'
+
+- name: gcr.io/cloud-builders/gsutil
+  args: ['cp', 'sqoop-dep.tar.gz', 'gs://solo-public-cache/sqoop/sqoop-dep.tar.gz']
