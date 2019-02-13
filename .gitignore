@@ -18,3 +18,7 @@ cmd/sqoopctl/sqoopctl
 site/
 test/kube_e2e/kube_resources/test-install.yaml
 test/kube_e2e/kube_resources/testing-resources.yaml
+
+# IDE
+.idea
+.vscode

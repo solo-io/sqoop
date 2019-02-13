@@ -1,13 +1,14 @@
 syntax = "proto3";
-package sqoop.api.v1;
-option go_package = "github.com/solo-io/sqoop/pkg/api/types/v1";
+package sqoop.solo.io;
+option go_package = "github.com/solo-io/sqoop/pkg/api/v1";
 
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all) = true;
 
-// imported from Gloo
-import "github.com/solo-io/gloo/api/v1/status.proto";
-import "github.com/solo-io/gloo/api/v1/metadata.proto";
+import "github.com/solo-io/solo-kit/api/v1/metadata.proto";
+import "github.com/solo-io/solo-kit/api/v1/status.proto";
+import "github.com/solo-io/solo-kit/api/v1/solo-kit.proto";
+import "github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto";
 
 /*
  * The ResolverMap object maps Resolvers to the fields in the GraphQL Schema
@@ -15,32 +16,32 @@ import "github.com/solo-io/gloo/api/v1/metadata.proto";
  * is read or updated if one does not alreay exist.
 */
 message ResolverMap {
-    // Name of the Resolver Map. Resolver Map names must be unique
-    //
-    // Resolver Map Names must be unique and follow the following syntax rules:
-    // One or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters.
-    string name = 1;
+
+    option (core.solo.io.resource).short_name = "rm";
+    option (core.solo.io.resource).plural_name = "resolver_maps";
+    // TODO: remove when we are ready to include this resource in the docs
+    option (core.solo.io.resource).skip_docs_gen = true;
 
     // Types is a map of Type Names (defined in the schema) to a TypeResolver, which contain resolvers for the
     // specific fields of the type
     map<string, TypeResolver> types = 3;
 
-    // Status indicates the validation status of the role resource.
+    // Status indicates the validation status of this resource.
     // Status is read-only by clients, and set by gloo during validation
-    gloo.api.v1.Status status = 4 [(gogoproto.moretags) = "testdiff:\"ignore\""];
+    core.solo.io.Status status = 6 [(gogoproto.nullable) = false, (gogoproto.moretags) = "testdiff:\"ignore\""];
 
-    // Metadata contains the resource metadata for the role
-    gloo.api.v1.Metadata metadata = 5;
+    // Metadata contains the object metadata for this resource
+    core.solo.io.Metadata metadata = 7 [(gogoproto.nullable) = false];
 }
 
 // TypeResolver contains the individual resolvers for each field for a specific type
 message TypeResolver {
     // This is a map of Field Names to the resolver that Sqoop should invoke when a query arrives for that field
-    map<string, Resolver> fields = 1;
+    map<string, FieldResolver> fields = 1;
 }
 
 // Resolvers define the actual logic Sqoop needs to know in order to resolve a specific field query
-message Resolver {
+message FieldResolver {
     // a resolver can have one of three types:
     oneof resolver {
         // a GlooResolver, which leverages Gloo to retrieve data from backend services and functions for the query
@@ -57,47 +58,32 @@ message GlooResolver {
     // the Request Template, if specified, will become the body of the HTTP request used to invoke a function through Gloo
     // input parameters, if needed, should be specified in the request template. See Sqoop's [Resolver documentation](TODO)
     // for more information on Request Templates.
-    string request_template = 1;
+    RequestTemplate request_template = 1;
     // The response template, if specified, will transform the body of HTTP responses returned by Gloo functions.
     // This field should be used if the object returned by the Gloo Function does not match the type specified in the GraphQL schema.
     // It can also be used to modify or transform responses from their original state. See Sqoop's [Resolver documentation](TODO)
     // for more information on Response Templates.
-    string response_template = 2;
-    // Optional. Use to set the outbound HTTP Request header `Content-Type`. Defaults to `application/json`
-    string content_type = 3;
-    // Specify the function the resolver should invoke. The function must be one registered to Gloo.
-    oneof function {
-        // SingleFunction specifies this resolver will always invoke a single function.
-        Function single_function = 4;
-        // MultiFunction specifies the resolver will distribute invocation across multiple functions
-        MultiFunction multi_function = 5;
-    }
+    ResponseTemplate response_template = 2;
+
+    // the routing action to take when resolver is executed. usually this is a Route destination
+    gloo.solo.io.RouteAction action = 4;
 }
 
-// A reference to a function known to Gloo
-message Function {
-    // Name of the Gloo Upstream that provides this function
-    string upstream = 1;
-    // Name of the function itself. See Gloo documentation for more details on functions in Gloo
-    string function = 2;
+message RequestTemplate {
+    string verb = 1;
+    string path = 2;
+    string body = 3;
+    map<string, string> headers = 4;
 }
 
-// A reference to a list of functions known to Gloo
-message MultiFunction {
-    // A list of functions with weights. Must have size >= 1
-    repeated WeightedFunction weighted_functions = 1;
-}
-
-message WeightedFunction {
-    // the function to call
-    Function function = 1;
-    // Invoking each functoion will be balanced by the ratio of the function's weight to the total weight on a resolver
-    uint32 weight = 2;
+message ResponseTemplate {
+    string body = 2;
+    map<string, string> headers = 3;
 }
 
 // A Go-template which will return data for a Resolver without making a function call. Template Resolvers can make use
 // of Sqoop's builtin template functions as well as the data provided by the Params object to the resolver.
-// Read more about Templates and Resolvers in Sqoop's [Resolver documentation](TODO).
+// Read more about Templates and Resolvers in Sqoop\'s [Resolver documentation](TODO).
 message TemplateResolver {
     // the Go template as an inline string
     string inline_template = 1;

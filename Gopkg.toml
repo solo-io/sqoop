@@ -1,53 +1,72 @@
-# Gopkg.toml example
-#
-# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
-# for detailed Gopkg.toml documentation.
-#
-# required = ["github.com/user/thing/cmd/thing"]
-# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
-#
-# [[constraint]]
-#   name = "github.com/user/project"
-#   version = "1.0.0"
-#
-# [[constraint]]
-#   name = "github.com/user/project2"
-#   branch = "dev"
-#   source = "github.com/myfork/project2"
-#
-# [[override]]
-#   name = "github.com/x/y"
-#   version = "2.4.0"
-#
-# [prune]
-#   non-go = false
-#   go-tests = true
-#   unused-packages = true
-
-[[override]]
-  name = "k8s.io/apimachinery"
-  revision = "31dade610c053669d8054bfd847da657251e8c1a"
-
-[[override]]
-  name = "github.com/Azure/go-autorest"
-  revision = "e14a70c556c8e0db173358d1a903dca345a8e75e"
-
-[[constraint]]
-  name = "github.com/solo-io/gloo"
-  revision = "4f06039f2a3cf4ae684de8e854c5eefb6448177a"
-
-[[constraint]]
-  name = "github.com/onsi/ginkgo"
-  version = "1.5.0"
-
-[[constraint]]
-  name = "github.com/onsi/gomega"
-  version = "1.4.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/vektah/gqlgen"
-
 [prune]
   go-tests = true
   unused-packages = true
+
+# used for older sqoop, remove if upgrading to 99designs
+[[constraint]]
+  revision = "6b3b338d5f9c8b5a80ad4ea1e2e37aa58677ea9d"
+  name = "github.com/vektah/gqlgen"
+
+# this must match the version of the gqlgen binary we depend on
+
+[[constraint]]
+  version = "0.7.2"
+  name = "github.com/99designs/gqlgen"
+
+[[constraint]]
+  version = "1.1.1"
+  name = "github.com/gogo/protobuf"
+
+[[override]]
+  name = "k8s.io/kubernetes"
+  version = "=v1.13.0"
+
+[[override]]
+  name = "k8s.io/api"
+  version = "kubernetes-1.13.0"
+
+[[constraint]]
+  name = "k8s.io/client-go"
+  version = "kubernetes-1.13.0"
+
+[[constraint]]
+  name = "k8s.io/apimachinery"
+  version = "kubernetes-1.13.0"
+
+[[override]]
+  name = "k8s.io/apiextensions-apiserver"
+  version = "kubernetes-1.13.0"
+
+[[override]]
+  name = "k8s.io/apiserver"
+  version = "kubernetes-1.13.0"
+
+[[override]]
+  version = "1.2.0"
+  name = "github.com/golang/protobuf"
+
+
+[[constraint]]
+  name = "github.com/solo-io/solo-kit"
+  version = "0.2.24"
+
+[[constraint]]
+  name = "github.com/solo-io/gloo"
+  version = "0.6.21"
+
+[[override]]
+  name = "github.com/hashicorp/consul"
+  revision = "eba25a143821cec25bdb48fe64dd7b7a6152d01d"
+
+# go versioning story not ideal, so we have to pin serf to the version consul expects
+[[override]]
+  name = "github.com/hashicorp/serf"
+  revision = "19bbd39e421bdf3559d5025fb2c760f5ffa56233"
+
+[[constraint]]
+  name = "github.com/solo-io/go-checkpoint"
+  version = "0.0.4"
+
+[[constraint]]
+  name = "github.com/solo-io/go-utils"
+  version = "0.1.3"

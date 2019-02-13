@@ -1,34 +1,35 @@
 syntax = "proto3";
-package sqoop.api.v1;
-option go_package = "github.com/solo-io/sqoop/pkg/api/types/v1";
+package sqoop.solo.io;
+option go_package = "github.com/solo-io/sqoop/pkg/api/v1";
 
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all) = true;
 
-// imported from Gloo
-import "github.com/solo-io/gloo/api/v1/status.proto";
-import "github.com/solo-io/gloo/api/v1/metadata.proto";
+import "github.com/solo-io/solo-kit/api/v1/metadata.proto";
+import "github.com/solo-io/solo-kit/api/v1/status.proto";
+import "github.com/solo-io/solo-kit/api/v1/solo-kit.proto";
 
 /*
-    * The Schema object wraps the user's GraphQL Schema, which is stored as an inline string.
-    * The Schema Object contains a Status field which is used by Sqoop to validate the user's input schema.
+
+* The Schema object wraps the user's GraphQL Schema, which is stored as an inline string.
+* The Schema Object contains a Status field which is used by SQooP to validate the user's input schema.
+
+* Schemas are matched to resolver maps in the same namespace with the same name
 */
 message Schema {
-    // Schema Names must be unique and follow the following syntax rules:
-    // One or more lowercase rfc1035/rfc1123 labels separated by '.' with a maximum length of 253 characters.
-    string name = 1;
 
-    // name of the resolver map to use to resolve this schema.
-    // if the user leaves this empty, Sqoop will generate the skeleton of a resolver map for the user
-    string resolver_map = 2;
+    option (core.solo.io.resource).short_name = "sc";
+    option (core.solo.io.resource).plural_name = "schemas";
+    // TODO: remove when we are ready to include this resource in the docs
+    option (core.solo.io.resource).skip_docs_gen = true;
 
     // inline the entire graphql schema as a string here
     string inline_schema = 3;
 
-    // Status indicates the validation status of the role resource.
+    // Status indicates the validation status of this resource.
     // Status is read-only by clients, and set by gloo during validation
-    gloo.api.v1.Status status = 6 [(gogoproto.moretags) = "testdiff:\"ignore\""];
+    core.solo.io.Status status = 6 [(gogoproto.nullable) = false, (gogoproto.moretags) = "testdiff:\"ignore\""];
 
-    // Metadata contains the resource metadata for the role
-    gloo.api.v1.Metadata metadata = 7;
+    // Metadata contains the object metadata for this resource
+    core.solo.io.Metadata metadata = 7 [(gogoproto.nullable) = false];
 }

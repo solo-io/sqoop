@@ -15,9 +15,6 @@
 #
 # Script to upload a release asset using the GitHub API v3.
 #
-# Example:
-#
-# upload-github-release-asset.sh github_api_token=TOKEN owner=stefanbuck repo=playground tag=v0.1.1 filename=./build.zip
 #
 
 # Check dependencies.
@@ -33,18 +30,19 @@ for line in $CONFIG; do
   eval "export ${line}"
 done
 
+github_token_no_spaces=$(echo $GITHUB_TOKEN | tr -d '[:space:]')
+
 # Define variables.
 GH_API="https://api.github.com"
 GH_REPO="$GH_API/repos/$owner/$repo"
 GH_TAGS="$GH_REPO/releases/tags/$tag"
-AUTH="Authorization: token $github_api_token"
+AUTH="Authorization: token $github_token_no_spaces"
 WGET_ARGS="--content-disposition --auth-no-challenge --no-cookie"
 CURL_ARGS="-LJO#"
 
 if [[ "$tag" == 'LATEST' ]]; then
   GH_TAGS="$GH_REPO/releases/latest"
 fi
-
 
 # Validate token.
 curl -o /dev/null -sH "$AUTH" $GH_REPO || { echo "Error: Invalid repo, token or network issue!";  exit 1; }
@@ -62,4 +60,7 @@ echo "Uploading asset... "
 # Construct url
 GH_ASSET="https://uploads.github.com/repos/$owner/$repo/releases/$id/assets?name=$(basename $filename)"
 
-curl --data-binary @"$filename" -H "Authorization: token $github_api_token" -H "Content-Type: application/octet-stream" $GH_ASSET
+curl --data-binary @"$filename" -H "Authorization: token $github_token_no_spaces" -H "Content-Type: application/octet-stream" $GH_ASSET
+if [[ "$sha" == 'TRUE' ]]; then
+  curl -d $(shasum -a 256 ${filename}) -H "Authorization: token $github_token_no_spaces" -H "Content-Type: application/octet-stream" $GH_ASSET.sha256
+fi
