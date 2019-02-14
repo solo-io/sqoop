@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sqoop
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      gloo: sqoop
+  template:
+    metadata:
+      labels:
+        gloo: sqoop
+    spec:
+      containers:
+        - image: "{{ .Values.sqoop.deployment.image.repository }}:{{ .Values.sqoop.deployment.image.tag }}"
+          imagePullPolicy:  {{ .Values.sqoop.deployment.image.pullPolicy }}
+          name: sqoop
+          ports:
+            - containerPort: {{ .Values.sqoop.deployment.staticPort }}

@@ -9,7 +9,7 @@ import (
 	strconv "strconv"
 	time "time"
 
-	graphql "github.com/99designs/gqlgen/graphql"
+	graphql "github.com/vektah/gqlgen/graphql"
 	introspection "github.com/vektah/gqlgen/neelance/introspection"
 	query "github.com/vektah/gqlgen/neelance/query"
 	schema "github.com/vektah/gqlgen/neelance/schema"

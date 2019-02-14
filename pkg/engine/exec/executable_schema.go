@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/99designs/gqlgen/graphql"
+	"github.com/vektah/gqlgen/graphql"
 	"github.com/pkg/errors"
 	"github.com/solo-io/sqoop/pkg/engine/dynamic"
 	"github.com/vektah/gqlgen/neelance/introspection"

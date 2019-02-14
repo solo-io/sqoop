@@ -1,0 +1,3 @@
+dependencies:
+  - name: gloo
+    repository: https://storage.googleapis.com/solo-public-helm

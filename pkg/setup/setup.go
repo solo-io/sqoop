@@ -7,7 +7,7 @@ import (
 
 	"github.com/solo-io/gloo/pkg/utils/setuputils"
 	"github.com/solo-io/sqoop/pkg/syncer"
-	"github.com/solo-io/sqoop/pkg/version"
+	"github.com/solo-io/sqoop/version"
 )
 
 func Main() error {

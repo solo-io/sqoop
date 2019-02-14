@@ -10,18 +10,6 @@
   version = "v0.33.1"
 
 [[projects]]
-  digest = "1:977c39e3432a402060aaf9c95ac5528d4d00871ff4f869ac2d2c1aaaeb8c049e"
-  name = "github.com/99designs/gqlgen"
-  packages = [
-    "complexity",
-    "graphql",
-    "handler",
-  ]
-  pruneopts = "UT"
-  revision = "da1e07f5876c0fb79cbad19006f7135be08590d6"
-  version = "v0.7.2"
-
-[[projects]]
   digest = "1:1fe87891e29a291377b0b2224b99fd857553dff7dce8a6ffb5fda003ce52a8b0"
   name = "github.com/Azure/go-autorest"
   packages = [
@@ -35,14 +23,6 @@
   pruneopts = "UT"
   revision = "4b7f49dc5db2e1e6d528524d269b4181981a7ebf"
   version = "v11.1.1"
-
-[[projects]]
-  digest = "1:897d91c431ce469d35a5e6030e60e617dccd9a0e95bdffa6a80594f5c5800d29"
-  name = "github.com/agnivade/levenshtein"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "3d21ba515fe27b856f230847e856431ae1724adc"
-  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -602,9 +582,10 @@
   version = "v0.1"
 
 [[projects]]
-  digest = "1:35b8260324c234929fffbc4fb5729cc654fee844fe3100bf20974807e99aa0b0"
+  digest = "1:09ac7460296a34a9bc8de4b6e7bfe6ca4dffbd88f05246b897222ec6eeb9ad3d"
   name = "github.com/solo-io/gloo"
   packages = [
+    "install/helm/gloo/generate",
     "pkg/utils/setuputils",
     "pkg/version",
     "projects/gloo/pkg/api/v1",
@@ -707,33 +688,20 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:bca821f024766ba3b322cd394b52e6e34885603a3d874f4e626f6da0fa000721"
+  digest = "1:768c1db4944fa5ab6944d11847200ba4b8b9e2b45458b7a20b4272fe599a1de0"
   name = "github.com/vektah/gqlgen"
   packages = [
+    "graphql",
+    "handler",
     "neelance/common",
     "neelance/errors",
     "neelance/introspection",
     "neelance/query",
     "neelance/schema",
+    "neelance/validation",
   ]
   pruneopts = "UT"
   revision = "6b3b338d5f9c8b5a80ad4ea1e2e37aa58677ea9d"
-
-[[projects]]
-  digest = "1:ed6a41de3eedd8d4868eea057837860453ebbe08c5e385fd50d4c24e5642ec18"
-  name = "github.com/vektah/gqlparser"
-  packages = [
-    ".",
-    "ast",
-    "gqlerror",
-    "lexer",
-    "parser",
-    "validator",
-    "validator/rules",
-  ]
-  pruneopts = "UT"
-  revision = "e805d08bb209b1accdea76bd2327811858d81985"
-  version = "v1.0.0"
 
 [[projects]]
   digest = "1:64c18dbf9c05549d0b0189cb0325e2145d788d1acc05735103746589c61dcff1"
@@ -1254,9 +1222,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/99designs/gqlgen/graphql",
-    "github.com/99designs/gqlgen/handler",
     "github.com/fatih/structs",
+    "github.com/ghodss/yaml",
     "github.com/gogo/protobuf/gogoproto",
     "github.com/gogo/protobuf/proto",
     "github.com/gogo/protobuf/types",
@@ -1265,7 +1232,9 @@
     "github.com/ilackarms/protoc-gen-doc",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
+    "github.com/pelletier/go-toml",
     "github.com/pkg/errors",
+    "github.com/solo-io/gloo/install/helm/gloo/generate",
     "github.com/solo-io/gloo/pkg/utils/setuputils",
     "github.com/solo-io/gloo/projects/gloo/pkg/api/v1",
     "github.com/solo-io/gloo/projects/gloo/pkg/bootstrap",
@@ -1291,6 +1260,8 @@
     "github.com/solo-io/solo-kit/test/helpers",
     "github.com/solo-io/solo-kit/test/setup",
     "github.com/solo-io/solo-kit/test/tests/typed",
+    "github.com/vektah/gqlgen/graphql",
+    "github.com/vektah/gqlgen/handler",
     "github.com/vektah/gqlgen/neelance/common",
     "github.com/vektah/gqlgen/neelance/introspection",
     "github.com/vektah/gqlgen/neelance/query",

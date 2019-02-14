@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.sqoop.service.name }}
+    gloo: {{ .Values.sqoop.service.name }}
+  name: {{ .Values.sqoop.service.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: sqoop
+      port: {{ .Values.sqoop.service.port }}
+      protocol: TCP
+  selector:
+    gloo: {{ .Values.sqoop.service.name }}

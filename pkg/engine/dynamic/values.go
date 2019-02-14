@@ -3,7 +3,7 @@ package dynamic
 import (
 	"time"
 
-	"github.com/99designs/gqlgen/graphql"
+	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/neelance/common"
 	"github.com/vektah/gqlgen/neelance/schema"
 )

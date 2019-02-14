@@ -68,23 +68,87 @@ clean:
 	rm -fr site
 
 
+#----------------------------------------------------------------------------------
+# sqoop
+#----------------------------------------------------------------------------------
 
+SQOOP_DIR=.
+SQOOP_SOURCES=$(call get_sources,$(SQOOP_DIR))
+
+$(OUTPUT_DIR)/sqoop-linux-amd64: $(SQOOP_SOURCES)
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -ldflags=$(LDFLAGS) -gcflags=$(GCFLAGS) -o $@ $(SQOOP_DIR)/cmd/main.go
+
+
+.PHONY: sqoop
+sqoop: $(OUTPUT_DIR)/sqoop-linux-amd64
+
+$(OUTPUT_DIR)/Dockerfile.sqoop: $(SQOOP_DIR)/cmd/Dockerfile
+	cp $< $@
+
+sqoop-docker: $(OUTPUT_DIR)/sqoop-linux-amd64 $(OUTPUT_DIR)/Dockerfile.sqoop
+	docker build -t soloio/sqoop:$(VERSION)  $(OUTPUT_DIR) -f $(OUTPUT_DIR)/Dockerfile.sqoop
+
+#----------------------------------------------------------------------------------
+# Deployment Manifests / Helm
+#----------------------------------------------------------------------------------
+
+
+HELM_SYNC_DIR := $(OUTPUT_DIR)/helm
+HELM_DIR := install/helm
+MANIFEST_DIR := install/manifest
+
+.PHONY: manifest
+manifest: helm-template init-helm install/manifest/sqoop.yaml update-helm-chart
+
+# creates Chart.yaml, values.yaml, and requirements.yaml
+.PHONY: helm-template
+helm-template:
+	mkdir -p $(MANIFEST_DIR)
+	go run install/helm/sqoop/generate.go $(VERSION)
+
+update-helm-chart:
+ifeq ($(RELEASE),"true")
+	mkdir -p $(HELM_SYNC_DIR)/charts
+	helm package --destination $(HELM_SYNC_DIR)/charts $(HELM_DIR)/sqoop
+	helm repo index $(HELM_SYNC_DIR)
+endif
+
+install/manifest/sqoop.yaml: helm-template
+	helm template install/helm/sqoop --namespace sqoop --name=sqoop > $@
+
+init-helm:
+	helm repo add gloo https://storage.googleapis.com/solo-public-helm
+	helm dependency update install/helm/sqoop
 
 #----------------------------------------------------------------------------------
 # sqoopctl
 #----------------------------------------------------------------------------------
 
-#.PHONY: sqoopctl
-#sqoopctl: $(OUTPUT_DIR)/sqoopctl
-#
-#$(OUTPUT_DIR)/sqoopctl: $(SOURCES)
-#	go build -v -o $@ cmd/sqoopctl/main.go
-#
-#$(OUTPUT_DIR)/sqoopctl-linux-amd64: $(SOURCES)
-#	GOOS=linux go build -v -o $@ cmd/sqoopctl/main.go
-#
-#$(OUTPUT_DIR)/sqoopctl-darwin-amd64: $(SOURCES)
-#	GOOS=darwin go build -v -o $@ cmd/sqoopctl/main.go
+CLI_DIR=cli
+
+$(OUTPUT_DIR)/sqoopctl: $(SOURCES)
+	go build -ldflags=$(LDFLAGS) -gcflags=$(GCFLAGS) -o $@ $(CLI_DIR)/cmd/main.go
+
+
+$(OUTPUT_DIR)/sqoopctl-linux-amd64: $(SOURCES)
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -ldflags=$(LDFLAGS) -gcflags=$(GCFLAGS) -o $@ $(CLI_DIR)/cmd/main.go
+
+
+$(OUTPUT_DIR)/sqoopctl-darwin-amd64: $(SOURCES)
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -ldflags=$(LDFLAGS) -gcflags=$(GCFLAGS) -o $@ $(CLI_DIR)/cmd/main.go
+
+$(OUTPUT_DIR)/sqoopctl-windows-amd64.exe: $(SOURCES)
+	CGO_ENABLED=0 GOARCH=amd64 GOOS=windows go build -ldflags=$(LDFLAGS) -gcflags=$(GCFLAGS) -o $@ $(CLI_DIR)/cmd/main.go
+
+
+.PHONY: sqoopctl
+sqoopctl: $(OUTPUT_DIR)/sqoopctl
+.PHONY: sqoopctl-linux-amd64
+sqoopctl-linux-amd64: $(OUTPUT_DIR)/sqoopctl-linux-amd64
+.PHONY: sqoopctl-darwin-amd64
+sqoopctl-darwin-amd64: $(OUTPUT_DIR)/sqoopctl-darwin-amd64
+.PHONY: sqoopctl-windows-amd64
+sqoopctl-windows-amd64: $(OUTPUT_DIR)/sqoopctl-windows-amd64.exe
 
 #----------------------------------------------------------------------------------
 # Docs
@@ -122,13 +186,66 @@ deploy-site: site
 #----------------------------------------------------------------------------------
 # Release
 #----------------------------------------------------------------------------------
+GH_ORG:=solo-io
+GH_REPO:=sqoop
 
-RELEASE_BINARIES := $(OUTPUT_DIR)/sqoopctl-linux-amd64 $(OUTPUT_DIR)/sqoopctl-darwin-amd64
+# For now, expecting people using the release to start from a sqoopctl CLI we provide, not
+# installing the binaries locally / directly. So only uploading the CLI binaries to Github.
+# The other binaries can be built manually and used, and docker images for everything will
+# be published on release.
+RELEASE_BINARIES :=
+ifeq ($(RELEASE),"true")
+	RELEASE_BINARIES := \
+		$(OUTPUT_DIR)/sqoopctl-linux-amd64 \
+		$(OUTPUT_DIR)/sqoopctl-darwin-amd64 \
+		$(OUTPUT_DIR)/sqoopctl-windows-amd64.exe
+endif
+
+RELEASE_YAMLS :=
+ifeq ($(RELEASE),"true")
+	RELEASE_YAMLS := \
+		install/manifest/sqoop.yaml
+endif
 
 .PHONY: release-binaries
 release-binaries: $(RELEASE_BINARIES)
 
+.PHONY: release-yamls
+release-yamls: $(RELEASE_YAMLS)
+
+# This is invoked by cloudbuild. When the bot gets a release notification, it kicks of a build with and provides a tag
+# variable that gets passed through to here as $TAGGED_VERSION. If no tag is provided, this is a no-op. If a tagged
+# version is provided, all the release binaries are uploaded to github.
+# Create new releases by clicking "Draft a new release" from https://github.com/solo-io/sqoop/releases
 .PHONY: release
-release: release-binaries
-	hack/create-release.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=sqoop tag=v$(VERSION)
-	@$(foreach BINARY,$(RELEASE_BINARIES),hack/upload-github-release-asset.sh github_api_token=$(GITHUB_TOKEN) owner=solo-io repo=sqoop tag=v$(VERSION) filename=$(BINARY);)
+release: release-binaries release-yamls
+ifeq ($(RELEASE),"true")
+	@$(foreach BINARY,$(RELEASE_BINARIES),ci/upload-github-release-asset.sh owner=solo-io repo=sqoop tag=$(TAGGED_VERSION) filename=$(BINARY) sha=TRUE;)
+	@$(foreach YAML,$(RELEASE_YAMLS),ci/upload-github-release-asset.sh owner=solo-io repo=sqoop tag=$(TAGGED_VERSION) filename=$(YAML);)
+endif
+
+#----------------------------------------------------------------------------------
+# Docker
+#----------------------------------------------------------------------------------
+#
+#---------
+#--------- Push
+#---------
+
+DOCKER_IMAGES :=
+ifeq ($(RELEASE),"true")
+	DOCKER_IMAGES := docker
+endif
+
+.PHONY: docker docker-push
+docker: sqoop-docker
+
+# Depends on DOCKER_IMAGES, which is set to docker if RELEASE is "true", otherwise empty (making this a no-op).
+# This prevents executing the dependent targets if RELEASE is not true, while still enabling `make docker`
+# to be used for local testing.
+# docker-push is intended to be run by CI
+docker-push: $(DOCKER_IMAGES)
+ifeq ($(RELEASE),"true")
+	docker push soloio/sqoop:$(VERSION)
+endif
+

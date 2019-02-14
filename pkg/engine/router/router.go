@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/99designs/gqlgen/graphql"
-	"github.com/99designs/gqlgen/handler"
+	"github.com/vektah/gqlgen/graphql"
+	"github.com/vektah/gqlgen/handler"
 	"github.com/gorilla/mux"
 	"github.com/solo-io/solo-kit/pkg/utils/log"
 )
