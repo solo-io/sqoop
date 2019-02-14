@@ -2,10 +2,17 @@ package cmd
 
 import (
 	"github.com/solo-io/go-utils/cliutils"
+	"github.com/solo-io/sqoop/cli/pkg/cmd/install"
+	"github.com/solo-io/sqoop/cli/pkg/cmd/resolvermap"
+	"github.com/solo-io/sqoop/cli/pkg/cmd/schema"
+	"github.com/solo-io/sqoop/cli/pkg/flagutils"
+	"github.com/solo-io/sqoop/cli/pkg/options"
 	"github.com/spf13/cobra"
 )
 
 func App(version string, optionsFunc ...cliutils.OptionsFunc) *cobra.Command {
+
+	opts := &options.Options{}
 
 	app := &cobra.Command{
 		Use:   "sqoopctl",
@@ -22,6 +29,14 @@ func App(version string, optionsFunc ...cliutils.OptionsFunc) *cobra.Command {
 			panic("not implemented")
 		},
 	}
+	pflags := app.PersistentFlags()
+	flagutils.AddCommonFlags(pflags, &opts.Top)
+
+	app.AddCommand(
+		install.InstallCmd(opts),
+		resolvermap.ResolverMapCmd(opts),
+		schema.SchemaCmd(opts),
+	)
 
 	// Complete additional passed in setup
 	cliutils.ApplyOptions(app, optionsFunc)
