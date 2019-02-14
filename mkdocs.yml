@@ -31,7 +31,7 @@ site_author: gloo Project Authors
 copyright: © Copyright 2018, solo.io Inc.
 google_analytics: ['UA-101654320-1', 'sqoop.solo.io']
 theme:
-  name: 'material'
+  name: 'mkdocs'
   favicon: 'img/favicon.ico'
 extra_css: [extra.css]
 extra:

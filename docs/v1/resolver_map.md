@@ -36,9 +36,7 @@ metadata: {gloo.api.v1.Metadata}
 ```
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | string |  | Name of the Resolver Map. Resolver Map names must be unique
-
-Resolver Map Names must be unique and follow the following syntax rules: One or more lowercase rfc1035/rfc1123 labels separated by &#39;.&#39; with a maximum length of 253 characters. |
+| name | string |  | Name of the Resolver Map. Resolver Map names must be unique Resolver Map Names must be unique and follow the following syntax rules: One or more lowercase rfc1035/rfc1123 labels separated by &#39;.&#39; with a maximum length of 253 characters. |
 | types | map&lt;string,TypeResolver&gt; |  | Types is a map of Type Names (defined in the schema) to a TypeResolver, which contain resolvers for the specific fields of the type |
 | status | [gloo.api.v1.Status](schema.md#gloo.api.v1.Status) |  | Status indicates the validation status of the role resource. Status is read-only by clients, and set by gloo during validation |
 | metadata | [gloo.api.v1.Metadata](schema.md#gloo.api.v1.Metadata) |  | Metadata contains the resource metadata for the role |

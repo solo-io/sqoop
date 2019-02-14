@@ -154,27 +154,10 @@ sqoopctl-windows-amd64: $(OUTPUT_DIR)/sqoopctl-windows-amd64.exe
 # Docs
 #----------------------------------------------------------------------------------
 
-docs/api.json: $(PROTOS)
-	export DISABLE_SORT=1 && \
-	cd api/v1/ && \
-	mkdir -p $(ROOTDIR)/pkg/api/types/v1 && \
-	protoc \
-	-I=. \
-	-I=$(GOPATH)/src \
-	-I=$(GOPATH)/src/github.com/gogo/protobuf/ \
-	--plugin=protoc-gen-doc=$(GOPATH)/bin/protoc-gen-doc \
-    --doc_out=$(ROOTDIR)/docs/ \
-    --doc_opt=json,api.json \
-	./*.proto
-
 docs/index.md: README.md
 	cat README.md | sed 's@docs/@@' > docs/index.md
 
-docs/getting_started/kubernetes/1.md: examples/petstore/README.md
-	mkdir -p docs/getting_started/kubernetes/
-	cp examples/petstore/README.md $@
-
-doc: docs/api.json docs/index.md docs/getting_started/kubernetes/1.md
+doc: docs/api.json docs/index.md
 	go run docs/gen_docs.go
 
 site: doc
