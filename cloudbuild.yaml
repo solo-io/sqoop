@@ -24,6 +24,7 @@ steps:
       - 'PROJECT_ROOT=github.com/solo-io/sqoop'
       - 'GIT_SSH_CONFIG=FALSE'
     id: 'dep'
+    waitFor: ['download-untar-dep-cache']
 
   # Helm setup
   # 1) Create directory to sync helm data
