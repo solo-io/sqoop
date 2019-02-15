@@ -1,0 +1,39 @@
+---
+# Source: petstore/templates/petstore.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: petstore
+  name: petstore
+spec:
+  selector:
+    matchLabels:
+      app: petstore
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: petstore
+    spec:
+      containers:
+        - image: soloio/petstore-example:latest
+          name: petstore
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: petstore
+  labels:
+    sevice: petstore
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+  selector:
+    app: petstore
