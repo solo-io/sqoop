@@ -83,7 +83,7 @@ func registerResolver(opts *options.Options) error {
 	if err != nil {
 		return err
 	}
-	existingResolverMap.Types[opts.ResolverMap.TypeName].Fields[opts.ResolverMap.TypeName] = resolver
+	existingResolverMap.Types[opts.ResolverMap.TypeName].Fields[opts.ResolverMap.FieldName] = resolver
 	_, err = client.Write(existingResolverMap, clients.WriteOpts{OverwriteExisting:true})
 	if err != nil {
 		return err

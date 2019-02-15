@@ -5,6 +5,9 @@ data:
     node:
       cluster: sqoop
       id: "{{ "{{" }}.PodName{{ "}}" }}.{{ "{{" }}.PodNamespace{{ "}}" }}"
+      metadata:
+        # this line must match !
+        role: "{{ .Release.Namespace }}~sqoop-proxy"
     static_resources:
       clusters:
       - name: xds_cluster
