@@ -34,6 +34,9 @@ func preInstall() error {
 	if err := registerSettingsCrd(); err != nil {
 		return errors.Wrapf(err, "registering settings crd")
 	}
+	if err := createNamespaceIfNotExist(installNamespace); err != nil {
+		return errors.Wrapf(err, "creating namespace")
+	}
 	return nil
 }
 

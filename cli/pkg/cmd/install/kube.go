@@ -13,8 +13,8 @@ import (
 func KubeCmd(opts *options.Options, optionsFunc... cliutils.OptionsFunc) *cobra.Command {
 	const glooGatewayUrlTemplate = "https://github.com/solo-io/sqoop/releases/download/v%s/sqoop.yaml"
 	cmd := &cobra.Command{
-		Use:   "gateway",
-		Short: "install the Gloo Gateway on kubernetes",
+		Use:   "kube",
+		Short: "install sqoop on kubernetes",
 		Long:  "requires kubectl to be installed",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := preInstall(); err != nil {
