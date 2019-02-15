@@ -9,7 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
-	v1 "github.com/solo-io/sqoop/pkg/api/v1"
+	"github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/solo-io/sqoop/pkg/engine/exec"
 	"github.com/solo-io/sqoop/pkg/engine/util"
 	"github.com/solo-io/sqoop/pkg/translator"

@@ -49,15 +49,26 @@ func registerResolver(opts *options.Options) error {
 	if err != nil {
 		return err
 	}
+
+	var responseTemplate *v1.ResponseTemplate
+	if opts.ResolverMap.ResponseTemplate != "" {
+		responseTemplate = &v1.ResponseTemplate{
+			Body: opts.ResolverMap.ResponseTemplate,
+		}
+	}
+	var requestTemplate *v1.RequestTemplate
+	if opts.ResolverMap.RequestTemplate != "" {
+		requestTemplate = &v1.RequestTemplate{
+			Body: opts.ResolverMap.RequestTemplate,
+		}
+	}
+
+
 	resolver := &v1.FieldResolver{
 		Resolver: &v1.FieldResolver_GlooResolver{
 			GlooResolver: &v1.GlooResolver{
-				ResponseTemplate: &v1.ResponseTemplate{
-					Body: opts.ResolverMap.ResponseTemplate,
-				},
-				RequestTemplate: &v1.RequestTemplate{
-					Body: opts.ResolverMap.RequestTemplate,
-				},
+				ResponseTemplate: responseTemplate,
+				RequestTemplate: requestTemplate,
 				Action: &glooV1.RouteAction{
 					Destination: &glooV1.RouteAction_Single{
 						Single: &glooV1.Destination{
