@@ -11,16 +11,10 @@ type Mutation {
 type Pet{
     id: ID!
     name: String!
-    status: Status!
 }
 
 input InputPet{
     id: ID!
     name: String!
     tag: String
-}
-
-enum Status {
-    pending
-    available
 }

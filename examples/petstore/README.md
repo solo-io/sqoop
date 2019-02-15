@@ -119,7 +119,7 @@ spec:
 
 #### Create a GraphQL Schema
 
-Copy and paste the following schema into `petstore.graphql` (or wherever you like):
+An example schema is located in `petstore.schema.graphql`
 
 ```graphql
 # The query type, represents all of the entry points into our object graph
@@ -135,18 +135,12 @@ type Mutation {
 type Pet{
     id: ID!
     name: String!
-    status: Status!
 }
 
 input InputPet{
     id: ID!
     name: String!
     tag: String
-}
-
-enum Status {
-    pending
-    available
 }
 ```   
 
@@ -183,7 +177,6 @@ types:
     fields:
       id: {}
       name: {}
-      status: {}
   Query:
     fields:
       pet: {}
