@@ -7,8 +7,9 @@ metadata:
   name: {{ .Values.sqoop.service.name }}
   namespace: {{ .Release.Namespace }}
 spec:
+  type: LoadBalancer
   ports:
-    - name: sqoop
+    - name: http
       port: {{ .Values.sqoop.service.port }}
       protocol: TCP
   selector:

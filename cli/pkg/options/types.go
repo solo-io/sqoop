@@ -6,10 +6,11 @@ import (
 )
 
 type Options struct {
-	Metadata core.Metadata
-	Top      Top
-	Install  Install
-	Schema   Schema
+	Metadata    core.Metadata
+	Top         Top
+	Install     Install
+	Schema      Schema
+	ResolverMap ResolverMap
 }
 
 type Top struct {
@@ -29,4 +30,14 @@ type Install struct {
 type Schema struct {
 	Name        string
 	ResolverMap string
+}
+
+type ResolverMap struct {
+	Upstream         string
+	Function         string
+	RequestTemplate  string
+	ResponseTemplate string
+	SchemaName       string
+	TypeName         string
+	FieldName        string
 }
