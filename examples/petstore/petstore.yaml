@@ -29,7 +29,7 @@ kind: Service
 metadata:
   name: petstore
   labels:
-    sevice: petstore
+    service: petstore
 spec:
   ports:
     - name: http

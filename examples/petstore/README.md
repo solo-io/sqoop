@@ -55,7 +55,7 @@ kind: Upstream
 metadata:
   labels:
     discovered_by: kubernetesplugin
-    sevice: petstore
+    service: petstore
   name: gloo-system-petstore-8080
   namespace: gloo-system
 spec:
