@@ -16,7 +16,6 @@ import (
 const (
 	valuesTemplate       = "install/helm/sqoop/values-template.yaml"
 	valuesOutput         = "install/helm/sqoop/values.yaml"
-	distributionOutput   = "install/distribution/values.yaml"
 	chartTemplate        = "install/helm/sqoop/Chart-template.yaml"
 	chartOutput          = "install/helm/sqoop/Chart.yaml"
 	requirementsTemplate = "install/helm/sqoop/requirements-template.yaml"
@@ -30,8 +29,6 @@ const (
 	neverPull    = "Never"
 	alwaysPull   = "Always"
 	ifNotPresent = "IfNotPresent"
-
-	glooiVersion = "0.0.14"
 )
 
 func main() {

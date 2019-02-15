@@ -22,14 +22,21 @@ type Rbac struct {
 
 type Sqoop struct {
 	Deployment *SqoopDeployment `json:"deployment,omitempty"`
-	Service    SqoopService     `json:"service,omitempty"`
+	Service    *SqoopService    `json:"service,omitempty"`
+	ConfigMap  *SqoopConfigMap  `json:"configMap,omitempty"`
 }
 
 type SqoopDeployment struct {
-	Image      *generate.Image `json:"image,omitempty"`
+	Image *generate.Image `json:"image,omitempty"`
+	Proxy *generate.Image `json:"proxy,omitempty"`
 	*generate.DeploymentSpec
 }
 
 type SqoopService struct {
 	Port string `json:"port"`
+	Name string `json:"name"`
+}
+
+type SqoopConfigMap struct {
+	Name string `json:"name"`
 }

@@ -114,7 +114,7 @@ ifeq ($(RELEASE),"true")
 endif
 
 install/manifest/sqoop.yaml: helm-template
-	helm template install/helm/sqoop --namespace sqoop --name=sqoop > $@
+	helm template install/helm/sqoop --namespace gloo-system --name=sqoop > $@
 
 init-helm:
 	helm repo add gloo https://storage.googleapis.com/solo-public-helm
