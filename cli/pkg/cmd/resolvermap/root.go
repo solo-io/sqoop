@@ -12,6 +12,11 @@ func ResolverMapCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) 
 		Use:   constants.RESOLVER_MAP_COMMAND.Use,
 		Short: constants.RESOLVER_MAP_COMMAND.Short,
 	}
+
+	cmd.AddCommand(
+		Delete(opts),
+	)
+
 	cliutils.ApplyOptions(cmd, optionsFunc)
 	return cmd
 }
