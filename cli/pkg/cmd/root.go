@@ -34,6 +34,7 @@ func App(version string, optionsFunc ...cliutils.OptionsFunc) *cobra.Command {
 
 	app.AddCommand(
 		install.InstallCmd(opts),
+		install.UninstallCmd(opts),
 		resolvermap.ResolverMapCmd(opts),
 		schema.SchemaCmd(opts),
 	)
