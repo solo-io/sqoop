@@ -16,10 +16,10 @@ import (
 	"github.com/solo-io/solo-kit/pkg/api/v1/reporter"
 	"github.com/solo-io/solo-kit/pkg/utils/contextutils"
 	"github.com/solo-io/solo-kit/pkg/utils/errutils"
-	v1 "github.com/solo-io/sqoop/pkg/api/v1"
+	"github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/solo-io/sqoop/pkg/engine"
 	"github.com/solo-io/sqoop/pkg/engine/router"
-	TODO "github.com/solo-io/sqoop/pkg/todo"
+	"github.com/solo-io/sqoop/pkg/todo"
 	"k8s.io/client-go/rest"
 )
 
@@ -119,7 +119,6 @@ func RunSqoop(opts Opts) error {
 	if err := proxyClient.Register(); err != nil {
 		return err
 	}
-	proxyReconciler := gloov1.NewProxyReconciler(proxyClient)
 
 	schemaClient, err := v1.NewSchemaClient(opts.Schemas)
 	if err != nil {
@@ -137,6 +136,8 @@ func RunSqoop(opts Opts) error {
 		return err
 	}
 
+	proxyReconciler := gloov1.NewProxyReconciler(proxyClient)
+
 	emitter := v1.NewApiEmitter(resolverMapClient, schemaClient)
 
 	rpt := reporter.NewReporter("sqoop", resolverMapClient.BaseClient(), schemaClient.BaseClient())
@@ -153,8 +154,11 @@ func RunSqoop(opts Opts) error {
 	sync := NewGraphQLSyncer(opts.WriteNamespace, rpt, writeErrs, proxyReconciler, resolverMapClient, eng, rtr)
 
 	go func() {
-		contextutils.LoggerFrom(opts.WatchOpts.Ctx).Fatalf("failed starting sqoop server: %v",
-			http.ListenAndServe(fmt.Sprintf(":%v", TODO.SqoopServerBindPort), rtr))
+		logger := contextutils.LoggerFrom(opts.WatchOpts.Ctx)
+		logger.Infof("starting graphql server on %d", TODO.SqoopServerBindPort)
+		if err := http.ListenAndServe(fmt.Sprintf(":%d", TODO.SqoopServerBindPort), rtr); err != nil {
+			logger.Fatalf("failed starting sqoop server: %v", err)
+		}
 	}()
 
 	eventLoop := v1.NewApiEventLoop(emitter, sync)

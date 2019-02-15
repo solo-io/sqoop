@@ -15,5 +15,5 @@ func addNameFlag(set *pflag.FlagSet, strptr *string) {
 }
 
 func AddNamespaceFlag(set *pflag.FlagSet, strptr *string) {
-	set.StringVarP(strptr, "namespace", "n", "sqoop", "namespace for reading or writing resources")
+	set.StringVarP(strptr, "namespace", "n", "gloo-system", "namespace for reading or writing resources")
 }
