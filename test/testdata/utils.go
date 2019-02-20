@@ -1,107 +1,156 @@
 package testdata
 
 import (
+	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
+	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
+	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
+	"github.com/solo-io/sqoop/pkg/api/v1"
+	"github.com/solo-io/sqoop/pkg/engine/exec"
+	"github.com/solo-io/sqoop/pkg/engine/resolvers"
+	"github.com/solo-io/sqoop/pkg/translator"
+	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/neelance/schema"
 )
 
 const resolversName = "starwars-resolvers"
+const namespace = "default"
+
+var resolverMetadata = core.Metadata{
+	Name: resolversName,
+	Namespace: namespace,
+}
 
 var StarWarsSchema = schema.MustParse(starWarsSchemaString)
+var x rest.DestinationSpec
 
-//func StarWarsResolverMap() *v1.ResolverMap {
-//	resolverMap := util.GenerateResolverMapSkeleton(resolversName, StarWarsSchema)
-//	resolverMap.Types["Query"].Fields["hero"].Resolver = &v1.Resolver_GlooResolver{
-//		GlooResolver: &v1.GlooResolver{
-//			Function: &v1.GlooResolver_SingleFunction{
-//				SingleFunction: &v1.Function{
-//					Upstream: "starwars-rest",
-//					Function: "GetHero",
-//				},
-//			},
-//		},
-//	}
-//	resolverMap.Types["Query"].Fields["human"].Resolver = &v1.Resolver_GlooResolver{
-//		GlooResolver: &v1.GlooResolver{
-//			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
-//			Function: &v1.GlooResolver_SingleFunction{
-//				SingleFunction: &v1.Function{
-//					Upstream: "starwars-rest",
-//					Function: "GetCharacter",
-//				},
-//			},
-//		},
-//	}
-//	resolverMap.Types["Query"].Fields["droid"].Resolver = &v1.Resolver_GlooResolver{
-//		GlooResolver: &v1.GlooResolver{
-//			RequestTemplate: `{"id": {{ index .Args "id" }}}`,
-//			Function: &v1.GlooResolver_SingleFunction{
-//				SingleFunction: &v1.Function{
-//					Upstream: "starwars-rest",
-//					Function: "GetCharacter",
-//				},
-//			},
-//		},
-//	}
-//	resolverMap.Types["Human"].Fields["friends"].Resolver = &v1.Resolver_GlooResolver{
-//		GlooResolver: &v1.GlooResolver{
-//			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
-//			Function: &v1.GlooResolver_SingleFunction{
-//				SingleFunction: &v1.Function{
-//					Upstream: "starwars-rest",
-//					Function: "GetCharacters",
-//				},
-//			},
-//		},
-//	}
-//	resolverMap.Types["Human"].Fields["appearsIn"].Resolver = &v1.Resolver_TemplateResolver{
-//		TemplateResolver: &v1.TemplateResolver{
-//			InlineTemplate: `{{ index .Parent "appears_in" }}}`,
-//		},
-//	}
-//	resolverMap.Types["Droid"].Fields["friends"].Resolver = &v1.Resolver_GlooResolver{
-//		GlooResolver: &v1.GlooResolver{
-//			RequestTemplate: `{{ marshal (index .Parent "friend_ids") }}`,
-//			Function: &v1.GlooResolver_SingleFunction{
-//				SingleFunction: &v1.Function{
-//					Upstream: "starwars-rest",
-//					Function: "GetCharacters",
-//				},
-//			},
-//		},
-//	}
-//	resolverMap.Types["Droid"].Fields["appearsIn"].Resolver = &v1.Resolver_TemplateResolver{
-//		TemplateResolver: &v1.TemplateResolver{
-//			InlineTemplate: `{{ index .Parent "appears_in" }}}`,
-//		},
-//	}
-//	return resolverMap
-//}
-//
-//func StarWarsV1Schema() *v1.Schema {
-//	return &v1.Schema{
-//		Name:         "starwars-schema",
-//		ResolverMap:  resolversName,
-//		InlineSchema: starWarsSchemaString,
-//	}
-//}
-//
-//func StarWarsExecutableSchema(proxyAddr string) graphql.ExecutableSchema {
-//	execResolvers := StarWarsExecutableResolvers(proxyAddr)
-//	return exec.NewExecutableSchema(StarWarsSchema, execResolvers)
-//}
+func StarWarsResolverMap() *v1.ResolverMap {
+	resolverMap := translator.GenerateResolverMapSkeleton(resolverMetadata, StarWarsSchema)
+	resolverMap.Types["Query"].Fields["hero"].Resolver = &v1.FieldResolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			Action: &glooV1.RouteAction{
+				Destination: &glooV1.RouteAction_Single{
+					Single: &glooV1.Destination{
+						Upstream: core.ResourceRef{
+							Name: "starwars-rest",
+						},
+						DestinationSpec: &glooV1.DestinationSpec{
+							DestinationType: &glooV1.DestinationSpec_Rest{
+								Rest: &rest.DestinationSpec{
+									FunctionName: "GetHero",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	resolverMap.Types["Query"].Fields["human"].Resolver = &v1.FieldResolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			RequestTemplate: &v1.RequestTemplate{
+				Body: `{"id": {{ index .Args "id" }}}`,
+			},
+			Action: &glooV1.RouteAction{
+				Destination: &glooV1.RouteAction_Single{
+					Single: &glooV1.Destination{
+						Upstream: core.ResourceRef{
+							Name: "starwars-rest",
+						},
+						DestinationSpec: &glooV1.DestinationSpec{
+							DestinationType: &glooV1.DestinationSpec_Rest{
+								Rest: &rest.DestinationSpec{
+									FunctionName: "GetCharacter",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	resolverMap.Types["Query"].Fields["droid"].Resolver = &v1.FieldResolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			RequestTemplate: &v1.RequestTemplate{
+				Body: `{"id": {{ index .Args "id" }}}`,
+			},
+			Action: &glooV1.RouteAction{
+				Destination: &glooV1.RouteAction_Single{
+					Single: &glooV1.Destination{
+						Upstream: core.ResourceRef{
+							Name: "starwars-rest",
+						},
+						DestinationSpec: &glooV1.DestinationSpec{
+							DestinationType: &glooV1.DestinationSpec_Rest{
+								Rest: &rest.DestinationSpec{
+									FunctionName: "GetCharacter",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	resolverMap.Types["Droid"].Fields["friends"].Resolver = &v1.FieldResolver_GlooResolver{
+		GlooResolver: &v1.GlooResolver{
+			RequestTemplate: &v1.RequestTemplate{
+				Body: `{{ marshal (index .Parent "friend_ids") }}`,
+			},
+			Action: &glooV1.RouteAction{
+				Destination: &glooV1.RouteAction_Single{
+					Single: &glooV1.Destination{
+						Upstream: core.ResourceRef{
+							Name: "starwars-rest",
+						},
+						DestinationSpec: &glooV1.DestinationSpec{
+							DestinationType: &glooV1.DestinationSpec_Rest{
+								Rest: &rest.DestinationSpec{
+									FunctionName: "GetCharacters",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	resolverMap.Types["Human"].Fields["appearsIn"].Resolver = &v1.FieldResolver_TemplateResolver{
+		TemplateResolver: &v1.TemplateResolver{
+			InlineTemplate: `{{ index .Parent "appears_in" }}}`,
+		},
+	}
+	resolverMap.Types["Droid"].Fields["appearsIn"].Resolver = &v1.FieldResolver_TemplateResolver{
+		TemplateResolver: &v1.TemplateResolver{
+			InlineTemplate: `{{ index .Parent "appears_in" }}}`,
+		},
+	}
+	return resolverMap
+}
 
-//func StarWarsExecutableResolvers(proxyAddr string) *exec.ExecutableResolverMap {
-//	factory := StarWarsResolverFactory(proxyAddr)
-//	execResolvers, err := exec.NewExecutableResolvers(StarWarsSchema, factory.CreateResolver)
-//	if err != nil {
-//		panic(err)
-//	}
-//	return execResolvers
-//}
+func StarWarsV1Schema() *v1.Schema {
+	return &v1.Schema{
+		Metadata: resolverMetadata,
+		InlineSchema: starWarsSchemaString,
+	}
+}
 
-//func StarWarsResolverFactory(proxyAddr string) *resolvers.ResolverFactory {
-//	return resolvers.NewResolverFactory(proxyAddr, StarWarsResolverMap())
-//}
+func StarWarsExecutableSchema(proxyAddr string) graphql.ExecutableSchema {
+	execResolvers := StarWarsExecutableResolvers(proxyAddr)
+	return exec.NewExecutableSchema(StarWarsSchema, execResolvers)
+}
+
+func StarWarsExecutableResolvers(proxyAddr string) *exec.ExecutableResolverMap {
+	factory := StarWarsResolverFactory(proxyAddr)
+	execResolvers, err := exec.NewExecutableResolvers(StarWarsSchema, factory.CreateResolver)
+	if err != nil {
+		panic(err)
+	}
+	return execResolvers
+}
+
+func StarWarsResolverFactory(proxyAddr string) *resolvers.ResolverFactory {
+	return resolvers.NewResolverFactory(proxyAddr, StarWarsResolverMap())
+}
 
 var starWarsSchemaString = `# The query type, represents all of the entry points into our object graph
 type Query {

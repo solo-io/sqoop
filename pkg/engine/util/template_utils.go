@@ -9,7 +9,7 @@ import (
 )
 
 func Template(tmplString string) (*template.Template, error) {
-	return template.New("qloo_template").Funcs(templateFuncs).Parse(tmplString)
+	return template.New("sqoop_template").Funcs(templateFuncs).Parse(tmplString)
 }
 
 func ExecTemplate(tmpl *template.Template, params exec.Params) (*bytes.Buffer, error) {
