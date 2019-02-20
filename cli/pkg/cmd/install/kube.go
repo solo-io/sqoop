@@ -17,11 +17,8 @@ func KubeCmd(opts *options.Options, optionsFunc... cliutils.OptionsFunc) *cobra.
 		Short: "install sqoop on kubernetes",
 		Long:  "requires kubectl to be installed",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := preInstall(); err != nil {
-				return errors.Wrapf(err, "pre-install failed")
-			}
-			if err := installFromUri(opts, opts.Install.ManifestOverride, glooGatewayUrlTemplate); err != nil {
-				return errors.Wrapf(err, "installing ingress from manifest")
+			if err := installFromUri(opts.Install.ManifestOverride, opts, glooGatewayUrlTemplate); err != nil {
+				return errors.Wrapf(err, "installing sqoop from manifest")
 			}
 			return nil
 		},

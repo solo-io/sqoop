@@ -1,5 +1,5 @@
 package defaults
 
 const (
-	SqoopSystem = "gloo-system"
+	SqoopSystem = "sqoop-system"
 )

@@ -25,6 +25,7 @@ type Install struct {
 	DryRun           bool
 	ReleaseVersion   string
 	ManifestOverride string
+	Namespace        string
 }
 
 type Schema struct {
