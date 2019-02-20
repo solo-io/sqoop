@@ -28,7 +28,6 @@ steps:
 
   # Helm setup
   # 1) Create directory to sync helm data
-  # 2)
   - name: gcr.io/cloud-builders/gsutil
     entrypoint: mkdir
     args: ['-p', './_output/helm']
@@ -45,24 +44,13 @@ steps:
     waitFor: ['make-helm-dir']
     id: 'setup-helm'
 
-  # TODO(EItanya): enable auth outside of e2e-ginkgo container
-  #0, #1 Authenticate with dev cluster
-#  - name: gcr.io/cloud-builders/gcloud
-#    args: ['config', 'set', 'compute/zone', 'us-central1-a']
-#  - name: gcr.io/cloud-builders/gcloud
-#    args: ['container', 'clusters', 'get-credentials', 'dev']
-
   # run all of the tests
   - name: 'gcr.io/$PROJECT_ID/e2e-ginkgo'
     env:
       - 'PROJECT_ROOT=github.com/solo-io/sqoop'
       - 'GOPATH=/workspace/gopath'
-#      - 'ENVOY_BINARY=/workspace/envoy'
-#      - 'AWS_SHARED_CREDENTIALS_FILE=/workspace/aws_credentials'
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=test-cluster'
-#      - 'RUN_KUBE_TESTS=1'
-#      - 'DOCKER_CONFIG=/workspace/.docker/'
     dir: './gopath/src/github.com/solo-io/sqoop'
     args: ['-r', '-failFast', '-p']
     waitFor: ['setup-helm']

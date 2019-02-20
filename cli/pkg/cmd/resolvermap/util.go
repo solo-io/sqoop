@@ -16,12 +16,6 @@ func ensureResolverMapParams(opts *options.ResolverMap, args []string) error {
 	if opts.Upstream == "" {
 		return fmt.Errorf("upstream cannot be empty")
 	}
-	//if opts.RequestTemplate == "" {
-	//	return fmt.Errorf("request name cannot be empty")
-	//}
-	//if opts.ResponseTemplate == "" {
-	//	return fmt.Errorf("function name cannot be empty")
-	//}
 	opts.TypeName = args[0]
 	opts.FieldName = args[1]
 	return nil

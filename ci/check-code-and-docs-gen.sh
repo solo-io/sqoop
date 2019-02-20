@@ -43,7 +43,7 @@ echo "Generating code produced a non-empty diff in the gloo repo"
   exit 1;
 fi
 
-(cd projects/gloo/doc && make site -B)
+(cd sqoop/doc && make site -B)
 if [[ $? -ne 0 ]]; then
   echo "Generating the site failed, check for warnings in the mkdocs build log"
   exit 1;

@@ -13,8 +13,6 @@ import (
 	"github.com/solo-io/solo-kit/pkg/errors"
 	"github.com/solo-io/solo-kit/pkg/utils/kubeutils"
 	"github.com/solo-io/solo-kit/pkg/utils/log"
-	"github.com/solo-io/sqoop/pkg/defaults"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
@@ -27,38 +25,6 @@ func UseMemoryClients() {
 	}
 }
 
-func MustGetNamespaces() []string {
-	ns, err := GetNamespaces()
-	if err != nil {
-		log.Fatalf("failed to list namespaces")
-	}
-	return ns
-}
-
-// Note: requires RBAC permission to list namespaces at the cluster level
-func GetNamespaces() ([]string, error) {
-	if memoryResourceClient != nil {
-		return []string{"default", defaults.SqoopSystem}, nil
-	}
-
-	cfg, err := kubeutils.GetConfig("", "")
-	if err != nil {
-		return nil, errors.Wrapf(err, "getting kube config")
-	}
-	kubeClient, err := kubernetes.NewForConfig(cfg)
-	if err != nil {
-		return nil, errors.Wrapf(err, "getting kube client")
-	}
-	var namespaces []string
-	nsList, err := kubeClient.CoreV1().Namespaces().List(metav1.ListOptions{})
-	if err != nil {
-		return nil, err
-	}
-	for _, ns := range nsList.Items {
-		namespaces = append(namespaces, ns.Name)
-	}
-	return namespaces, nil
-}
 
 func MustSchemaClient() v1.SchemaClient {
 	client, err := SchemaClient()

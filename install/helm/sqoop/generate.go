@@ -106,10 +106,6 @@ func generateValuesYamls(version string) error {
 		return err
 	}
 
-	// Generate values for distribution
-	//if err := generateValuesYaml(version, ifNotPresent, distributionOutput); err != nil {
-	//	return err
-	//}
 	return nil
 }
 
