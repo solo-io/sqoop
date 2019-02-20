@@ -7,8 +7,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/solo-io/gloo/pkg/version"
-	"github.com/solo-io/gloo/projects/gloo/cli/pkg/cmd"
+	"github.com/solo-io/sqoop/cli/pkg/cmd"
+	"github.com/solo-io/sqoop/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 )
@@ -44,7 +44,7 @@ func renderFrontMatter(filename string) string {
 }
 
 func main() {
-	app := cmd.GlooCli(version.Version)
+	app := cmd.App(version.Version)
 	disableAutoGenTag(app)
 	//emptyStr := func(s string) string { return "" }
 	linkHandler := func(s string) string {

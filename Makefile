@@ -57,6 +57,13 @@ $(OUTPUT_DIR)/.generated-code:
 	mkdir -p $(OUTPUT_DIR)
 	touch $@
 
+
+.PHONY: cli-docs
+cli-docs: docs/cli/sqoopctl.md
+
+docs/cli/sqoopctl.md: $(shell find cli -name "*.go" | grep -v test.go | grep -v '\.\#*')
+	go run cli/cmd/docs/main.go
+
 #----------------------------------------------------------------------------------
 # Clean
 #----------------------------------------------------------------------------------
@@ -150,21 +157,6 @@ sqoopctl-darwin-amd64: $(OUTPUT_DIR)/sqoopctl-darwin-amd64
 .PHONY: sqoopctl-windows-amd64
 sqoopctl-windows-amd64: $(OUTPUT_DIR)/sqoopctl-windows-amd64.exe
 
-#----------------------------------------------------------------------------------
-# Docs
-#----------------------------------------------------------------------------------
-
-docs/index.md: README.md
-	cat README.md | sed 's@docs/@@' > docs/index.md
-
-doc: docs/api.json docs/index.md
-	go run docs/gen_docs.go
-
-site: doc
-	mkdocs build
-
-deploy-site: site
-	firebase deploy --only hosting:sqoop-site
 
 #----------------------------------------------------------------------------------
 # Release

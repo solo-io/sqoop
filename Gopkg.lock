@@ -52,6 +52,14 @@
   revision = "bf89c38ff1742f295e15df0bd5e8b3e81da95855"
 
 [[projects]]
+  digest = "1:7cb4fdca4c251b3ef8027c90ea35f70c7b661a593b9eeae34753c65499098bb1"
+  name = "github.com/cpuguy83/go-md2man"
+  packages = ["md2man"]
+  pruneopts = "UT"
+  revision = "20f5889cbdc3c73dbd2862796665e7c465ade7d1"
+  version = "v1.0.8"
+
+[[projects]]
   digest = "1:a2c1d0e43bd3baaa071d1b9ed72c27d78169b2b269f71c105ac4ba34b1be4a39"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -430,14 +438,6 @@
   version = "v2.3.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:400e113a367b511b9b09ca642ee11d9885485a93838526d697033af334a2fdde"
-  name = "github.com/kballard/go-shellquote"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "95032a82bc518f77982ea72343cc1ade730072f0"
-
-[[projects]]
   digest = "1:dfe5159383dfcd370555c35374ac99022906f987b55cc65a830fb9ced970b4b1"
   name = "github.com/lyft/protoc-gen-validate"
   packages = ["validate"]
@@ -476,14 +476,6 @@
   pruneopts = "UT"
   revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
   version = "v1.0.1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:2b32af4d2a529083275afc192d1067d8126b578c7a9613b26600e4df9c735155"
-  name = "github.com/mgutz/ansi"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "9520e82c474b0a04dd04f8a40959027271bab992"
 
 [[projects]]
   branch = "master"
@@ -675,6 +667,14 @@
   version = "v1.0.2"
 
 [[projects]]
+  digest = "1:b36a0ede02c4c2aef7df7f91cbbb7bb88a98b5d253509d4f997dda526e50c88c"
+  name = "github.com/russross/blackfriday"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "05f3235734ad95d0016f6a23902f06461fcf567a"
+  version = "v1.5.2"
+
+[[projects]]
   digest = "1:0e792eea6c96ec55ff302ef33886acbaa5006e900fefe82689e88d96439dcd84"
   name = "github.com/ryanuber/go-glob"
   packages = ["."]
@@ -683,20 +683,16 @@
   version = "v0.1"
 
 [[projects]]
-  digest = "1:140edd3c7c9acc5e017fccfa284633e5c984d98862574e0e926a67cc734c4459"
+  digest = "1:cf5736fef8b837eb3b789f151a6104a2bb7ea2e8406b49c6e5246b86582e9cdc"
   name = "github.com/solo-io/gloo"
   packages = [
     "install/helm/gloo/generate",
-    "pkg/cliutil",
     "pkg/utils/setuputils",
     "pkg/version",
     "projects/gateway/pkg/api/v1",
-    "projects/gloo/cli/pkg/argsutils",
-    "projects/gloo/cli/pkg/cmd/options",
     "projects/gloo/cli/pkg/constants",
     "projects/gloo/cli/pkg/helpers",
     "projects/gloo/cli/pkg/printers",
-    "projects/gloo/cli/pkg/surveyutils",
     "projects/gloo/pkg/api/v1",
     "projects/gloo/pkg/api/v1/plugins",
     "projects/gloo/pkg/api/v1/plugins/aws",
@@ -797,9 +793,12 @@
   version = "v0.2.26"
 
 [[projects]]
-  digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
+  digest = "1:e01b05ba901239c783dfe56450bcde607fc858908529868259c9a8765dc176d0"
   name = "github.com/spf13/cobra"
-  packages = ["."]
+  packages = [
+    ".",
+    "doc",
+  ]
   pruneopts = "UT"
   revision = "ef82de70bb3f60c65fb8eebacbb2d122ef517385"
   version = "v0.0.3"
@@ -1047,18 +1046,6 @@
   pruneopts = "UT"
   revision = "168a6198bcb0ef175f7dacec0b8691fc141dc9b8"
   version = "v1.13.0"
-
-[[projects]]
-  digest = "1:61e056dd0a189d9f1d07de809181f2ee5d36058d1ce4f9e58f443a1bea745ac0"
-  name = "gopkg.in/AlecAivazis/survey.v1"
-  packages = [
-    ".",
-    "core",
-    "terminal",
-  ]
-  pruneopts = "UT"
-  revision = "ee72c28b95a5ff3e227cfd403f556f0ef4b07ca5"
-  version = "v1.8.2"
 
 [[projects]]
   digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
@@ -1378,7 +1365,6 @@
     "github.com/pkg/errors",
     "github.com/solo-io/gloo/install/helm/gloo/generate",
     "github.com/solo-io/gloo/pkg/utils/setuputils",
-    "github.com/solo-io/gloo/projects/gloo/cli/pkg/argsutils",
     "github.com/solo-io/gloo/projects/gloo/cli/pkg/constants",
     "github.com/solo-io/gloo/projects/gloo/cli/pkg/helpers",
     "github.com/solo-io/gloo/projects/gloo/pkg/api/v1",
@@ -1400,6 +1386,7 @@
     "github.com/solo-io/solo-kit/pkg/api/v1/resources",
     "github.com/solo-io/solo-kit/pkg/api/v1/resources/core",
     "github.com/solo-io/solo-kit/pkg/code-generator/cmd",
+    "github.com/solo-io/solo-kit/pkg/code-generator/docgen/options",
     "github.com/solo-io/solo-kit/pkg/errors",
     "github.com/solo-io/solo-kit/pkg/utils/contextutils",
     "github.com/solo-io/solo-kit/pkg/utils/errutils",
@@ -1410,6 +1397,7 @@
     "github.com/solo-io/solo-kit/test/setup",
     "github.com/solo-io/solo-kit/test/tests/typed",
     "github.com/spf13/cobra",
+    "github.com/spf13/cobra/doc",
     "github.com/spf13/pflag",
     "github.com/vektah/gqlgen/graphql",
     "github.com/vektah/gqlgen/handler",
