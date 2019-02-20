@@ -430,6 +430,14 @@
   version = "v2.3.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:400e113a367b511b9b09ca642ee11d9885485a93838526d697033af334a2fdde"
+  name = "github.com/kballard/go-shellquote"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "95032a82bc518f77982ea72343cc1ade730072f0"
+
+[[projects]]
   digest = "1:dfe5159383dfcd370555c35374ac99022906f987b55cc65a830fb9ced970b4b1"
   name = "github.com/lyft/protoc-gen-validate"
   packages = ["validate"]
@@ -454,12 +462,28 @@
   version = "v0.0.3"
 
 [[projects]]
+  digest = "1:0356f3312c9bd1cbeda81505b7fd437501d8e778ab66998ef69f00d7f9b3a0d7"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3ee7d812e62a0804a7d0a324e0249ca2db3476d3"
+  version = "v0.0.4"
+
+[[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
   pruneopts = "UT"
   revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
   version = "v1.0.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:2b32af4d2a529083275afc192d1067d8126b578c7a9613b26600e4df9c735155"
+  name = "github.com/mgutz/ansi"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "9520e82c474b0a04dd04f8a40959027271bab992"
 
 [[projects]]
   branch = "master"
@@ -500,6 +524,14 @@
   pruneopts = "UT"
   revision = "4b7aa43c6742a2c18fdef89dd197aaae7dac7ccd"
   version = "1.0.1"
+
+[[projects]]
+  digest = "1:abcdbf03ca6ca13d3697e2186edc1f33863bbdac2b3a44dfa39015e8903f7409"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e6d60cf7ba1f42d86d54cdf5508611c4aafb3970"
+  version = "v0.0.1"
 
 [[projects]]
   digest = "1:42e29deef12327a69123b9cb2cb45fee4af5c12c2a23c6e477338279a052703f"
@@ -651,13 +683,20 @@
   version = "v0.1"
 
 [[projects]]
-  digest = "1:f9ee75b761ef65d799a30e1c12a417d8d4ab7db5f22fcfb13a2e3574a8b2f3bf"
+  digest = "1:140edd3c7c9acc5e017fccfa284633e5c984d98862574e0e926a67cc734c4459"
   name = "github.com/solo-io/gloo"
   packages = [
     "install/helm/gloo/generate",
+    "pkg/cliutil",
     "pkg/utils/setuputils",
     "pkg/version",
+    "projects/gateway/pkg/api/v1",
+    "projects/gloo/cli/pkg/argsutils",
+    "projects/gloo/cli/pkg/cmd/options",
     "projects/gloo/cli/pkg/constants",
+    "projects/gloo/cli/pkg/helpers",
+    "projects/gloo/cli/pkg/printers",
+    "projects/gloo/cli/pkg/surveyutils",
     "projects/gloo/pkg/api/v1",
     "projects/gloo/pkg/api/v1/plugins",
     "projects/gloo/pkg/api/v1/plugins/aws",
@@ -702,7 +741,7 @@
   version = "v0.1.3"
 
 [[projects]]
-  digest = "1:bae86d39a363072867024ce0309e07734d7b90fbffb245a613c0849ec34cd480"
+  digest = "1:42a88b90798bec703f12b152ee7013361b5aa730b0bbab8a4036a8d344fd5a41"
   name = "github.com/solo-io/solo-kit"
   packages = [
     "pkg/api/v1/clients",
@@ -740,6 +779,7 @@
     "pkg/code-generator/model",
     "pkg/code-generator/parser",
     "pkg/errors",
+    "pkg/utils/cliutils",
     "pkg/utils/contextutils",
     "pkg/utils/errutils",
     "pkg/utils/fileutils",
@@ -1007,6 +1047,18 @@
   pruneopts = "UT"
   revision = "168a6198bcb0ef175f7dacec0b8691fc141dc9b8"
   version = "v1.13.0"
+
+[[projects]]
+  digest = "1:61e056dd0a189d9f1d07de809181f2ee5d36058d1ce4f9e58f443a1bea745ac0"
+  name = "gopkg.in/AlecAivazis/survey.v1"
+  packages = [
+    ".",
+    "core",
+    "terminal",
+  ]
+  pruneopts = "UT"
+  revision = "ee72c28b95a5ff3e227cfd403f556f0ef4b07ca5"
+  version = "v1.8.2"
 
 [[projects]]
   digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
@@ -1326,11 +1378,12 @@
     "github.com/pkg/errors",
     "github.com/solo-io/gloo/install/helm/gloo/generate",
     "github.com/solo-io/gloo/pkg/utils/setuputils",
+    "github.com/solo-io/gloo/projects/gloo/cli/pkg/argsutils",
     "github.com/solo-io/gloo/projects/gloo/cli/pkg/constants",
+    "github.com/solo-io/gloo/projects/gloo/cli/pkg/helpers",
     "github.com/solo-io/gloo/projects/gloo/pkg/api/v1",
     "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest",
     "github.com/solo-io/gloo/projects/gloo/pkg/bootstrap",
-    "github.com/solo-io/gloo/projects/gloo/pkg/defaults",
     "github.com/solo-io/go-checkpoint",
     "github.com/solo-io/go-utils/cliutils",
     "github.com/solo-io/go-utils/errors",

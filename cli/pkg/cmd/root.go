@@ -28,6 +28,7 @@ func App(version string, optionsFunc ...cliutils.OptionsFunc) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			panic("not implemented")
 		},
+		Version: version,
 	}
 	pflags := app.PersistentFlags()
 	flagutils.AddCommonFlags(pflags, &opts.Top)

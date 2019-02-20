@@ -14,10 +14,8 @@ func ResolverMapCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) 
 	}
 
 	cmd.AddCommand(
-		Delete(opts),
-		Create(opts),
+		Reset(opts),
 		Register(opts),
-		Update(opts),
 	)
 
 	cliutils.ApplyOptions(cmd, optionsFunc)
