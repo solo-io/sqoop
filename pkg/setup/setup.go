@@ -1,8 +1,9 @@
 package setup
 
 import (
-	"github.com/solo-io/gloo/pkg/utils/setuputils"
 	"time"
+
+	"github.com/solo-io/gloo/pkg/utils/setuputils"
 
 	check "github.com/solo-io/go-checkpoint"
 

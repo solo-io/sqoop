@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/vektah/gqlgen/graphql"
 	"github.com/pkg/errors"
 	"github.com/solo-io/sqoop/pkg/engine/dynamic"
+	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/neelance/introspection"
 	"github.com/vektah/gqlgen/neelance/query"
 	"github.com/vektah/gqlgen/neelance/schema"

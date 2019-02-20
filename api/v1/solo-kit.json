@@ -12,5 +12,6 @@
         "package": "sqoop.solo.io"
       }
     ]
-  }
+  },
+  "docs_dir": "docs/v1"
 }

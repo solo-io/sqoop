@@ -1,10 +1,11 @@
 package main
 
 import (
+	"os"
+
 	"github.com/solo-io/go-utils/stats"
 	"github.com/solo-io/solo-kit/pkg/utils/log"
 	"github.com/solo-io/sqoop/pkg/setup"
-	"os"
 )
 
 const (

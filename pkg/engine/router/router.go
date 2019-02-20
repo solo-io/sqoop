@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/vektah/gqlgen/graphql"
-	"github.com/vektah/gqlgen/handler"
 	"github.com/gorilla/mux"
 	"github.com/solo-io/solo-kit/pkg/utils/log"
+	"github.com/vektah/gqlgen/graphql"
+	"github.com/vektah/gqlgen/handler"
 )
 
 type Router struct {
