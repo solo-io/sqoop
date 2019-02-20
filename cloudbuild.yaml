@@ -76,7 +76,7 @@ steps:
     waitFor: ['docker-login']
     id: 'compile'
   - name: 'gcr.io/$PROJECT_ID/go-make'
-    args: ['docker-push', 'manifest', 'release', 'deploy-site']
+    args: ['docker-push', 'manifest', 'release']
     env:
       - 'TAGGED_VERSION=$TAG_NAME'
       - 'PROJECT_ROOT=github.com/solo-io/sqoop'

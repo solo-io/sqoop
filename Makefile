@@ -58,13 +58,6 @@ $(OUTPUT_DIR)/.generated-code:
 	mkdir -p $(OUTPUT_DIR)
 	touch $@
 
-
-.PHONY: cli-docs
-cli-docs: docs/cli/sqoopctl.md
-
-docs/cli/sqoopctl.md: $(shell find cli -name "*.go" | grep -v test.go | grep -v '\.\#*')
-	go run cli/cmd/docs/main.go
-
 #----------------------------------------------------------------------------------
 # Clean
 #----------------------------------------------------------------------------------
