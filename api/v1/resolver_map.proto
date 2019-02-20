@@ -19,8 +19,6 @@ message ResolverMap {
 
     option (core.solo.io.resource).short_name = "rm";
     option (core.solo.io.resource).plural_name = "resolver_maps";
-    // TODO: remove when we are ready to include this resource in the docs
-    option (core.solo.io.resource).skip_docs_gen = true;
 
     // Types is a map of Type Names (defined in the schema) to a TypeResolver, which contain resolvers for the
     // specific fields of the type
@@ -56,12 +54,12 @@ message FieldResolver {
 // GlooResolvers are the "meat" of Sqoop. GlooResolvers tell Sqoop how to invoke a "Gloo Function"
 message GlooResolver {
     // the Request Template, if specified, will become the body of the HTTP request used to invoke a function through Gloo
-    // input parameters, if needed, should be specified in the request template. See Sqoop's [Resolver documentation](TODO)
+    // input parameters, if needed, should be specified in the request template. See Sqoop's [Resolver documentation]
     // for more information on Request Templates.
     RequestTemplate request_template = 1;
     // The response template, if specified, will transform the body of HTTP responses returned by Gloo functions.
     // This field should be used if the object returned by the Gloo Function does not match the type specified in the GraphQL schema.
-    // It can also be used to modify or transform responses from their original state. See Sqoop's [Resolver documentation](TODO)
+    // It can also be used to modify or transform responses from their original state. See Sqoop's [Resolver documentation]
     // for more information on Response Templates.
     ResponseTemplate response_template = 2;
 
@@ -83,7 +81,7 @@ message ResponseTemplate {
 
 // A Go-template which will return data for a Resolver without making a function call. Template Resolvers can make use
 // of Sqoop's builtin template functions as well as the data provided by the Params object to the resolver.
-// Read more about Templates and Resolvers in Sqoop\'s [Resolver documentation](TODO).
+// Read more about Templates and Resolvers in Sqoop\'s [Resolver documentation].
 message TemplateResolver {
     // the Go template as an inline string
     string inline_template = 1;

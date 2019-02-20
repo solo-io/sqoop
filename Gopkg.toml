@@ -7,8 +7,6 @@
   revision = "6b3b338d5f9c8b5a80ad4ea1e2e37aa58677ea9d"
   name = "github.com/vektah/gqlgen"
 
-# this must match the version of the gqlgen binary we depend on
-
 [[constraint]]
   version = "0.7.2"
   name = "github.com/99designs/gqlgen"

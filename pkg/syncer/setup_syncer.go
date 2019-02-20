@@ -8,7 +8,6 @@ import (
 	"github.com/gogo/protobuf/types"
 	gloov1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/gloo/projects/gloo/pkg/bootstrap"
-	"github.com/solo-io/gloo/projects/gloo/pkg/defaults"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/factory"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/kube"
@@ -17,6 +16,7 @@ import (
 	"github.com/solo-io/solo-kit/pkg/utils/contextutils"
 	"github.com/solo-io/solo-kit/pkg/utils/errutils"
 	"github.com/solo-io/sqoop/pkg/api/v1"
+	"github.com/solo-io/sqoop/pkg/defaults"
 	"github.com/solo-io/sqoop/pkg/engine"
 	"github.com/solo-io/sqoop/pkg/engine/router"
 	"github.com/solo-io/sqoop/pkg/todo"
@@ -78,7 +78,7 @@ func Setup(ctx context.Context, kubeCache kube.SharedCache, cache memory.InMemor
 
 	writeNamespace := settings.DiscoveryNamespace
 	if writeNamespace == "" {
-		writeNamespace = defaults.GlooSystem
+		writeNamespace = defaults.SqoopSystem
 	}
 	watchNamespaces := settings.WatchNamespaces
 	var writeNamespaceProvided bool

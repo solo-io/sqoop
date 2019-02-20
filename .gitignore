@@ -22,3 +22,6 @@ test/kube_e2e/kube_resources/testing-resources.yaml
 # IDE
 .idea
 .vscode
+
+# mac files
+.DS_Store

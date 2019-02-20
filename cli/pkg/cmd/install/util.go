@@ -14,11 +14,11 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
-	"github.com/solo-io/gloo/projects/gloo/pkg/defaults"
 	"github.com/solo-io/go-utils/kubeutils"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/factory"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/kube"
 	"github.com/solo-io/sqoop/cli/pkg/options"
+	"github.com/solo-io/sqoop/pkg/defaults"
 	"github.com/solo-io/sqoop/version"
 	kubev1 "k8s.io/api/core/v1"
 	kubeerrs "k8s.io/apimachinery/pkg/api/errors"
@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	installNamespace = defaults.GlooSystem
+	installNamespace = defaults.SqoopSystem
 )
 
 func preInstall() error {

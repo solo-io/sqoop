@@ -20,8 +20,6 @@ message Schema {
 
     option (core.solo.io.resource).short_name = "sc";
     option (core.solo.io.resource).plural_name = "schemas";
-    // TODO: remove when we are ready to include this resource in the docs
-    option (core.solo.io.resource).skip_docs_gen = true;
 
     // inline the entire graphql schema as a string here
     string inline_schema = 3;

@@ -17,6 +17,12 @@ spec:
         - image: "{{ .Values.sqoop.deployment.image.repository }}:{{ .Values.sqoop.deployment.image.tag }}"
           imagePullPolicy:  {{ .Values.sqoop.deployment.image.pullPolicy }}
           name: sqoop
+          args: ["--namespace={{.Release.Namespace}}" ]
+          {{- if .Values.sqoop.deployment.stats }}
+          env:
+            - name: START_STATS_SERVER
+              value: "true"
+          {{- end}}
           ports:
             - containerPort: {{ .Values.sqoop.service.port }}
         - image: "{{ .Values.sqoop.deployment.proxy.repository }}:{{ .Values.sqoop.deployment.proxy.tag }}"

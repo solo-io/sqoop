@@ -7,13 +7,13 @@ import (
 	"time"
 
 	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
-	"github.com/solo-io/gloo/projects/gloo/pkg/defaults"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/factory"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/kube"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/memory"
 	"github.com/solo-io/solo-kit/pkg/errors"
 	"github.com/solo-io/solo-kit/pkg/utils/kubeutils"
 	"github.com/solo-io/solo-kit/pkg/utils/log"
+	"github.com/solo-io/sqoop/pkg/defaults"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -38,7 +38,7 @@ func MustGetNamespaces() []string {
 // Note: requires RBAC permission to list namespaces at the cluster level
 func GetNamespaces() ([]string, error) {
 	if memoryResourceClient != nil {
-		return []string{"default", defaults.GlooSystem}, nil
+		return []string{"default", defaults.SqoopSystem}, nil
 	}
 
 	cfg, err := kubeutils.GetConfig("", "")
