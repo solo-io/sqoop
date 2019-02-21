@@ -62,7 +62,7 @@ var _ = Describe("Schema", func() {
 	})
 
 	getResolverMap := func(name string) *v1.ResolverMap {
-		rm, err := helpers.MustResolverMapClient().Read(defaults.SqoopSystem, name, clients.ReadOpts{})
+		rm, err := helpers.MustResolverMapClient().Read(defaults.GlooSystem, name, clients.ReadOpts{})
 		Expect(err).NotTo(HaveOccurred())
 		return rm
 	}

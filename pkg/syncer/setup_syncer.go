@@ -78,7 +78,7 @@ func Setup(ctx context.Context, kubeCache kube.SharedCache, cache memory.InMemor
 
 	writeNamespace := settings.DiscoveryNamespace
 	if writeNamespace == "" {
-		writeNamespace = defaults.SqoopSystem
+		writeNamespace = defaults.GlooSystem
 	}
 	watchNamespaces := settings.WatchNamespaces
 	var writeNamespaceProvided bool

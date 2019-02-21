@@ -28,9 +28,9 @@ import (
 )
 
 const (
-	installNamespace = defaults.SqoopSystem
+	installNamespace = defaults.GlooSystem
 
-	sqoopTemplateUrl = "https://github.com/solo-io/sqoop/releases/download/v%s/sqoop.yaml"
+	sqoopTemplateUrl = "https://storage.googleapis.com/sqoop-helm/charts/sqoop-%s.tgz"
 )
 
 func preInstall(namespace string) error {

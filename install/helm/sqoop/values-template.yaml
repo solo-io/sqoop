@@ -16,7 +16,7 @@ sqoop:
       repository: soloio/gloo-envoy-wrapper
       pullPolicy: Always
   service:
-    port: 9090
+    port: 9095
     name: sqoop
   configMap:
     name: sqoop-proxy-config

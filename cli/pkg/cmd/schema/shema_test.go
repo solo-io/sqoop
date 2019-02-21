@@ -27,7 +27,7 @@ var _ = Describe("Schema", func() {
 	})
 
 	getSchema := func(name string) *v1.Schema {
-		schema, err := helpers.MustSchemaClient().Read(defaults.SqoopSystem, name, clients.ReadOpts{})
+		schema, err := helpers.MustSchemaClient().Read(defaults.GlooSystem, name, clients.ReadOpts{})
 		Expect(err).NotTo(HaveOccurred())
 		return schema
 	}

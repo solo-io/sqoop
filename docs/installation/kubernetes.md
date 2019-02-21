@@ -18,7 +18,7 @@ Once your Kubernetes cluster is up and running, run the following command to dep
 ```bash
 # install Sqoop
 kubectl apply -f \
-    https://raw.githubusercontent.com/solo-io/sqoop/master/install/kube/install.yaml
+    https://raw.githubusercontent.com/solo-io/sqoop/master/install/manifest/sqoop.yaml
 ```
 
 
@@ -41,38 +41,36 @@ sqoopctl install kube
 Check that the Gloo pods and services have been created:
 
 ```bash
-kubectl get all -n gloo-system
-NAME                                           READY     STATUS    RESTARTS   AGE
-pod/control-plane-757bd75db7-9vw59             1/1       Running   0          2h
-pod/function-discovery-7df6bd4fcd-26rx8        1/1       Running   0          2h
-pod/ingress-77c7bd6577-kdgdd                   1/1       Running   0          2h
-pod/kube-ingress-controller-78bfc4c84d-8tvjr   1/1       Running   0          2h
-pod/sqoop-6b79fdc655-n7j6n                      2/2       Running   0          2h
-pod/upstream-discovery-59bc6f7889-g65z6        1/1       Running   0          2h
+$ kubectl get all -n gloo-system
 
-NAME                    TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                         AGE
-service/control-plane   ClusterIP      10.96.24.217     <none>        8081/TCP                        3h
-service/ingress         LoadBalancer   10.111.152.102   <pending>     8080:31972/TCP,8443:30576/TCP   3h
-service/sqoop            LoadBalancer   10.106.92.208    <pending>     9090:31470/TCP                  3h
+NAME                                 READY   STATUS    RESTARTS   AGE
+pod/discovery-7f6865dc44-n4qrf       1/1     Running   0          2m5s
+pod/gateway-66c549fdf6-s5kl2         1/1     Running   0          2m5s
+pod/gateway-proxy-5c4df77bc6-n7v9r   1/1     Running   0          2m5s
+pod/gloo-69f67879cb-6qcrv            1/1     Running   0          2m5s
+pod/sqoop-855dc98dfd-bx97f           2/2     Running   0          2m5s
 
-NAME                                      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/control-plane             1         1         1            1           3h
-deployment.apps/function-discovery        1         1         1            1           3h
-deployment.apps/ingress                   1         1         1            1           3h
-deployment.apps/kube-ingress-controller   1         1         1            1           3h
-deployment.apps/sqoop                      1         1         1            1           3h
-deployment.apps/upstream-discovery        1         1         1            1           3h
+NAME                    TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+service/gateway-proxy   LoadBalancer   10.101.11.56    <pending>     80:30045/TCP,443:31283/TCP   2m5s
+service/gloo            ClusterIP      10.98.204.164   <none>        9977/TCP                     2m5s
+service/sqoop           LoadBalancer   10.99.235.90    <pending>     9095:30772/TCP               2m5s
 
-NAME                                                 DESIRED   CURRENT   READY     AGE
-replicaset.apps/control-plane-757bd75db7             1         1         1         3h
-replicaset.apps/function-discovery-7df6bd4fcd        1         1         1         3h
-replicaset.apps/ingress-77c7bd6577                   1         1         1         3h
-replicaset.apps/kube-ingress-controller-78bfc4c84d   1         1         1         3h
-replicaset.apps/sqoop-6b79fdc655                      1         1         1         3h
-replicaset.apps/upstream-discovery-59bc6f7889        1         1         1         3h
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/discovery       1/1     1            1           2m5s
+deployment.apps/gateway         1/1     1            1           2m5s
+deployment.apps/gateway-proxy   1/1     1            1           2m5s
+deployment.apps/gloo            1/1     1            1           2m5s
+deployment.apps/sqoop           1/1     1            1           2m5s
+
+NAME                                       DESIRED   CURRENT   READY   AGE
+replicaset.apps/discovery-7f6865dc44       1         1         1       2m5s
+replicaset.apps/gateway-66c549fdf6         1         1         1       2m5s
+replicaset.apps/gateway-proxy-5c4df77bc6   1         1         1       2m5s
+replicaset.apps/gloo-69f67879cb            1         1         1       2m5s
+replicaset.apps/sqoop-855dc98dfd           1         1         1       2m5s
 ```
 
 Everything should be up and running. If this process does not work, please [open an issue](https://github.com/solo-io/sqoop/issues/new). We are happy to answer
 questions on our [diligently staffed Slack channel](https://slack.solo.io/).
 
-See [Getting Started on Kubernetes](../getting_started/kubernetes/1.md) to get started creating your first GraphQL endpoint with Sqoop.
+See [Getting Started on Kubernetes](../getting_started/kubernetes.md) to get started creating your first GraphQL endpoint with Sqoop.

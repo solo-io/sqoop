@@ -13,5 +13,5 @@ func AddInstallFlags(set *pflag.FlagSet, install *options.Install) {
 		set.StringVar(&install.ReleaseVersion, "release", "", "install using this release version. defaults to the latest github release")
 	}
 	set.StringVarP(&install.ManifestOverride, "file", "f", "", "Install sqoop from this kubernetes manifest yaml file rather than from a release")
-	set.StringVarP(&install.Namespace, "namespace", "n", defaults.SqoopSystem, "which namespace to install sqoop into")
+	set.StringVarP(&install.Namespace, "namespace", "n", defaults.GlooSystem, "which namespace to install sqoop into")
 }
