@@ -9,5 +9,5 @@ import (
 
 func TestResolvermap(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Resolvermap Suite")
+	RunSpecs(t, "ResolverMap Suite")
 }

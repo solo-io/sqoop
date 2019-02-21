@@ -122,35 +122,6 @@ func SettingsClient() (glooV1.SettingsClient, error) {
 	return settingsClient, nil
 }
 
-func MustSecretClient() glooV1.SecretClient {
-	client, err := secretClient()
-	if err != nil {
-		log.Fatalf("failed to create Secret client: %v", err)
-	}
-	return client
-}
-
-func secretClient() (glooV1.SecretClient, error) {
-	if memoryResourceClient != nil {
-		return glooV1.NewSecretClient(memoryResourceClient)
-	}
-
-	clientset, err := getKubernetesClient()
-	if err != nil {
-		return nil, errors.Wrapf(err, "getting kube config")
-	}
-	secretClient, err := glooV1.NewSecretClient(&factory.KubeSecretClientFactory{
-		Clientset: clientset,
-	})
-	if err != nil {
-		return nil, errors.Wrapf(err, "creating Secrets client")
-	}
-	if err := secretClient.Register(); err != nil {
-		return nil, err
-	}
-	return secretClient, nil
-}
-
 func getKubernetesClient() (*kubernetes.Clientset, error) {
 	config, err := getKubernetesConfig(0)
 	if err != nil {
