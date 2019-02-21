@@ -43,21 +43,14 @@ func preInstall(namespace string) error {
 	return nil
 }
 
-func installFromUri(overrideUri string, opts *options.Options, valuesFileName string) error {
-
-	// Pre-install step writes to k8s. Run only if this is not a dry run.
-	if !opts.Install.DryRun {
-		if err := preInstall(opts.Install.Namespace); err != nil {
-			return errors.Wrapf(err, "pre-install failed")
-		}
-	}
+func getFinalUri(overrideUri string, opts *options.Options) (string, error) {
 	var uri string
 	switch {
 	case overrideUri != "":
 		uri = overrideUri
 	case !version.IsReleaseVersion():
 		if opts.Install.ReleaseVersion == "" {
-			return errors.Errorf("you must provide a file or a release version containing the manifest when running an unreleased version of glooctl.")
+			return "", errors.Errorf("you must provide a file or a release version containing the manifest when running an unreleased version of glooctl.")
 		}
 		uri = fmt.Sprintf(sqoopTemplateUrl, opts.Install.ReleaseVersion)
 	default:
@@ -65,8 +58,23 @@ func installFromUri(overrideUri string, opts *options.Options, valuesFileName st
 
 	}
 
-	var manifestBytes []byte
+	return uri, nil
+}
 
+func installFromUri(opts *options.Options, manifestUri, valuesFileName string) error {
+	// Pre-install step writes to k8s. Run only if this is not a dry run.
+	if !opts.Install.DryRun {
+		if err := preInstall(opts.Install.Namespace); err != nil {
+			return errors.Wrapf(err, "pre-install failed")
+		}
+	}
+
+	uri, err := getFinalUri(manifestUri, opts)
+	if err != nil {
+		return err
+	}
+
+	var manifestBytes []byte
 	switch path.Ext(uri) {
 	case ".json", ".yaml", ".yml":
 		var err error

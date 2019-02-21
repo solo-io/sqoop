@@ -1,3 +1,9 @@
+---
+weight: 3
+title: Api Objects
+---
+
+
 # ResolverMaps
 
 ### Storage-Based API

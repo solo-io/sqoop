@@ -1,11 +1,15 @@
-# Getting started on Docker
+---
+weight: 2
+title: Kubernetes
+---
 
-#### What you'll need
+# Getting Started on Kubernetes
 
- 1. [Docker](https://www.docker.com/)
- 1. [Docker-Compose](https://docs.docker.com/compose/)
- 1. [sqoopctl](https://github.com/solo-io/sqoop/releases)
- 1. [glooctl](https://github.com/solo-io/glooctl/releases) (optional)
+### What you'll need
+- [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- [`sqoopctl`](https://github.com/solo-io/sqoop)
+- [`glooctl`](https://github.com/solo-io/gloo): (OPTIONAL) to see how Sqoop is interacting with the underlying system
+- Kubernetes v1.8+ deployed somewhere. [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is a great way to get a cluster up quickly.
 
 
 
@@ -13,70 +17,31 @@
 
 #### Deploy Sqoop and Gloo
 
-    sqoopctl install docker sqoop-docker
-    cd ./sqoop-docker
-    docker-compose up
-
-or
-
-    git clone https://github.com/solo-io/sqoop
-    cd sqoop/install/docker-compose
-    ./prepare-config-directories
-    docker-compose up
+        sqoopctl install kube
 
 
 ####  Deploy the Pet Store
 
-    docker run -d -p 1234:8080 soloio/petstore-example:latest
-
-#### Create a Gloo upstream for the petstore
-
-  * using `glooctl`:
-  
-```bash
-cat << EOF | glooctl upstream create -f -
-name: petstore
-type: static
-spec:
-  hosts:
-  # gateway ip for the docker network
-  - addr: $(docker inspect sqoop-docker_default -f '{{ (index .IPAM.Config 0).Gateway }}')
-    port: 1234
-EOF
-```
-
-
-
-
-  * writing directly to disk
-
-```bash
-cat > ./_gloo_config/upstreams/petstore.yaml << EOF 
-name: petstore
-type: static
-spec:
-  hosts:
-  # gateway ip for the docker network
-  - addr: $(docker inspect sqoop-docker_default -f '{{ (index .IPAM.Config 0).Gateway }}')
-    port: 1234
-EOF
-```
-
+        kubectl apply \
+          -f https://raw.githubusercontent.com/solo-io/gloo/master/example/petstore/petstore.yaml
 
 #### OPTIONAL: View the petstore functions using `glooctl`:
 
         glooctl upstream get
         
-        +----------+---------+--------+-------------+
-        |   NAME   |  TYPE   | STATUS |  FUNCTION   |
-        +----------+---------+--------+-------------+
-        | petstore | static |        | addPet      |
-        |          |         |        | deletePet   |
-        |          |         |        | findPetById |
-        |          |         |        | findPets    |
-        +----------+---------+--------+-------------+
+        +--------------------------------+------------+----------+-------------+
+        |              NAME              |    TYPE    |  STATUS  |  FUNCTION   |
+        +--------------------------------+------------+----------+-------------+
+        | default-petstore-8080          | kubernetes | Accepted | addPet      |
+        |                                |            |          | deletePet   |
+        |                                |            |          | findPetById |
+        |                                |            |          | findPets    |
+        | gloo-system-control-plane-8081 | kubernetes | Accepted |             |
+        | gloo-system-ingress-8080       | kubernetes | Accepted |             |
+        | gloo-system-ingress-8443       | kubernetes | Accepted |             |
+        +--------------------------------+------------+----------+-------------+
 
-The upstream we want to see is `petstore`. The functions `addPet`, `deletePet`, `findPetById`, and `findPets`
+The upstream we want to see is `default-petstore-8080`. The functions `addPet`, `deletePet`, `findPetById`, and `findPets`
 will become the resolvers for our GraphQL schema.  
 
 
@@ -133,7 +98,8 @@ Take a look at its structure:
 sqoopctl resolvermap get petstore-resolvers -o yaml
 
 metadata:
-  resource_version: "1"
+  namespace: gloo-system
+  resource_version: "573676"
 name: petstore-resolvers
 status:
   state: Accepted
@@ -163,25 +129,27 @@ Let's use `sqoopctl` to register some resolvers.
 
 ```bash
 # register findPetById for Query.pets (specifying no arguments)
-sqoopctl resolvermap register -u petstore -f findPetById Query pets
+sqoopctl resolvermap register -u default-petstore-8080 -f findPetById Query pets
 # register a resolver for Query.pet
-sqoopctl resolvermap register -u petstore -f findPetById Query pet
+sqoopctl resolvermap register -u default-petstore-8080 -f findPetById Query pet
 # register a resolver for Mutation.addPet
 # the request template tells Sqoop to use the Variable "pet" as an argument 
-sqoopctl resolvermap register -u petstore -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
+sqoopctl resolvermap register -u default-petstore-8080 -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
 ```
-
-*Note*: if you get a `permission denied` error, run
-```bash
-sudo chown -R $USER _gloo_config
-sudo chgrp -R $USER _gloo_config
-``` 
 
 That's it! Now we should have a functioning GraphQL frontend for our REST service.
 
 #### Visit the Playground
 
-Visit the Sqoop UI from your browser: http://localhost:9090/
+Visit the exposed address of the `sqoop` service in your browser.
+
+If you're running in minkube, you can get this address with the command
+
+```bash
+echo http://$(minikube ip):$(kubectl get svc sqoop -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
+
+http://192.168.39.47:30935/
+```
 
 You should see a landing page for Sqoop which contains a link to the GraphQL Playground for our
 Pet Store. Visit it and try out some queries!

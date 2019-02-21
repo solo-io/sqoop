@@ -1,3 +1,9 @@
+---
+weight: 1
+title: Kubernetes
+---
+
+
 # Installing on Kubernetes
 
 ## Installing with `kubectl`

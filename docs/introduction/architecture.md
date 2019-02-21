@@ -1,8 +1,14 @@
+---
+weight: 3
+title: Architecture
+---
+
+
 # Architecture
 
 The Architecture of Sqoop can be understood as follows:
 
-![Architecture](low_level_arch.png "Sqoop Architecture")
+![Architecture](../../img/low_level_arch.png "Sqoop Architecture")
 
 
 Sqoop users interact via the [Storage Layer API](https://github.com/solo-io/sqoop/tree/master/pkg/storage).

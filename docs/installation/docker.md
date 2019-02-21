@@ -1,3 +1,9 @@
+---
+weight: 1
+title: Docker
+---
+
+
 # Installing on Docker
 
 ## Installing with `sqoopctl`

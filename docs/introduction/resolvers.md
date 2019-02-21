@@ -1,3 +1,9 @@
+---
+weight: 3
+title: Resolvers
+---
+
+
 # Gloo Resolvers
 
 Gloo resolvers are the primary means of resolving schema fields using Sqoop. This 

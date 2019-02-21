@@ -1,3 +1,7 @@
+---
+weight: 99
+title: Sqoop
+---
 
 
 <h1 align="center">
@@ -15,12 +19,9 @@ for REST/gRPC applications and serverless functions. Sqoop routes requests to da
 Envoy [HTTP filters](https://envoyproxy.io/docs/envoy/latest/intro/arch_overview/http_filters.html) 
 for security, load balancing, and [more](https://gloo.solo.io/#features).
 
-<BR>
-<p align="center">
-<img src="introduction/high_level_architecture.png" alt="Sqoop" width="776" height="400">
-</p>    
-<BR>
-    
+<BR><center><img src="img/high_level_architecture.png" alt="Sqoop" width="776" height="400"></center>
+
+
 ## Workflow with Sqoop
 * Register or Discovery API Endpoints and Serverless Functions with Gloo
 * Upload a GraphQL schema 
