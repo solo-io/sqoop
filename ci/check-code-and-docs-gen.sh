@@ -42,9 +42,3 @@ echo "Generating code produced a non-empty diff in the gloo repo"
   git --git-dir=/workspace/gopath/src/github.com/solo-io/gloo/.git --work-tree=/workspace/gopath/src/github.com/solo-io/gloo diff | cat
   exit 1;
 fi
-
-(cd sqoop/doc && make site -B)
-if [[ $? -ne 0 ]]; then
-  echo "Generating the site failed, check for warnings in the mkdocs build log"
-  exit 1;
-fi
