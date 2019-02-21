@@ -15,7 +15,7 @@ for line in $CONFIG; do
 done
 
 github_token_no_spaces=$(echo $GITHUB_TOKEN | tr -d '[:space:]')
-branch="docs-gloo-$tag"
+branch="docs-sqoop-$tag"
 
 set +x
 echo "Cloning solo-docs repo"
@@ -67,6 +67,6 @@ fi
 (cd solo-docs && git push --set-upstream origin $branch)
 
 curl -v -H "Authorization: token $github_token_no_spaces" -H "Content-Type:application/json" -X POST https://api.github.com/repos/solo-io/solo-docs/pulls -d \
-'{"title":"Update docs for gloo '"$tag"'", "body": "Update docs for gloo '"$tag"'", "head": "'"$branch"'", "base": "master"}'
+'{"title":"Update docs for sqoop '"$tag"'", "body": "Update docs for sqoop '"$tag"'", "head": "'"$branch"'", "base": "master"}'
 
 rm -rf solo-docs
