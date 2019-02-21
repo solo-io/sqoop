@@ -4,15 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"os/exec"
-	"path"
-	"path/filepath"
-	"strings"
-
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/cliutil"
 	"github.com/solo-io/gloo/pkg/cliutil/install"
@@ -22,16 +13,24 @@ import (
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/kube"
 	"github.com/solo-io/sqoop/cli/pkg/options"
 	"github.com/solo-io/sqoop/pkg/defaults"
+	"github.com/solo-io/sqoop/version"
+	"io"
+	"io/ioutil"
 	kubev1 "k8s.io/api/core/v1"
 	kubeerrs "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/helm/pkg/chartutil"
 	"k8s.io/helm/pkg/renderutil"
+	"os"
+	"os/exec"
+	"path"
 )
 
 const (
 	installNamespace = defaults.SqoopSystem
+
+	sqoopTemplateUrl = "https://github.com/solo-io/sqoop/releases/download/v%s/sqoop.yaml"
 )
 
 func preInstall(namespace string) error {
@@ -44,35 +43,7 @@ func preInstall(namespace string) error {
 	return nil
 }
 
-//func installFromUri(opts *options.Options, overrideUri, manifestUriTemplate string) error {
-//	var uri string
-//	switch {
-//	case overrideUri != "":
-//		uri = overrideUri
-//	case !version.IsReleaseVersion():
-//		if opts.Install.ReleaseVersion == "" {
-//			return errors.Errorf("you must provide a file or a release version containing the manifest when running an unreleased version of glooctl.")
-//		}
-//		uri = fmt.Sprintf(manifestUriTemplate, opts.Install.ReleaseVersion)
-//	default:
-//		uri = fmt.Sprintf(manifestUriTemplate, version.Version)
-//	}
-//
-//	manifestBytes, err := readFile(uri)
-//	if err != nil {
-//		return errors.Wrapf(err, "reading manifest %v", uri)
-//	}
-//	if opts.Install.DryRun {
-//		fmt.Printf("%s", manifestBytes)
-//		return nil
-//	}
-//	if err := kubectlApply(manifestBytes); err != nil {
-//		return errors.Wrapf(err, "running kubectl apply on manifest")
-//	}
-//	return nil
-//}
-
-func installFromUri(manifestUri string, opts *options.Options, valuesFileName string) error {
+func installFromUri(overrideUri string, opts *options.Options, valuesFileName string) error {
 
 	// Pre-install step writes to k8s. Run only if this is not a dry run.
 	if !opts.Install.DryRun {
@@ -80,13 +51,26 @@ func installFromUri(manifestUri string, opts *options.Options, valuesFileName st
 			return errors.Wrapf(err, "pre-install failed")
 		}
 	}
+	var uri string
+	switch {
+	case overrideUri != "":
+		uri = overrideUri
+	case !version.IsReleaseVersion():
+		if opts.Install.ReleaseVersion == "" {
+			return errors.Errorf("you must provide a file or a release version containing the manifest when running an unreleased version of glooctl.")
+		}
+		uri = fmt.Sprintf(sqoopTemplateUrl, opts.Install.ReleaseVersion)
+	default:
+		uri = fmt.Sprintf(sqoopTemplateUrl, version.Version)
+
+	}
 
 	var manifestBytes []byte
 
-	switch path.Ext(manifestUri) {
+	switch path.Ext(uri) {
 	case ".json", ".yaml", ".yml":
 		var err error
-		manifestBytes, err = getFileManifestBytes(manifestUri)
+		manifestBytes, err = getFileManifestBytes(uri)
 		if err != nil {
 			return err
 		}
@@ -99,12 +83,12 @@ func installFromUri(manifestUri string, opts *options.Options, valuesFileName st
 			},
 		}
 
-		manifestBytes, err = install.GetHelmManifest(manifestUri, valuesFileName, renderOpts, install.ExcludeEmptyManifests)
+		manifestBytes, err = install.GetHelmManifest(uri, valuesFileName, renderOpts, install.ExcludeEmptyManifests)
 		if err != nil {
 			return err
 		}
 	default:
-		return errors.Errorf("unsupported file extension in manifest URI: %s", path.Ext(manifestUri))
+		return errors.Errorf("unsupported file extension in manifest URI: %s", path.Ext(uri))
 	}
 
 	return installManifest(manifestBytes, opts)
@@ -124,7 +108,6 @@ func installManifest(manifest []byte, opts *options.Options) error {
 func kubectlApply(manifest []byte, namespace string) error {
 	return kubectl(bytes.NewBuffer(manifest), "apply", "-n", namespace, "-f", "-")
 }
-
 
 func kubectl(stdin io.Reader, args ...string) error {
 	kubectl := exec.Command("kubectl", args...)
@@ -198,35 +181,4 @@ func getFileManifestBytes(uri string) ([]byte, error) {
 		return nil, errors.Wrapf(err, "reading manifest file %v", uri)
 	}
 	return manifestBytes, nil
-}
-
-func readFile(uri string) ([]byte, error) {
-	var file io.Reader
-	if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
-		resp, err := http.Get(uri)
-		if err != nil {
-			return nil, err
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			return nil, errors.Errorf("http GET returned status %d", resp.StatusCode)
-		}
-
-		file = resp.Body
-	} else {
-		path, err := filepath.Abs(uri)
-		if err != nil {
-			return nil, errors.Wrapf(err, "getting absolute path for %v", uri)
-		}
-
-		f, err := os.Open(path)
-		if err != nil {
-			return nil, errors.Wrapf(err, "opening file %v", path)
-		}
-		file = f
-	}
-
-	// Write the body to file
-	return ioutil.ReadAll(file)
 }

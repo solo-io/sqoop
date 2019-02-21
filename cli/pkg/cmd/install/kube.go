@@ -11,13 +11,12 @@ import (
 )
 
 func KubeCmd(opts *options.Options, optionsFunc... cliutils.OptionsFunc) *cobra.Command {
-	const glooGatewayUrlTemplate = "https://github.com/solo-io/sqoop/releases/download/v%s/sqoop.yaml"
 	cmd := &cobra.Command{
 		Use:   "kube",
 		Short: "install sqoop on kubernetes",
 		Long:  "requires kubectl to be installed",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := installFromUri(opts.Install.ManifestOverride, opts, glooGatewayUrlTemplate); err != nil {
+			if err := installFromUri(opts.Install.ManifestOverride, opts, sqoopTemplateUrl); err != nil {
 				return errors.Wrapf(err, "installing sqoop from manifest")
 			}
 			return nil
