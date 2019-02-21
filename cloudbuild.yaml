@@ -65,7 +65,7 @@ steps:
     args: ['-c', 'docker login --username soloiobot --password $$DOCKER_HUB_PASSWORD']
     secretEnv: ['DOCKER_HUB_PASSWORD']
     id: 'docker-login'
-    waitFor: ['test']
+    waitFor: ['dep']
   - name: 'gcr.io/$PROJECT_ID/go-make'
     args: ['docker']
     env:

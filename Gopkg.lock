@@ -1908,7 +1908,6 @@
     "github.com/gogo/protobuf/types",
     "github.com/gorilla/mux",
     "github.com/hashicorp/go-multierror",
-    "github.com/ilackarms/protoc-gen-doc",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
     "github.com/pelletier/go-toml",
