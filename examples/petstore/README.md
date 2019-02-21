@@ -6,7 +6,7 @@
 - [`glooctl`](https://github.com/solo-io/gloo): (OPTIONAL) to see how Sqoop is interacting with the underlying system
 - Kubernetes v1.8+ deployed somewhere. [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is a great way to get a cluster up quickly.
 
-
+This tutorial will install sqoop into the namespace `gloo-system` by default, this is configurable from the `sqoopctl` cli.
 
 ### Steps
 
@@ -17,7 +17,7 @@
 
 ####  Deploy the Pet Store
 
-        kubectl apply -n <sqoop-namespace> -f petstore.yaml
+        kubectl apply -n gloo-system -f petstore.yaml
 
 #### OPTIONAL: View the petstore functions using `glooctl`:
 
@@ -26,29 +26,29 @@
         +--------------------------------+------------+----------+-------------+
         |              NAME              |    TYPE    |  STATUS  |  FUNCTION   |
         +--------------------------------+------------+----------+-------------+
-        | <sqoop-namespace>-petstore-8080| kubernetes | Accepted | addPet      |
+        | gloo-system-petstore-8080	     | kubernetes | Accepted | addPet      |
         |                                |            |          | deletePet   |
         |                                |            |          | findPetById |
         |                                |            |          | findPets    |
         +--------------------------------+------------+----------+-------------+
 
-The upstream we want to see is `<sqoop-namespace>-petstore-8080`. The functions `addPet`, `deletePet`, `findPetById`, and `findPets`
+The upstream we want to see is `gloo-system-petstore-8080`. The functions `addPet`, `deletePet`, `findPetById`, and `findPets`
 will become the resolvers for our GraphQL schema.  
 
 ##### Alternatively: find the upstreams using `kubectl`
 ```bash
-kubectl get upstreams -n <sqoop-namesapce>
+kubectl get upstreams -n gloo-system
 
 NAME                                                    AGE
-<sqoop-namespace>-gloo-9977                              1h
-<sqoop-namespace>-petstore-8080                          1h
-<sqoop-namespace>-sqoop-9090                             1h
+gloo-system-gloo-9977                              1h
+gloo-system-petstore-8080                          1h
+gloo-system-sqoop-9090                             1h
 ```
 
 The upstream we are interested in is the petstore, so we run the following to find the functions:
 
 ```bash
-kubectl get upstreams -n <sqoop-namespace> <sqoop-namespace>-petstore-8080 -oyaml
+kubectl get upstreams -n gloo-system gloo-system-petstore-8080 -oyaml
 
 apiVersion: gloo.solo.io/v1
 kind: Upstream
@@ -164,7 +164,7 @@ Take a look at its structure:
 sqoopctl resolvermap get petstore-resolvers -o yaml
 
 metadata:
-  namespace:<sqoop-namespace>
+  namespace: gloo-system
   resource_version: "573676"
 name: petstore-resolvers
 status:
@@ -194,12 +194,12 @@ Let's use `sqoopctl` to register some resolvers.
 
 ```bash
 # register findPetById for Query.pets (specifying no arguments)
-sqoopctl resolvermap register -u <sqoop-namespace>-petstore-8080 -f findPetById Query pets
+sqoopctl resolvermap register -u gloo-system-petstore-8080 -f findPetById Query pets
 # register a resolver for Query.pet
-sqoopctl resolvermap register -u <sqoop-namespace>-petstore-8080 -f findPetById Query pet
+sqoopctl resolvermap register -u gloo-system-petstore-8080 -f findPetById Query pet
 # register a resolver for Mutation.addPet
 # the request template tells Sqoop to use the Variable "pet" as an argument 
-sqoopctl resolvermap register -u <sqoop-namespace>-petstore-8080 -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
+sqoopctl resolvermap register -u gloo-system-petstore-8080 -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
 ```
 
 That's it! Now we should have a functioning GraphQL frontend for our REST service.
@@ -211,7 +211,7 @@ Visit the exposed address of the `sqoop` service in your browser.
 If you're running in minkube, you can get this address with the command
 
 ```bash
-echo http://$(minikube ip):$(kubectl get svc sqoop -n <sqoop-namespace> -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
+echo http://$(minikube ip):$(kubectl get svc sqoop -n gloo-system -o 'jsonpath={.spec.ports[?(@.name=="http")].nodePort}')
 
 http://192.168.39.47:30935/
 ```

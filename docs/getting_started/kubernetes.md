@@ -11,6 +11,7 @@ title: Kubernetes
 - [`glooctl`](https://github.com/solo-io/gloo): (OPTIONAL) to see how Sqoop is interacting with the underlying system
 - Kubernetes v1.8+ deployed somewhere. [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is a great way to get a cluster up quickly.
 
+This tutorial will install sqoop into the namespace `gloo-system` by default, this is configurable from the `sqoopctl` cli.
 
 
 ### Steps
@@ -30,24 +31,103 @@ title: Kubernetes
         glooctl upstream get
         
         +--------------------------------+------------+----------+-------------+
+        +--------------------------------+------------+----------+-------------+
         |              NAME              |    TYPE    |  STATUS  |  FUNCTION   |
         +--------------------------------+------------+----------+-------------+
-        | default-petstore-8080          | kubernetes | Accepted | addPet      |
+        | gloo-system-petstore-8080	     | kubernetes | Accepted | addPet      |
         |                                |            |          | deletePet   |
         |                                |            |          | findPetById |
         |                                |            |          | findPets    |
-        | gloo-system-control-plane-8081 | kubernetes | Accepted |             |
-        | gloo-system-ingress-8080       | kubernetes | Accepted |             |
-        | gloo-system-ingress-8443       | kubernetes | Accepted |             |
         +--------------------------------+------------+----------+-------------+
 
-The upstream we want to see is `default-petstore-8080`. The functions `addPet`, `deletePet`, `findPetById`, and `findPets`
+The upstream we want to see is `gloo-system-petstore-8080`. The functions `addPet`, `deletePet`, `findPetById`, and `findPets`
 will become the resolvers for our GraphQL schema.  
+
+##### Alternatively: find the upstreams using `kubectl`
+```bash
+kubectl get upstreams -n gloo-system
+
+NAME                                                    AGE
+gloo-system-gloo-9977                              1h
+gloo-system-petstore-8080                          1h
+gloo-system-sqoop-9090                             1h
+```
+
+The upstream we are interested in is the petstore, so we run the following to find the functions:
+
+```bash
+kubectl get upstreams -n gloo-system gloo-system-petstore-8080 -oyaml
+
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  labels:
+    discovered_by: kubernetesplugin
+    service: petstore
+  name: gloo-system-petstore-8080
+  namespace: gloo-system
+spec:
+  upstreamSpec:
+    kube:
+      selector:
+        app: petstore
+      serviceName: petstore
+      serviceNamespace: gloo-system
+      servicePort: 8080
+      serviceSpec:
+        rest:
+          swaggerInfo:
+            urlå: http://petstore.gloo-system.svc.cluster.local:8080/swagger.json
+          transformations:
+            addPet:
+              body:
+                text: '{"id": {{ default(id, "") }},"name": "{{ default(name, "")}}","tag":
+                  "{{ default(tag, "")}}"}'
+              headers:
+                :method:
+                  text: POST
+                :path:
+                  text: /api/pets
+                content-type:
+                  text: application/json
+            deletePet:
+              headers:
+                :method:
+                  text: DELETE
+                :path:
+                  text: /api/pets/{{ default(id, "") }}
+                content-type:
+                  text: application/json
+            findPetById:
+              body: {}
+              headers:
+                :method:
+                  text: GET
+                :path:
+                  text: /api/pets/{{ default(id, "") }}
+                content-length:
+                  text: "0"
+                content-type: {}
+                transfer-encoding: {}
+            findPets:
+              body: {}
+              headers:
+                :method:
+                  text: GET
+                :path:
+                  text: /api/pets?tags={{default(tags, "")}}&limit={{default(limit,
+                    "")}}
+                content-length:
+                  text: "0"
+                content-type: {}
+                transfer-encoding: {}
+
+```
 
 
 #### Create a GraphQL Schema
 
-Copy and paste the following schema into `petstore.graphql` (or wherever you like):
+An example schema is located in `petstore.schema.graphql`
 
 ```graphql
 # The query type, represents all of the entry points into our object graph
@@ -63,18 +143,12 @@ type Mutation {
 type Pet{
     id: ID!
     name: String!
-    status: Status!
 }
 
 input InputPet{
     id: ID!
     name: String!
     tag: String
-}
-
-enum Status {
-    pending
-    available
 }
 ```   
 
@@ -111,7 +185,6 @@ types:
     fields:
       id: {}
       name: {}
-      status: {}
   Query:
     fields:
       pet: {}
@@ -129,12 +202,12 @@ Let's use `sqoopctl` to register some resolvers.
 
 ```bash
 # register findPetById for Query.pets (specifying no arguments)
-sqoopctl resolvermap register -u default-petstore-8080 -f findPetById Query pets
+sqoopctl resolvermap register -u gloo-system-petstore-8080 -f findPetById Query pets
 # register a resolver for Query.pet
-sqoopctl resolvermap register -u default-petstore-8080 -f findPetById Query pet
+sqoopctl resolvermap register -u gloo-system-petstore-8080 -f findPetById Query pet
 # register a resolver for Mutation.addPet
 # the request template tells Sqoop to use the Variable "pet" as an argument 
-sqoopctl resolvermap register -u default-petstore-8080 -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
+sqoopctl resolvermap register -u gloo-system-petstore-8080 -f addPet Mutation addPet --request-template '{{ marshal (index .Args "pet") }}'
 ```
 
 That's it! Now we should have a functioning GraphQL frontend for our REST service.
