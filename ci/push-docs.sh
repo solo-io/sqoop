@@ -29,13 +29,13 @@ git config --global user.name "soloio-bot"
 if [ -d "solo-docs/sqoop/docs/v1/github.com/solo-io/sqoop" ]; then
 	rm -r solo-docs/sqoop/docs/v1/github.com/solo-io/sqoop
 fi
-cp -r docs/v1/github.com/solo-io/sqoop solo-docs/sqoop/docs/v1/github.com/solo-io/gloo
+cp -r docs/v1/github.com/solo-io/sqoop solo-docs/sqoop/docs/v1/github.com/solo-io/sqoop
 
 # Gloo
 if [ -d "solo-docs/sqoop/docs/v1/github.com/solo-io/gloo" ]; then
 	rm -r solo-docs/sqoop/docs/v1/github.com/solo-io/gloo
 fi
-cp -r docs/v1/github.com/solo-io/gloo solo-docs/sqoop/docs/v1/github.com/solo-io/sqoop
+cp -r docs/v1/github.com/solo-io/gloo solo-docs/sqoop/docs/v1/github.com/solo-io/gloo
 
 # Solo Kit
 if [ -d "solo-docs/sqoop/docs/v1/github.com/solo-io/solo-kit" ]; then
