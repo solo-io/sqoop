@@ -189,9 +189,17 @@ release-yamls: $(RELEASE_YAMLS)
 .PHONY: release
 release: release-binaries release-yamls
 ifeq ($(RELEASE),"true")
+	ci/push-docs.sh tag=$(TAGGED_VERSION)
 	@$(foreach BINARY,$(RELEASE_BINARIES),ci/upload-github-release-asset.sh owner=solo-io repo=sqoop tag=$(TAGGED_VERSION) filename=$(BINARY) sha=TRUE;)
 	@$(foreach YAML,$(RELEASE_YAMLS),ci/upload-github-release-asset.sh owner=solo-io repo=sqoop tag=$(TAGGED_VERSION) filename=$(YAML);)
 endif
+
+.PHONY: push-docs
+push-docs:
+ifeq ($(RELEASE),"true")
+	ci/push-docs.sh tag=$(TAGGED_VERSION)
+endif
+
 
 #----------------------------------------------------------------------------------
 # Docker
