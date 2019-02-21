@@ -17,9 +17,10 @@ sqoopctl install kube [flags]
 ### Options
 
 ```
-  -d, --dry-run          Dump the raw installation yaml instead of applying it to kubernetes
-  -h, --help             help for kube
-      --release string   install using this release version. defaults to the latest github release
+  -d, --dry-run            Dump the raw installation yaml instead of applying it to kubernetes
+  -h, --help               help for kube
+  -n, --namespace string   which namespace to install sqoop into (default "sqoop-system")
+      --release string     install using this release version. defaults to the latest github release
 ```
 
 ### Options inherited from parent commands
