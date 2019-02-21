@@ -1,7 +1,7 @@
 
 
 <h1 align="center">
-    <img src="docs/Sqoop.png" alt="Sqoop" width="200" height="183">
+    <img src="https://sqoop.solo.io/img/Sqoop.png" alt="Sqoop" width="200" height="183">
   <br>
   GraphQL for Monolith, Microservices, and Serverless
 </h1>
@@ -17,7 +17,7 @@ for security, load balancing, and more.
 
 <BR>
 <p align="center">
-<img src="docs/introduction/high_level_architecture.png" alt="Sqoop" width="776" height="400">
+<img src="https://sqoop.solo.io/img/high_level_architecture.png" alt="Sqoop" width="776" height="400">
 </p>    
 <BR>
     
@@ -60,16 +60,16 @@ of data sources Sqoop can connect to.
 ## Documentation
 
 ### Installation:
-* [Installing locally Docker-Compose](docs/installation/docker.md): Installation guide for Docker-Compose (easiest way to get started)
-* [Installing on Kubernetes](docs/installation/kubernetes.md): Installation guide for Kubernetes
+* [Installing locally Docker-Compose](https://sqoop.solo.io/installation/docker/): Installation guide for Docker-Compose (easiest way to get started)
+* [Installing on Kubernetes](https://sqoop.solo.io/installation/kubernetes/): Installation guide for Kubernetes
 
 ### Getting Started:
-* [Getting Started on Docker-Compose](docs/getting_started/docker/1.md): Getting started with Docker (recommended for first time users)
-* [Getting Started on Kubernetes](docs/getting_started/kubernetes/1.md): Getting started with Kubernetes (recommended for first time users)
+* [Getting Started on Docker-Compose](https://sqoop.solo.io/getting_started/docker/): Getting started with Docker (recommended for first time users)
+* [Getting Started on Kubernetes](https://sqoop.solo.io/getting_started/kubernetes/): Getting started with Kubernetes (recommended for first time users)
 
 ### v1 API reference:
-* [Schemas](docs/v1/schema.md): API Specification for proving your GraphQL Schemas to Sqoop
-* [ResolverMaps](docs/v1/resolver_map.md): API Reference for ResolverMaps, which map your data sources to your Schemas
+* [Schemas](https://sqoop.solo.io/v1/github.com/solo-io/sqoop/api/v1/schema.proto.sk/): API Specification for proving your GraphQL Schemas to Sqoop
+* [ResolverMaps](https://sqoop.solo.io/v1/github.com/solo-io/sqoop/api/v1/resolver_map.proto.sk/): API Reference for ResolverMaps, which map your data sources to your Schemas
 
 
 Blogs & Demos
