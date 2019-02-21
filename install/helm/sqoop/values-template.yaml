@@ -1,0 +1,22 @@
+########################################################################
+###                                                                  ###
+###                        Sqoop                                     ###
+###                                                                  ###
+########################################################################
+
+
+sqoop:
+  deployment:
+    name: sqoop
+    image:
+      repository: soloio/sqoop
+      pullPolicy: Always
+    proxy:
+      tag: 0.6.19
+      repository: soloio/gloo-envoy-wrapper
+      pullPolicy: Always
+  service:
+    port: 9095
+    name: sqoop
+  configMap:
+    name: sqoop-proxy-config

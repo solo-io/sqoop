@@ -1,0 +1,17 @@
+{
+  "name": "sqoop.solo.io",
+  "version": "v1",
+  "resource_groups": {
+    "api.sqoop.solo.io": [
+      {
+        "name": "ResolverMap",
+        "package": "sqoop.solo.io"
+      },
+      {
+        "name": "Schema",
+        "package": "sqoop.solo.io"
+      }
+    ]
+  },
+  "docs_dir": "docs/v1"
+}

@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sqoop
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      gloo: sqoop
+  template:
+    metadata:
+      labels:
+        gloo: sqoop
+    spec:
+      containers:
+        - image: "{{ .Values.sqoop.deployment.image.repository }}:{{ .Values.sqoop.deployment.image.tag }}"
+          imagePullPolicy:  {{ .Values.sqoop.deployment.image.pullPolicy }}
+          name: sqoop
+          {{- if .Values.sqoop.deployment.stats }}
+          env:
+            - name: START_STATS_SERVER
+              value: "true"
+          {{- end}}
+          ports:
+            - containerPort: {{ .Values.sqoop.service.port }}
+        - image: "{{ .Values.sqoop.deployment.proxy.repository }}:{{ .Values.sqoop.deployment.proxy.tag }}"
+          imagePullPolicy:  {{ .Values.sqoop.deployment.image.pullPolicy }}
+          args: ["--disable-hot-restart"]
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          name: envoy
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8443
+              name: https
+            - containerPort: 19000
+              name: admin
+          volumeMounts:
+            - name: {{ .Values.sqoop.configMap.name }}
+              mountPath: /etc/envoy
+      volumes:
+        - name: {{ .Values.sqoop.configMap.name }}
+          configMap:
+            name: {{ .Values.sqoop.configMap.name }}
