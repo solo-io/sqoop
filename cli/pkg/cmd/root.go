@@ -25,9 +25,6 @@ func App(version string, optionsFunc ...cliutils.OptionsFunc) *cobra.Command {
 			" ResolverMaps define how your schema fields are resolved.\n\n" +
 			"" +
 			"Start by creating a schema using sqoopctl schema create --from-file <path/to/your/graphql/schema>",
-		Run: func(cmd *cobra.Command, args []string) {
-			panic("not implemented")
-		},
 		Version: version,
 	}
 	pflags := app.PersistentFlags()

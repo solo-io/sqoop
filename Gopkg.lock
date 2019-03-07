@@ -386,6 +386,22 @@
   revision = "e89373fe6b4a7413d7acd6da1725b83ef713e6e4"
 
 [[projects]]
+  digest = "1:b4303d38d92c00af6603f3b865a9bd20e3c50cebe55489e5aeb721c26750e375"
+  name = "github.com/google/go-github"
+  packages = ["github"]
+  pruneopts = "UT"
+  revision = "7462feb2032c2da9e3b85e9b04e6853a6e9e14ca"
+  version = "v24.0.1"
+
+[[projects]]
+  digest = "1:a63cff6b5d8b95638bfe300385d93b2a6d9d687734b863da8e09dc834510a690"
+  name = "github.com/google/go-querystring"
+  packages = ["query"]
+  pruneopts = "UT"
+  revision = "44c6ddd0a2342c386950e880b658017258da92fc"
+  version = "v1.0.0"
+
+[[projects]]
   branch = "master"
   digest = "1:3ee90c0d94da31b442dde97c99635aaafec68d0b8a3c12ee2075c6bdabeec6bb"
   name = "github.com/google/gofuzz"
@@ -969,7 +985,7 @@
   version = "v0.1"
 
 [[projects]]
-  digest = "1:afac92ed8b072133d8eb2c65875491b4f6a25727c4ff59575ad7a4b06489b040"
+  digest = "1:01412129fc2d8d2280aa4f48c62902c820aa4df772f0f50eda7e3a40d9a8421e"
   name = "github.com/solo-io/gloo"
   packages = [
     "install/helm/gloo/generate",
@@ -998,8 +1014,8 @@
     "projects/gloo/pkg/defaults",
   ]
   pruneopts = "UT"
-  revision = "a07620941be10029f13d6c00ddfa52bae141304a"
-  version = "v0.10.2"
+  revision = "e26d8c02f58d1f1536d6b73a4c9cbddf84f72588"
+  version = "v0.7.8"
 
 [[projects]]
   digest = "1:699918466a9758902a14923851a7fbd230500f93da6982dae7c79959afb0a664"
@@ -1010,13 +1026,17 @@
   version = "0.0.4"
 
 [[projects]]
-  digest = "1:8761ddc47a9e86a00b30258c2787ae7c31267132fc9f2c736e77c18d09e91878"
+  digest = "1:3f550e47b57c3a38041726956a0a9cf99880835fd4376ee2d2a393424b2b49d2"
   name = "github.com/solo-io/go-utils"
   packages = [
+    "changelogutils",
     "cliutils",
     "contextutils",
+    "docsutils",
     "errors",
+    "githubutils",
     "kubeutils",
+    "logger",
     "protoutils",
     "stats",
     "versionutils",
@@ -1026,7 +1046,7 @@
   version = "v0.3.1"
 
 [[projects]]
-  digest = "1:b57738f0edd82fb89ffeabbd92550f87ed40863ff08e5c25475bb1ed1d00cd3d"
+  digest = "1:10e3c832789ef7d6b6d9043bf9b81d091c9a94ffd781a199d8ac91757b299b77"
   name = "github.com/solo-io/solo-kit"
   packages = [
     "pkg/api/v1/clients",
@@ -1078,8 +1098,19 @@
     "test/tests/typed",
   ]
   pruneopts = "UT"
-  revision = "6dbbf377211f93ed8dbc6689bfc6cf5aa4a3f821"
-  version = "v0.3.1"
+  revision = "498a5f09cb11bd02eeac82301be333cc857a0454"
+  version = "v0.2.31"
+
+[[projects]]
+  digest = "1:3e39bafd6c2f4bf3c76c3bfd16a2e09e016510ad5db90dc02b88e2f565d6d595"
+  name = "github.com/spf13/afero"
+  packages = [
+    ".",
+    "mem",
+  ]
+  pruneopts = "UT"
+  revision = "f4711e4db9e9a1d3887343acb72b2bbfc2f686f5"
+  version = "v1.2.1"
 
 [[projects]]
   digest = "1:e01b05ba901239c783dfe56450bcde607fc858908529868259c9a8765dc176d0"
@@ -1931,7 +1962,9 @@
     "github.com/solo-io/gloo/projects/gloo/pkg/bootstrap",
     "github.com/solo-io/go-checkpoint",
     "github.com/solo-io/go-utils/cliutils",
+    "github.com/solo-io/go-utils/docsutils",
     "github.com/solo-io/go-utils/errors",
+    "github.com/solo-io/go-utils/githubutils",
     "github.com/solo-io/go-utils/kubeutils",
     "github.com/solo-io/go-utils/stats",
     "github.com/solo-io/go-utils/versionutils",
