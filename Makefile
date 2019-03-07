@@ -36,7 +36,7 @@ update-deps:
 
 .PHONY: pin-repos
 pin-repos:
-	go run pin_repos.go
+	go run ci/pin_repos.go
 
 .PHONY: check-format
 check-format:
@@ -44,7 +44,6 @@ check-format:
 
 check-spelling:
 	./ci/spell.sh check
-
 
 .PHONY: generated-code
 generated-code: $(OUTPUT_DIR)/.generated-code
@@ -155,51 +154,14 @@ sqoopctl-windows-amd64: $(OUTPUT_DIR)/sqoopctl-windows-amd64.exe
 #----------------------------------------------------------------------------------
 # Release
 #----------------------------------------------------------------------------------
-GH_ORG:=solo-io
-GH_REPO:=sqoop
 
-# For now, expecting people using the release to start from a sqoopctl CLI we provide, not
-# installing the binaries locally / directly. So only uploading the CLI binaries to Github.
-# The other binaries can be built manually and used, and docker images for everything will
-# be published on release.
-RELEASE_BINARIES :=
-ifeq ($(RELEASE),"true")
-	RELEASE_BINARIES := \
-		$(OUTPUT_DIR)/sqoopctl-linux-amd64 \
-		$(OUTPUT_DIR)/sqoopctl-darwin-amd64 \
-		$(OUTPUT_DIR)/sqoopctl-windows-amd64.exe
-endif
-
-RELEASE_YAMLS :=
-ifeq ($(RELEASE),"true")
-	RELEASE_YAMLS := \
-		install/manifest/sqoop.yaml
-endif
-
-.PHONY: release-binaries
-release-binaries: $(RELEASE_BINARIES)
-
-.PHONY: release-yamls
-release-yamls: $(RELEASE_YAMLS)
-
-# This is invoked by cloudbuild. When the bot gets a release notification, it kicks of a build with and provides a tag
-# variable that gets passed through to here as $TAGGED_VERSION. If no tag is provided, this is a no-op. If a tagged
-# version is provided, all the release binaries are uploaded to github.
-# Create new releases by clicking "Draft a new release" from https://github.com/solo-io/sqoop/releases
-.PHONY: release
-release: release-binaries release-yamls
-ifeq ($(RELEASE),"true")
-	ci/push-docs.sh tag=$(TAGGED_VERSION)
-	@$(foreach BINARY,$(RELEASE_BINARIES),ci/upload-github-release-asset.sh owner=solo-io repo=sqoop tag=$(TAGGED_VERSION) filename=$(BINARY) sha=TRUE;)
-	@$(foreach YAML,$(RELEASE_YAMLS),ci/upload-github-release-asset.sh owner=solo-io repo=sqoop tag=$(TAGGED_VERSION) filename=$(YAML);)
-endif
+.PHONY: upload-github-release-assets
+upload-github-release-assets:
+	go run ci/upload_github_release_assets.go
 
 .PHONY: push-docs
 push-docs:
-ifeq ($(RELEASE),"true")
-	ci/push-docs.sh tag=$(TAGGED_VERSION)
-endif
-
+	go run ci/push_docs.go
 
 #----------------------------------------------------------------------------------
 # Docker
