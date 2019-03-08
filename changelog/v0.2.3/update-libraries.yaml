@@ -1,3 +1,0 @@
-changelog:
-  - type: NON_USER_FACING
-    description: Updated go-utils to get the new changelog, docs push, and asset uploading utilities.

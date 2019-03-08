@@ -2,10 +2,10 @@ package install
 
 import (
 	"fmt"
+	"github.com/solo-io/sqoop/cli/pkg/constants"
 
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/cliutil/install"
-	"github.com/solo-io/gloo/projects/gloo/cli/pkg/constants"
 	"github.com/solo-io/go-utils/cliutils"
 	"github.com/solo-io/go-utils/kubeutils"
 	"github.com/solo-io/sqoop/cli/pkg/options"
