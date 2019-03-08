@@ -15,8 +15,8 @@ func App(version string, optionsFunc ...cliutils.OptionsFunc) *cobra.Command {
 	opts := &options.Options{}
 
 	app := &cobra.Command{
-		Use:   "sqoopctl",
-		Short: "Interact with Sqoop's storage API from the command line. \nFor more information, visit https://sqoop.solo.io.",
+		Use:     "sqoopctl",
+		Short:   "Interact with Sqoop's storage API from the command line. \nFor more information, visit https://sqoop.solo.io.",
 		Version: version,
 	}
 	pflags := app.PersistentFlags()
