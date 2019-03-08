@@ -3,6 +3,7 @@ package install
 import (
 	"fmt"
 	"github.com/solo-io/sqoop/cli/pkg/constants"
+	"github.com/solo-io/sqoop/cli/pkg/flagutils"
 
 	"github.com/pkg/errors"
 	"github.com/solo-io/gloo/pkg/cliutil/install"
@@ -62,6 +63,9 @@ func UninstallCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *c
 			return nil
 		},
 	}
+	pFlags := cmd.PersistentFlags()
+	flagutils.AddUninstallFlags(pFlags, &opts.Uninstall)
+
 	cliutils.ApplyOptions(cmd, optionsFunc)
 	return cmd
 }
