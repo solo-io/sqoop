@@ -1,0 +1,11 @@
+changelog:
+  - type: NON_USER_FACING
+    description: Updated go-utils to get the new changelog, docs push, and asset uploading utilities.
+  - type: NON_USER_FACING
+    description: Updated to latest Gloo.
+  - type: FIX
+    description: Fixed panic when no commands provided to sqoopctl.
+    issueLink: https://github.com/solo-io/sqoop/issues/20
+  - type: FIX
+    description: Added short description to resolvermap and schema commands.
+    issueLink: https://github.com/solo-io/sqoop/issues/21

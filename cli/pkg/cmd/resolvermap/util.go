@@ -2,6 +2,7 @@ package resolvermap
 
 import (
 	"fmt"
+
 	"github.com/solo-io/sqoop/cli/pkg/options"
 	"github.com/spf13/cobra"
 )
@@ -27,5 +28,3 @@ func ensureResolverMapArgs(cmd *cobra.Command, args []string) error {
 	}
 	return nil
 }
-
-

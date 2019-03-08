@@ -2,14 +2,15 @@ package schema
 
 import (
 	"fmt"
+	"io/ioutil"
+
 	"github.com/solo-io/go-utils/cliutils"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
 	"github.com/solo-io/sqoop/cli/pkg/common"
 	"github.com/solo-io/sqoop/cli/pkg/helpers"
 	"github.com/solo-io/sqoop/cli/pkg/options"
-	"github.com/solo-io/sqoop/pkg/api/v1"
+	v1 "github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/spf13/cobra"
-	"io/ioutil"
 )
 
 func Create(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *cobra.Command {
@@ -47,7 +48,7 @@ func createSchema(opts *options.Options) error {
 		return err
 	}
 	schema := &v1.Schema{
-		Metadata: opts.Metadata,
+		Metadata:     opts.Metadata,
 		InlineSchema: string(inlineSchemaBytes),
 	}
 

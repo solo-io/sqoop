@@ -17,7 +17,7 @@ func main() {
 	app := cmd.App(version.Version)
 	if err := app.Execute(); err != nil {
 		if err != nil {
-			panic(err)
+			os.Exit(1)
 		}
 		os.Exit(0)
 	}

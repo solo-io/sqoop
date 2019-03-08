@@ -2,12 +2,13 @@ package schema_test
 
 import (
 	"fmt"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/solo-io/sqoop/cli/pkg/helpers"
-	"github.com/solo-io/sqoop/pkg/api/v1"
+	v1 "github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/solo-io/sqoop/pkg/defaults"
-	"os"
 
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
 	"github.com/solo-io/sqoop/cli/pkg/testutils"
@@ -35,7 +36,7 @@ var _ = Describe("Schema", func() {
 	baseCommand := func(cmdType string) {
 		schemaFile := testutils.MustWriteTestFile(exampleSchema)
 		defer os.Remove(schemaFile)
-		err := testutils.Sqoopctl(fmt.Sprintf("schema %s %s -f %s", cmdType,  schemaName, schemaFile))
+		err := testutils.Sqoopctl(fmt.Sprintf("schema %s %s -f %s", cmdType, schemaName, schemaFile))
 		Expect(err).NotTo(HaveOccurred())
 		schemaOne := getSchema(schemaName)
 		Expect(schemaOne.InlineSchema).To(Equal(exampleSchema))
@@ -126,5 +127,3 @@ input InputPet{
     tag: String
 }
 `
-
-

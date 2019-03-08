@@ -1,8 +1,8 @@
 package flagutils
 
 import (
-"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
-"github.com/spf13/pflag"
+	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
+	"github.com/spf13/pflag"
 )
 
 func AddMetadataFlags(set *pflag.FlagSet, metaptr *core.Metadata) {
