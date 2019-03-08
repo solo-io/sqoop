@@ -2,6 +2,9 @@ package install
 
 import (
 	"fmt"
+	"github.com/solo-io/go-utils/kubeutils"
+	kubev1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
 	"path"
 	"strings"
 	"time"
@@ -13,6 +16,7 @@ import (
 	"github.com/solo-io/sqoop/cli/pkg/flagutils"
 	"github.com/solo-io/sqoop/version"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	kubeerrs "k8s.io/apimachinery/pkg/api/errors"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/helm/pkg/chartutil"
 	helmhooks "k8s.io/helm/pkg/hooks"
@@ -147,6 +151,11 @@ func KubeCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *cobra.
 			if err != nil {
 				return err
 			}
+
+			if err := createNamespaceIfNotExist(opts.Install.Namespace); err != nil {
+				return err
+			}
+
 			return install.InstallManifest(manifestBytes, opts.Install.DryRun)
 		},
 	}
@@ -155,4 +164,24 @@ func KubeCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *cobra.
 
 	cliutils.ApplyOptions(cmd, optionsFunc)
 	return cmd
+}
+
+func createNamespaceIfNotExist(namespace string) error {
+	restCfg, err := kubeutils.GetConfig("", "")
+	if err != nil {
+		return err
+	}
+	kubeClient, err := kubernetes.NewForConfig(restCfg)
+	if err != nil {
+		return err
+	}
+	installNamespace := &kubev1.Namespace{
+		ObjectMeta: v1.ObjectMeta{
+			Name: namespace,
+		},
+	}
+	if _, err := kubeClient.CoreV1().Namespaces().Create(installNamespace); err != nil && !kubeerrs.IsAlreadyExists(err) {
+		return err
+	}
+	return nil
 }

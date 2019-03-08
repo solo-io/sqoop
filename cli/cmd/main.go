@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/solo-io/solo-kit/pkg/utils/log"
 	"os"
 	"time"
 
@@ -17,7 +18,7 @@ func main() {
 	app := cmd.App(version.Version)
 	if err := app.Execute(); err != nil {
 		if err != nil {
-			panic(err)
+			log.Fatalf("Error running CLI: %v", err)
 		}
 		os.Exit(0)
 	}
