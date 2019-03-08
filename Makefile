@@ -155,6 +155,9 @@ sqoopctl-windows-amd64: $(OUTPUT_DIR)/sqoopctl-windows-amd64.exe
 # Release
 #----------------------------------------------------------------------------------
 
+.PHONY: build-cli
+build-cli: sqoopctl-linux-amd64 sqoopctl-darwin-amd64 sqoopctl-windows-amd64
+
 .PHONY: upload-github-release-assets
 upload-github-release-assets:
 	go run ci/upload_github_release_assets.go
