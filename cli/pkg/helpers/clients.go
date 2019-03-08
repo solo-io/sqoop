@@ -3,8 +3,9 @@ package helpers
 import (
 	"context"
 	"fmt"
-	"github.com/solo-io/sqoop/pkg/api/v1"
 	"time"
+
+	v1 "github.com/solo-io/sqoop/pkg/api/v1"
 
 	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/factory"
@@ -24,7 +25,6 @@ func UseMemoryClients() {
 		Cache: memory.NewInMemoryResourceCache(),
 	}
 }
-
 
 func MustSchemaClient() v1.SchemaClient {
 	client, err := SchemaClient()

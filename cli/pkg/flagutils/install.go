@@ -1,9 +1,9 @@
 package flagutils
 
 import (
+	"github.com/solo-io/sqoop/cli/pkg/options"
 	"github.com/solo-io/sqoop/pkg/defaults"
 	"github.com/solo-io/sqoop/version"
-	"github.com/solo-io/sqoop/cli/pkg/options"
 	"github.com/spf13/pflag"
 )
 

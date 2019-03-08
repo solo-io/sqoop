@@ -2,6 +2,7 @@ package resolvermap
 
 import (
 	"fmt"
+
 	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
 	"github.com/solo-io/go-utils/cliutils"
@@ -11,7 +12,7 @@ import (
 	"github.com/solo-io/sqoop/cli/pkg/flagutils"
 	"github.com/solo-io/sqoop/cli/pkg/helpers"
 	"github.com/solo-io/sqoop/cli/pkg/options"
-	"github.com/solo-io/sqoop/pkg/api/v1"
+	v1 "github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/spf13/cobra"
 )
 
@@ -63,12 +64,11 @@ func registerResolver(opts *options.Options) error {
 		}
 	}
 
-
 	resolver := &v1.FieldResolver{
 		Resolver: &v1.FieldResolver_GlooResolver{
 			GlooResolver: &v1.GlooResolver{
 				ResponseTemplate: responseTemplate,
-				RequestTemplate: requestTemplate,
+				RequestTemplate:  requestTemplate,
 				Action: &glooV1.RouteAction{
 					Destination: &glooV1.RouteAction_Single{
 						Single: &glooV1.Destination{
@@ -95,7 +95,7 @@ func registerResolver(opts *options.Options) error {
 		return err
 	}
 	existingResolverMap.Types[opts.ResolverMap.TypeName].Fields[opts.ResolverMap.FieldName] = resolver
-	_, err = client.Write(existingResolverMap, clients.WriteOpts{OverwriteExisting:true})
+	_, err = client.Write(existingResolverMap, clients.WriteOpts{OverwriteExisting: true})
 	if err != nil {
 		return err
 	}

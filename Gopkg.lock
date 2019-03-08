@@ -985,7 +985,7 @@
   version = "v0.1"
 
 [[projects]]
-  digest = "1:01412129fc2d8d2280aa4f48c62902c820aa4df772f0f50eda7e3a40d9a8421e"
+  digest = "1:afac92ed8b072133d8eb2c65875491b4f6a25727c4ff59575ad7a4b06489b040"
   name = "github.com/solo-io/gloo"
   packages = [
     "install/helm/gloo/generate",
@@ -1014,8 +1014,8 @@
     "projects/gloo/pkg/defaults",
   ]
   pruneopts = "UT"
-  revision = "e26d8c02f58d1f1536d6b73a4c9cbddf84f72588"
-  version = "v0.7.8"
+  revision = "a07620941be10029f13d6c00ddfa52bae141304a"
+  version = "v0.10.2"
 
 [[projects]]
   digest = "1:699918466a9758902a14923851a7fbd230500f93da6982dae7c79959afb0a664"
@@ -1046,7 +1046,7 @@
   version = "v0.3.1"
 
 [[projects]]
-  digest = "1:10e3c832789ef7d6b6d9043bf9b81d091c9a94ffd781a199d8ac91757b299b77"
+  digest = "1:b57738f0edd82fb89ffeabbd92550f87ed40863ff08e5c25475bb1ed1d00cd3d"
   name = "github.com/solo-io/solo-kit"
   packages = [
     "pkg/api/v1/clients",
@@ -1098,8 +1098,8 @@
     "test/tests/typed",
   ]
   pruneopts = "UT"
-  revision = "498a5f09cb11bd02eeac82301be333cc857a0454"
-  version = "v0.2.31"
+  revision = "6dbbf377211f93ed8dbc6689bfc6cf5aa4a3f821"
+  version = "v0.3.1"
 
 [[projects]]
   digest = "1:3e39bafd6c2f4bf3c76c3bfd16a2e09e016510ad5db90dc02b88e2f565d6d595"

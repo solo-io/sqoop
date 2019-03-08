@@ -2,6 +2,7 @@ package options
 
 import (
 	"context"
+
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
 )
 
@@ -22,10 +23,10 @@ type Top struct {
 }
 
 type Install struct {
-	DryRun           bool
-	ReleaseVersion   string
-	ManifestOverride string
-	Namespace        string
+	DryRun            bool
+	ReleaseVersion    string
+	HelmChartOverride string
+	Namespace         string
 }
 
 type Schema struct {

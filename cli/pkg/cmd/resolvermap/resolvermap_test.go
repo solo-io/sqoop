@@ -2,12 +2,13 @@ package resolvermap_test
 
 import (
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	glooHelpers "github.com/solo-io/gloo/projects/gloo/cli/pkg/helpers"
 	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/sqoop/cli/pkg/helpers"
-	"github.com/solo-io/sqoop/pkg/api/v1"
+	v1 "github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/solo-io/sqoop/pkg/defaults"
 	"sigs.k8s.io/yaml"
 

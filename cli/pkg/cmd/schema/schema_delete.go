@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+
 	"github.com/solo-io/go-utils/cliutils"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
 	"github.com/solo-io/sqoop/cli/pkg/common"
@@ -10,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func Delete(opts *options.Options, optionsFunc... cliutils.OptionsFunc) *cobra.Command {
+func Delete(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete [NAME]",
 		Short: "delete a schema by its name",
@@ -27,7 +28,6 @@ func Delete(opts *options.Options, optionsFunc... cliutils.OptionsFunc) *cobra.C
 		},
 		Args: common.RequiredNameArg,
 	}
-
 
 	cliutils.ApplyOptions(cmd, optionsFunc)
 	return cmd

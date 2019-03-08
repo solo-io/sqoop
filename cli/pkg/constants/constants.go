@@ -12,6 +12,4 @@ var (
 		Use:     "resolvermap",
 		Aliases: []string{"r", "rm", "resolvermaps"},
 	}
-
-
 )
