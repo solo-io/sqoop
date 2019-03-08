@@ -38,7 +38,7 @@ func UninstallCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *c
 		Short: constants.UNINSTALL_COMMAND.Short,
 		Long:  constants.UNINSTALL_COMMAND.Long,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Printf("Uninstalling Sqoop. This might take a while...")
+			fmt.Printf("Uninstalling Sqoop and removing namespace %s. This might take a while...", opts.Uninstall.Namespace)
 			cfg, err := kubeutils.GetConfig("", "")
 			if err != nil {
 				return err
