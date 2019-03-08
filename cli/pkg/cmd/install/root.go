@@ -2,6 +2,7 @@ package install
 
 import (
 	"fmt"
+
 	"github.com/solo-io/sqoop/cli/pkg/constants"
 	"github.com/solo-io/sqoop/cli/pkg/flagutils"
 

@@ -3,7 +3,6 @@ package constants
 import "github.com/spf13/cobra"
 
 var (
-
 	INSTALL_COMMAND = cobra.Command{
 		Use:   "install",
 		Short: "install sqoop on different platforms",

@@ -2,12 +2,13 @@ package install
 
 import (
 	"fmt"
-	"github.com/solo-io/go-utils/kubeutils"
-	kubev1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/solo-io/go-utils/kubeutils"
+	kubev1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/ghodss/yaml"
 	"github.com/pkg/errors"
@@ -15,8 +16,8 @@ import (
 	"github.com/solo-io/go-utils/cliutils"
 	"github.com/solo-io/sqoop/cli/pkg/flagutils"
 	"github.com/solo-io/sqoop/version"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	kubeerrs "k8s.io/apimachinery/pkg/api/errors"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/helm/pkg/chartutil"
 	helmhooks "k8s.io/helm/pkg/hooks"
