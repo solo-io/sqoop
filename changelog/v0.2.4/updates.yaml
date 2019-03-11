@@ -1,0 +1,4 @@
+changelog:
+  - type: NEW_FEATURE
+    description: Adding an install.sh script to simplify the installation of the Sqoop CLI
+    issueLink: https://github.com/solo-io/sqoop/issues/25
