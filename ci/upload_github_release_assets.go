@@ -20,8 +20,8 @@ func main() {
 		UploadSHA:  true,
 	}
 	assets[3] = githubutils.ReleaseAssetSpec{
-		Name:       "sqoop-install.yaml",
-		ParentPath: "install",
+		Name:       "sqoop.yaml",
+		ParentPath: "install/manifest",
 	}
 	spec := githubutils.UploadReleaseAssetSpec{
 		Owner:             "solo-io",
