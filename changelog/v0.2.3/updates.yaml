@@ -9,3 +9,6 @@ changelog:
   - type: FIX
     description: Added short description to resolvermap and schema commands.
     issueLink: https://github.com/solo-io/sqoop/issues/21
+  - type: NEW_FEATURE
+    description: Adding an install.sh script to simplify the installation of the Sqoop CLI
+    issueLink: https://github.com/solo-io/sqoop/issues/25
