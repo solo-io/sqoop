@@ -1,7 +1,6 @@
 
-
 <h1 align="center">
-    <img src="https://sqoop.solo.io/img/Sqoop.png" alt="Sqoop" width="200" height="183">
+  <img src="https://sqoop.solo.io/img/Sqoop.png" alt="Sqoop" width="200" height="183">
   <br>
   GraphQL for Monolith, Microservices, and Serverless
 </h1>
@@ -11,29 +10,31 @@
 Sqoop (formerly QLoo) is a GraphQL Server built on top of [Gloo](https://github.com/solo-io/gloo) and the [Envoy Proxy](https://envoyproxy.io).
 
 Sqoop leverages Gloo's function registry and Envoy's advanced HTTP routing features to provide a GraphQL frontend
-for REST/gRPC applications and serverless functions. Sqoop routes requests to data sources via Envoy, leveraging 
-Envoy [HTTP filters](https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/filter/filter.html?highlight=http%20filter) 
+for REST/gRPC applications and serverless functions. Sqoop routes requests to data sources via Envoy, leveraging
+Envoy [HTTP filters](https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/filter/filter.html?highlight=http%20filter)
 for security, load balancing, and more.
 
 <BR>
 <p align="center">
-<img src="https://sqoop.solo.io/img/high_level_architecture.png" alt="Sqoop" width="776" height="400">
-</p>    
+  <img src="https://sqoop.solo.io/img/high_level_architecture.png" alt="Sqoop" width="776" height="400">
+</p>
 <BR>
-    
+
 ## Workflow with Sqoop
+
 * Register or Discovery API Endpoints and Serverless Functions with Gloo
-* Upload a GraphQL schema 
+* Upload a GraphQL schema
 * Connect Functions to your Schema's fields in a Sqoop ResolverMap
 
 ## Features
+
 * **Codeless GraphQL API**: Instantly deploy a GraphQL server and connect it to your data sources with configuration,
 zero code required.
 * **Dynamic Load Balancing**: Load balance traffic across multiple data sources.
 * **Health Checks**: Active and passive monitoring of your data sources.
-* **OpenTracing**: Monitor GraphQL requests using the well-supported OpenTracing standard
-* **Monitoring**: Export HTTP metrics to Prometheus or Statsd
-* **Client SSL**: Communicate with Data Sources using TLS encryption 
+* **OpenTracing**: Monitor GraphQL requests using the well-supported OpenTracing standard.
+* **Monitoring**: Export HTTP metrics to Prometheus or Statsd.
+* **Client SSL**: Communicate with Data Sources using TLS encryption.
 * **Declarative API**: Sqoop features a declarative YAML-based API; store your configuration as code and commit it with your projects.
 * **Scalability**: Sqoop scales independently of your data sources and scales infinitely.
 * **Performance**: Sqoop leverages Envoy for its high network performance and low footprint.
@@ -41,13 +42,15 @@ zero code required.
 of data sources Sqoop can connect to.
 * **JSON-to-gRPC transcoding**: Connect GraphQL JSON clients to gRPC data sources.
 
-**Service Discovery**:
+### Service Discovery
+
 * Kubernetes
 * OpenShift
 * HashiCorp Stack (Vault, Consul, Nomad)
 * Cloud Foundry
 
-**Function Discovery**:
+### Function Discovery
+
 * AWS Lambda
 * Microsoft Azure Functions
 * Google Cloud Platform Functions
@@ -59,30 +62,30 @@ of data sources Sqoop can connect to.
 
 ## Documentation
 
-### Installation:
-* [Installing locally Docker-Compose](https://sqoop.solo.io/installation/docker/): Installation guide for Docker-Compose (easiest way to get started)
-* [Installing on Kubernetes](https://sqoop.solo.io/installation/kubernetes/): Installation guide for Kubernetes
+### Installation
 
-### Getting Started:
-* [Getting Started on Docker-Compose](https://sqoop.solo.io/getting_started/docker/): Getting started with Docker (recommended for first time users)
-* [Getting Started on Kubernetes](https://sqoop.solo.io/getting_started/kubernetes/): Getting started with Kubernetes (recommended for first time users)
+* [Installing on Kubernetes](https://sqoop.solo.io/installation): Installation guide for Kubernetes
 
-### v1 API reference:
-* [Schemas](https://sqoop.solo.io/v1/github.com/solo-io/sqoop/api/v1/schema.proto.sk/): API Specification for proving your GraphQL Schemas to Sqoop
-* [ResolverMaps](https://sqoop.solo.io/v1/github.com/solo-io/sqoop/api/v1/resolver_map.proto.sk/): API Reference for ResolverMaps, which map your data sources to your Schemas
+### Getting Started
 
+* [Getting Started on Kubernetes](https://sqoop.solo.io/getting_started): Getting started with Kubernetes
 
-Blogs & Demos
------
-* [Announcement Blog](https://medium.com/solo-io/)
+### v1 API reference
 
-Community
------
+* [Schemas](https://sqoop.solo.io/v1/github.com/solo-io/sqoop/api/v1/schema.proto.sk/#a-name-schema-schema-a): API Specification for proving your GraphQL Schemas to Sqoop
+* [ResolverMaps](https://sqoop.solo.io/v1/github.com/solo-io/sqoop/api/v1/resolver_map.proto.sk/#a-name-resolvermap-resolvermap-a): API Reference for ResolverMaps, which map your data sources to your Schemas
+
+## Blogs & Demos
+
+* [Announcement Blog](https://medium.com/solo-io)
+
+## Community
+
 Join us on our slack channel: [https://slack.solo.io/](https://slack.solo.io/)
 
 ---
 
 ### Thanks
 
-**Sqoop** would not be possible without the valuable open-source work of projects in the community. We would like to extend 
+**Sqoop** would not be possible without the valuable open-source work of projects in the community. We would like to extend
 a special thank-you to [Envoy](https://www.envoyproxy.io) and [gqlgen](https://github.com/vektah/gqlgen) server library.
