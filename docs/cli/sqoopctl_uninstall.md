@@ -4,11 +4,11 @@ weight: 5
 ---
 ## sqoopctl uninstall
 
-uninstall gloo
+uninstall sqoop and remove namespace (gloo-system by default)
 
 ### Synopsis
 
-uninstall gloo
+uninstall sqoop and remove namespace (gloo-system by default)
 
 ```
 sqoopctl uninstall [flags]
@@ -17,7 +17,8 @@ sqoopctl uninstall [flags]
 ### Options
 
 ```
-  -h, --help   help for uninstall
+  -h, --help               help for uninstall
+  -n, --namespace string   which namespace to uninstall sqoop from (default "gloo-system")
 ```
 
 ### Options inherited from parent commands
@@ -30,5 +31,6 @@ sqoopctl uninstall [flags]
 
 ### SEE ALSO
 
-* [sqoopctl](../sqoopctl)	 - Interact with Sqoop's storage API from the command line
+* [sqoopctl](../sqoopctl)	 - Interact with Sqoop's storage API from the command line. 
+For more information, visit https://sqoop.solo.io.
 

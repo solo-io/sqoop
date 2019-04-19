@@ -4,11 +4,11 @@ weight: 5
 ---
 ## sqoopctl schema
 
-
+interacting with sqoop schema resources
 
 ### Synopsis
 
-
+interacting with sqoop schema resources
 
 ### Options
 
@@ -28,7 +28,8 @@ weight: 5
 
 ### SEE ALSO
 
-* [sqoopctl](../sqoopctl)	 - Interact with Sqoop's storage API from the command line
+* [sqoopctl](../sqoopctl)	 - Interact with Sqoop's storage API from the command line. 
+For more information, visit https://sqoop.solo.io.
 * [sqoopctl schema create](../sqoopctl_schema_create)	 - upload a schema to Sqoop from a local GraphQL Schema file
 * [sqoopctl schema delete](../sqoopctl_schema_delete)	 - delete a schema by its name
 * [sqoopctl schema update](../sqoopctl_schema_update)	 - upload a schema to Sqoop from a local GraphQL Schema file

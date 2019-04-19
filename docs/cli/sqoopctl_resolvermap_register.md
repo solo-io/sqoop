@@ -37,5 +37,5 @@ sqoopctl resolvermap register TypeName FieldName -f resolver.yaml [-s schema-nam
 
 ### SEE ALSO
 
-* [sqoopctl resolvermap](../sqoopctl_resolvermap)	 - 
+* [sqoopctl resolvermap](../sqoopctl_resolvermap)	 - interacting with sqoop resolver maps
 

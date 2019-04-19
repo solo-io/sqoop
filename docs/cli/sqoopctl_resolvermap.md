@@ -4,11 +4,11 @@ weight: 5
 ---
 ## sqoopctl resolvermap
 
-
+interacting with sqoop resolver maps
 
 ### Synopsis
 
-
+interacting with sqoop resolver maps
 
 ### Options
 
@@ -26,7 +26,8 @@ weight: 5
 
 ### SEE ALSO
 
-* [sqoopctl](../sqoopctl)	 - Interact with Sqoop's storage API from the command line
+* [sqoopctl](../sqoopctl)	 - Interact with Sqoop's storage API from the command line. 
+For more information, visit https://sqoop.solo.io.
 * [sqoopctl resolvermap register](../sqoopctl_resolvermap_register)	 - Register a resolver for a field in your Schema
 * [sqoopctl resolvermap reset](../sqoopctl_resolvermap_reset)	 - reset a resolver map by its name
 

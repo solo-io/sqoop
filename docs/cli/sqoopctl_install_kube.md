@@ -19,8 +19,7 @@ sqoopctl install kube [flags]
 ```
   -d, --dry-run            Dump the raw installation yaml instead of applying it to kubernetes
   -h, --help               help for kube
-  -n, --namespace string   which namespace to install sqoop into (default "sqoop-system")
-      --release string     install using this release version. defaults to the latest github release
+  -n, --namespace string   which namespace to install sqoop into (default "gloo-system")
 ```
 
 ### Options inherited from parent commands
@@ -33,5 +32,5 @@ sqoopctl install kube [flags]
 
 ### SEE ALSO
 
-* [sqoopctl install](../sqoopctl_install)	 - install gloo on different platforms
+* [sqoopctl install](../sqoopctl_install)	 - install sqoop on different platforms (into gloo-system namespace by default)
 
