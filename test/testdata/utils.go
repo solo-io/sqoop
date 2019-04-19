@@ -4,7 +4,7 @@ import (
 	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
-	"github.com/solo-io/sqoop/pkg/api/v1"
+	v1 "github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/solo-io/sqoop/pkg/engine/exec"
 	"github.com/solo-io/sqoop/pkg/engine/resolvers"
 	"github.com/solo-io/sqoop/pkg/translator"
@@ -16,7 +16,7 @@ const resolversName = "starwars-resolvers"
 const namespace = "default"
 
 var resolverMetadata = core.Metadata{
-	Name: resolversName,
+	Name:      resolversName,
 	Namespace: namespace,
 }
 
@@ -129,7 +129,7 @@ func StarWarsResolverMap() *v1.ResolverMap {
 
 func StarWarsV1Schema() *v1.Schema {
 	return &v1.Schema{
-		Metadata: resolverMetadata,
+		Metadata:     resolverMetadata,
 		InlineSchema: starWarsSchemaString,
 	}
 }
