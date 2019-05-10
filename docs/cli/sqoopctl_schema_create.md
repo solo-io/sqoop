@@ -32,5 +32,5 @@ sqoopctl schema create NAME -f <path/to/your/graphql/schema> [flags]
 
 ### SEE ALSO
 
-* [sqoopctl schema](../sqoopctl_schema)	 - 
+* [sqoopctl schema](../sqoopctl_schema)	 - interacting with sqoop schema resources
 

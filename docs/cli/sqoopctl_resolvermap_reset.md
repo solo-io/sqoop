@@ -30,5 +30,5 @@ sqoopctl resolvermap reset [NAME] [flags]
 
 ### SEE ALSO
 
-* [sqoopctl resolvermap](../sqoopctl_resolvermap)	 - 
+* [sqoopctl resolvermap](../sqoopctl_resolvermap)	 - interacting with sqoop resolver maps
 

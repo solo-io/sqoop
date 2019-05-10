@@ -4,11 +4,11 @@ weight: 5
 ---
 ## sqoopctl install
 
-install gloo on different platforms
+install sqoop on different platforms (into gloo-system namespace by default)
 
 ### Synopsis
 
-choose which version of Gloo to install.
+choose which version of Sqoop to install.
 
 ### Options
 
@@ -26,6 +26,7 @@ choose which version of Gloo to install.
 
 ### SEE ALSO
 
-* [sqoopctl](../sqoopctl)	 - Interact with Sqoop's storage API from the command line
+* [sqoopctl](../sqoopctl)	 - Interact with Sqoop's storage API from the command line. 
+For more information, visit https://sqoop.solo.io.
 * [sqoopctl install kube](../sqoopctl_install_kube)	 - install sqoop on kubernetes
 
