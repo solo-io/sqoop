@@ -42,9 +42,9 @@ func main() {
 
 	fOpts := []pkgmgmtutils.FormulaOptions{
 		{
-			Name:           "homebrew-tap/sqoop",
-			FormulaName:    "sqoop",
-			Path:           "Formula/sqoop.rb",
+			Name:           "homebrew-tap/sqoopctl",
+			FormulaName:    "sqoopctl",
+			Path:           "Formula/sqoopctl.rb",
 			RepoOwner:      repoOwner,      // Make change in this repo owner
 			RepoName:       "homebrew-tap", //   expects this repo is forked from PRRepoOwner if PRRepoOwner != RepoOwner
 			PRRepoOwner:    repoOwner,      // Make PR to this repo owner
