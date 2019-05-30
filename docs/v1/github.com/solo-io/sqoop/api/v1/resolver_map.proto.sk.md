@@ -8,17 +8,17 @@ weight: 5
 
 
 ### Package: `sqoop.solo.io` 
-##### Types:
+#### Types:
 
 
-- [ResolverMap](#ResolverMap) **Top-Level Resource**
-- [TypeResolver](#TypeResolver)
-- [FieldResolver](#FieldResolver)
-- [GlooResolver](#GlooResolver)
-- [RequestTemplate](#RequestTemplate)
-- [ResponseTemplate](#ResponseTemplate)
-- [TemplateResolver](#TemplateResolver)
-- [NodeJSResolver](#NodeJSResolver)
+- [ResolverMap](#resolvermap) **Top-Level Resource**
+- [TypeResolver](#typeresolver)
+- [FieldResolver](#fieldresolver)
+- [GlooResolver](#glooresolver)
+- [RequestTemplate](#requesttemplate)
+- [ResponseTemplate](#responsetemplate)
+- [TemplateResolver](#templateresolver)
+- [NodeJSResolver](#nodejsresolver)
   
 
 
@@ -30,7 +30,7 @@ weight: 5
 
 
 ---
-### <a name="ResolverMap">ResolverMap</a>
+### ResolverMap
 
  
 The ResolverMap object maps Resolvers to the fields in the GraphQL Schema
@@ -47,14 +47,14 @@ is read or updated if one does not alreay exist.
 | Field | Type | Description | Default |
 | ----- | ---- | ----------- |----------- | 
 | `types` | `map<string, .sqoop.solo.io.TypeResolver>` | Types is a map of Type Names (defined in the schema) to a TypeResolver, which contain resolvers for the specific fields of the type |  |
-| `status` | [.core.solo.io.Status](../../../../solo-kit/api/v1/status.proto.sk#Status) | Status indicates the validation status of this resource. Status is read-only by clients, and set by gloo during validation |  |
-| `metadata` | [.core.solo.io.Metadata](../../../../solo-kit/api/v1/metadata.proto.sk#Metadata) | Metadata contains the object metadata for this resource |  |
+| `status` | [.core.solo.io.Status](../../../../solo-kit/api/v1/status.proto.sk#status) | Status indicates the validation status of this resource. Status is read-only by clients, and set by gloo during validation |  |
+| `metadata` | [.core.solo.io.Metadata](../../../../solo-kit/api/v1/metadata.proto.sk#metadata) | Metadata contains the object metadata for this resource |  |
 
 
 
 
 ---
-### <a name="TypeResolver">TypeResolver</a>
+### TypeResolver
 
  
 TypeResolver contains the individual resolvers for each field for a specific type
@@ -72,51 +72,51 @@ TypeResolver contains the individual resolvers for each field for a specific typ
 
 
 ---
-### <a name="FieldResolver">FieldResolver</a>
+### FieldResolver
 
  
 Resolvers define the actual logic Sqoop needs to know in order to resolve a specific field query
 
 ```yaml
-"gloo_resolver": .sqoop.solo.io.GlooResolver
-"template_resolver": .sqoop.solo.io.TemplateResolver
-"nodejs_resolver": .sqoop.solo.io.NodeJSResolver
+"glooResolver": .sqoop.solo.io.GlooResolver
+"templateResolver": .sqoop.solo.io.TemplateResolver
+"nodejsResolver": .sqoop.solo.io.NodeJSResolver
 
 ```
 
 | Field | Type | Description | Default |
 | ----- | ---- | ----------- |----------- | 
-| `gloo_resolver` | [.sqoop.solo.io.GlooResolver](../resolver_map.proto.sk#GlooResolver) | a GlooResolver, which leverages Gloo to retrieve data from backend services and functions for the query |  |
-| `template_resolver` | [.sqoop.solo.io.TemplateResolver](../resolver_map.proto.sk#TemplateResolver) | a TemplateResolver, which uses Go Templates to generate data for the query |  |
-| `nodejs_resolver` | [.sqoop.solo.io.NodeJSResolver](../resolver_map.proto.sk#NodeJSResolver) | a NodeJSResolver, which calls NodeJS functions to return data for the query |  |
+| `glooResolver` | [.sqoop.solo.io.GlooResolver](../resolver_map.proto.sk#glooresolver) | a GlooResolver, which leverages Gloo to retrieve data from backend services and functions for the query |  |
+| `templateResolver` | [.sqoop.solo.io.TemplateResolver](../resolver_map.proto.sk#templateresolver) | a TemplateResolver, which uses Go Templates to generate data for the query |  |
+| `nodejsResolver` | [.sqoop.solo.io.NodeJSResolver](../resolver_map.proto.sk#nodejsresolver) | a NodeJSResolver, which calls NodeJS functions to return data for the query |  |
 
 
 
 
 ---
-### <a name="GlooResolver">GlooResolver</a>
+### GlooResolver
 
  
 GlooResolvers are the "meat" of Sqoop. GlooResolvers tell Sqoop how to invoke a "Gloo Function"
 
 ```yaml
-"request_template": .sqoop.solo.io.RequestTemplate
-"response_template": .sqoop.solo.io.ResponseTemplate
+"requestTemplate": .sqoop.solo.io.RequestTemplate
+"responseTemplate": .sqoop.solo.io.ResponseTemplate
 "action": .gloo.solo.io.RouteAction
 
 ```
 
 | Field | Type | Description | Default |
 | ----- | ---- | ----------- |----------- | 
-| `request_template` | [.sqoop.solo.io.RequestTemplate](../resolver_map.proto.sk#RequestTemplate) | the Request Template, if specified, will become the body of the HTTP request used to invoke a function through Gloo input parameters, if needed, should be specified in the request template. See Sqoop's [Resolver documentation] for more information on Request Templates. |  |
-| `response_template` | [.sqoop.solo.io.ResponseTemplate](../resolver_map.proto.sk#ResponseTemplate) | The response template, if specified, will transform the body of HTTP responses returned by Gloo functions. This field should be used if the object returned by the Gloo Function does not match the type specified in the GraphQL schema. It can also be used to modify or transform responses from their original state. See Sqoop's [Resolver documentation] for more information on Response Templates. |  |
-| `action` | [.gloo.solo.io.RouteAction](../../../../gloo/projects/gloo/api/v1/proxy.proto.sk#RouteAction) | the routing action to take when resolver is executed. usually this is a Route destination |  |
+| `requestTemplate` | [.sqoop.solo.io.RequestTemplate](../resolver_map.proto.sk#requesttemplate) | the Request Template, if specified, will become the body of the HTTP request used to invoke a function through Gloo input parameters, if needed, should be specified in the request template. See Sqoop's [Resolver documentation] for more information on Request Templates. |  |
+| `responseTemplate` | [.sqoop.solo.io.ResponseTemplate](../resolver_map.proto.sk#responsetemplate) | The response template, if specified, will transform the body of HTTP responses returned by Gloo functions. This field should be used if the object returned by the Gloo Function does not match the type specified in the GraphQL schema. It can also be used to modify or transform responses from their original state. See Sqoop's [Resolver documentation] for more information on Response Templates. |  |
+| `action` | [.gloo.solo.io.RouteAction](../../../../gloo/projects/gloo/api/v1/proxy.proto.sk#routeaction) | the routing action to take when resolver is executed. usually this is a Route destination |  |
 
 
 
 
 ---
-### <a name="RequestTemplate">RequestTemplate</a>
+### RequestTemplate
 
 
 
@@ -139,7 +139,7 @@ GlooResolvers are the "meat" of Sqoop. GlooResolvers tell Sqoop how to invoke a 
 
 
 ---
-### <a name="ResponseTemplate">ResponseTemplate</a>
+### ResponseTemplate
 
 
 
@@ -158,7 +158,7 @@ GlooResolvers are the "meat" of Sqoop. GlooResolvers tell Sqoop how to invoke a 
 
 
 ---
-### <a name="TemplateResolver">TemplateResolver</a>
+### TemplateResolver
 
  
 A Go-template which will return data for a Resolver without making a function call. Template Resolvers can make use
@@ -166,31 +166,31 @@ of Sqoop's builtin template functions as well as the data provided by the Params
 Read more about Templates and Resolvers in Sqoop\'s [Resolver documentation].
 
 ```yaml
-"inline_template": string
+"inlineTemplate": string
 
 ```
 
 | Field | Type | Description | Default |
 | ----- | ---- | ----------- |----------- | 
-| `inline_template` | `string` | the Go template as an inline string |  |
+| `inlineTemplate` | `string` | the Go template as an inline string |  |
 
 
 
 
 ---
-### <a name="NodeJSResolver">NodeJSResolver</a>
+### NodeJSResolver
 
  
 NOTE: currently unsupported
 
 ```yaml
-"inline_code": string
+"inlineCode": string
 
 ```
 
 | Field | Type | Description | Default |
 | ----- | ---- | ----------- |----------- | 
-| `inline_code` | `string` |  |  |
+| `inlineCode` | `string` |  |  |
 
 
 

@@ -8,10 +8,10 @@ weight: 5
 
 
 ### Package: `sqoop.solo.io` 
-##### Types:
+#### Types:
 
 
-- [Schema](#Schema) **Top-Level Resource**
+- [Schema](#schema) **Top-Level Resource**
   
 
 
@@ -23,7 +23,7 @@ weight: 5
 
 
 ---
-### <a name="Schema">Schema</a>
+### Schema
 
  
 The Schema object wraps the user's GraphQL Schema, which is stored as an inline string.
@@ -32,7 +32,7 @@ The Schema Object contains a Status field which is used by SQooP to validate the
 Schemas are matched to resolver maps in the same namespace with the same name
 
 ```yaml
-"inline_schema": string
+"inlineSchema": string
 "status": .core.solo.io.Status
 "metadata": .core.solo.io.Metadata
 
@@ -40,9 +40,9 @@ Schemas are matched to resolver maps in the same namespace with the same name
 
 | Field | Type | Description | Default |
 | ----- | ---- | ----------- |----------- | 
-| `inline_schema` | `string` | inline the entire graphql schema as a string here |  |
-| `status` | [.core.solo.io.Status](../../../../solo-kit/api/v1/status.proto.sk#Status) | Status indicates the validation status of this resource. Status is read-only by clients, and set by gloo during validation |  |
-| `metadata` | [.core.solo.io.Metadata](../../../../solo-kit/api/v1/metadata.proto.sk#Metadata) | Metadata contains the object metadata for this resource |  |
+| `inlineSchema` | `string` | inline the entire graphql schema as a string here |  |
+| `status` | [.core.solo.io.Status](../../../../solo-kit/api/v1/status.proto.sk#status) | Status indicates the validation status of this resource. Status is read-only by clients, and set by gloo during validation |  |
+| `metadata` | [.core.solo.io.Metadata](../../../../solo-kit/api/v1/metadata.proto.sk#metadata) | Metadata contains the object metadata for this resource |  |
 
 
 

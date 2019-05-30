@@ -1,6 +1,7 @@
 package install
 
 import (
+	"bytes"
 	"fmt"
 	"path"
 	"strings"
@@ -133,13 +134,13 @@ func KubeCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *cobra.
 			if err != nil {
 				return errors.Wrapf(err, "rendering crd manifests")
 			}
-			if err := install.InstallManifest(crdManifestBytes, opts.Install.DryRun); err != nil {
+			if err := installManifest(crdManifestBytes, opts.Install.DryRun); err != nil {
 				return errors.Wrapf(err, "installing crd manifests")
 			}
 
 			// Only run if this is not a dry run
 			if !opts.Install.DryRun {
-				if err := install.WaitForCrdsToBeRegistered(crdNames, time.Second*5, time.Millisecond*500); err != nil {
+				if err := waitForCrdsToBeRegistered(crdNames, time.Second*5, time.Millisecond*500); err != nil {
 					return errors.Wrapf(err, "waiting for crds to be registered")
 				}
 			}
@@ -157,7 +158,7 @@ func KubeCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *cobra.
 				return err
 			}
 
-			return install.InstallManifest(manifestBytes, opts.Install.DryRun)
+			return installManifest(manifestBytes, opts.Install.DryRun)
 		},
 	}
 	pflags := cmd.PersistentFlags()
@@ -165,6 +166,49 @@ func KubeCmd(opts *options.Options, optionsFunc ...cliutils.OptionsFunc) *cobra.
 
 	cliutils.ApplyOptions(cmd, optionsFunc)
 	return cmd
+}
+
+// Blocks until the given CRDs have been registered.
+func waitForCrdsToBeRegistered(crds []string, timeout, interval time.Duration) error {
+	if len(crds) == 0 {
+		return nil
+	}
+
+	// TODO: think about improving
+	// Just pick the last crd in the list an wait for it to be created. It is reasonable to assume that by the time we
+	// get to applying the manifest the other ones will be ready as well.
+	crdName := crds[len(crds)-1]
+
+	elapsed := time.Duration(0)
+	for {
+		select {
+		case <-time.After(interval):
+			if err := install.Kubectl(nil, "get", crdName); err == nil {
+				return nil
+			}
+			elapsed += interval
+			if elapsed > timeout {
+				return errors.Errorf("failed to confirm knative crd registration after %v", timeout)
+			}
+		}
+	}
+}
+
+func installManifest(manifest []byte, isDryRun bool) error {
+	if isDryRun {
+		fmt.Printf("%s", manifest)
+		// For safety, print a YAML separator so multiple invocations of this function will produce valid output
+		fmt.Println("\n---")
+		return nil
+	}
+	if err := kubectlApply(manifest); err != nil {
+		return errors.Wrapf(err, "running kubectl apply on manifest")
+	}
+	return nil
+}
+
+func kubectlApply(manifest []byte) error {
+	return install.Kubectl(bytes.NewBuffer(manifest), "apply", "-f", "-")
 }
 
 func createNamespaceIfNotExist(namespace string) error {

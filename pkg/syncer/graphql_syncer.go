@@ -4,11 +4,11 @@ import (
 	"context"
 
 	gloov1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
+	"github.com/solo-io/go-utils/contextutils"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
 	"github.com/solo-io/solo-kit/pkg/api/v1/reporter"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
 	"github.com/solo-io/solo-kit/pkg/errors"
-	"github.com/solo-io/solo-kit/pkg/utils/contextutils"
 	v1 "github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/solo-io/sqoop/pkg/engine"
 	"github.com/solo-io/sqoop/pkg/engine/router"
@@ -74,8 +74,8 @@ func (s *GraphQLSyncer) Sync(ctx context.Context, snap *v1.ApiSnapshot) error {
 	var endpoints []*router.Endpoint
 	var resolverMapsToGenerate v1.ResolverMapList
 	var schemasToUpdate v1.SchemaList
-	for _, schema := range snap.Schemas.List() {
-		resolverMap, err := snap.ResolverMaps.List().Find(schema.Metadata.Ref().Strings())
+	for _, schema := range snap.Schemas {
+		resolverMap, err := snap.ResolverMaps.Find(schema.Metadata.Ref().Strings())
 		if err != nil {
 			newMeta := core.Metadata{
 				Name:        schema.Metadata.Name,
@@ -99,7 +99,7 @@ func (s *GraphQLSyncer) Sync(ctx context.Context, snap *v1.ApiSnapshot) error {
 		resourceErrs.Accept(schema)
 
 		// this time should succeed
-		resolverMap, err = snap.ResolverMaps.List().Find(schema.Metadata.Ref().Strings())
+		resolverMap, err = snap.ResolverMaps.Find(schema.Metadata.Ref().Strings())
 		if err != nil {
 			resourceErrs.AddError(schema, errors.Wrapf(err, "finding resolvermap for schema"))
 			continue

@@ -5,13 +5,13 @@ package v1
 import (
 	"fmt"
 
-	"github.com/solo-io/solo-kit/pkg/utils/hashutils"
+	"github.com/solo-io/go-utils/hashutils"
 	"go.uber.org/zap"
 )
 
 type ApiSnapshot struct {
-	ResolverMaps ResolverMapsByNamespace
-	Schemas      SchemasByNamespace
+	ResolverMaps ResolverMapList
+	Schemas      SchemaList
 }
 
 func (s ApiSnapshot) Clone() ApiSnapshot {
@@ -29,11 +29,11 @@ func (s ApiSnapshot) Hash() uint64 {
 }
 
 func (s ApiSnapshot) hashResolverMaps() uint64 {
-	return hashutils.HashAll(s.ResolverMaps.List().AsInterfaces()...)
+	return hashutils.HashAll(s.ResolverMaps.AsInterfaces()...)
 }
 
 func (s ApiSnapshot) hashSchemas() uint64 {
-	return hashutils.HashAll(s.Schemas.List().AsInterfaces()...)
+	return hashutils.HashAll(s.Schemas.AsInterfaces()...)
 }
 
 func (s ApiSnapshot) HashFields() []zap.Field {
@@ -69,7 +69,7 @@ func (ss ApiSnapshotStringer) String() string {
 func (s ApiSnapshot) Stringer() ApiSnapshotStringer {
 	return ApiSnapshotStringer{
 		Version:      s.Hash(),
-		ResolverMaps: s.ResolverMaps.List().NamespacesDotNames(),
-		Schemas:      s.Schemas.List().NamespacesDotNames(),
+		ResolverMaps: s.ResolverMaps.NamespacesDotNames(),
+		Schemas:      s.Schemas.NamespacesDotNames(),
 	}
 }

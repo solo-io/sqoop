@@ -3,7 +3,7 @@ package version
 import (
 	"github.com/pkg/errors"
 	version "github.com/solo-io/go-utils/versionutils"
-	"github.com/solo-io/solo-kit/pkg/utils/log"
+	"github.com/solo-io/go-utils/log"
 )
 
 func CheckVersions() error {

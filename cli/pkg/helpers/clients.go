@@ -12,8 +12,8 @@ import (
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/kube"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/memory"
 	"github.com/solo-io/solo-kit/pkg/errors"
-	"github.com/solo-io/solo-kit/pkg/utils/kubeutils"
-	"github.com/solo-io/solo-kit/pkg/utils/log"
+	"github.com/solo-io/go-utils/kubeutils"
+	"github.com/solo-io/go-utils/log"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )

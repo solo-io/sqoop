@@ -9,6 +9,11 @@ import (
 	"github.com/solo-io/solo-kit/pkg/errors"
 )
 
+type SchemaWatcher interface {
+	// watch namespace-scoped Schemas
+	Watch(namespace string, opts clients.WatchOpts) (<-chan SchemaList, <-chan error, error)
+}
+
 type SchemaClient interface {
 	BaseClient() clients.ResourceClient
 	Register() error
@@ -16,7 +21,7 @@ type SchemaClient interface {
 	Write(resource *Schema, opts clients.WriteOpts) (*Schema, error)
 	Delete(namespace, name string, opts clients.DeleteOpts) error
 	List(namespace string, opts clients.ListOpts) (SchemaList, error)
-	Watch(namespace string, opts clients.WatchOpts) (<-chan SchemaList, <-chan error, error)
+	SchemaWatcher
 }
 
 type schemaClient struct {

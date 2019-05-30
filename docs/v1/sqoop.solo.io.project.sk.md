@@ -15,9 +15,10 @@ API Version: `sqoop.solo.io.v1`
 
 
 ### API Resources:
-- [Proxy](../github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk#Proxy)
-- [ResolverMap](../github.com/solo-io/sqoop/api/v1/resolver_map.proto.sk#ResolverMap)
-- [Schema](../github.com/solo-io/sqoop/api/v1/schema.proto.sk#Schema)
+- [Proxy](../github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk#proxy)
+- [ResolverMap](../github.com/solo-io/sqoop/api/v1/resolver_map.proto.sk#resolvermap)
+- [Schema](../github.com/solo-io/sqoop/api/v1/schema.proto.sk#schema)
+- [UpstreamGroup](../github.com/solo-io/gloo/projects/gloo/api/v1/proxy.proto.sk#upstreamgroup)
 
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5130874.js"></script>

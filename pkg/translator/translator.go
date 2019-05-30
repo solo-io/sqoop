@@ -11,7 +11,7 @@ import (
 // trnslate a snapshot of schemas and resolvermaps to:
 // a 1 proxy for the snapshot, assigned to the sqoop sidecar
 func Translate(writeNamespace string, snap *v1.ApiSnapshot, resourceErrs reporter.ResourceErrors) *gloov1.Proxy {
-	ourRoutes := routesForResolverMaps(snap.ResolverMaps.List(), resourceErrs)
+	ourRoutes := routesForResolverMaps(snap.ResolverMaps, resourceErrs)
 
 	var routes []*gloov1.Route
 
