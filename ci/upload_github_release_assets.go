@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/solo-io/go-utils/githubutils"
-	"github.com/solo-io/go-utils/logger"
+	"github.com/solo-io/go-utils/log"
 	"github.com/solo-io/go-utils/pkgmgmtutils"
 )
 

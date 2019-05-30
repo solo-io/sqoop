@@ -228,7 +228,7 @@
   version = "v1.12.0"
 
 [[projects]]
-  digest = "1:c76178e75235ac60b036c8aa39e870ee248c3ef82e6ce70a01806d870cec7383"
+  digest = "1:47d2eab2d709f99ed4eb0c4994c7d8cdf4e0dc1627cbced538de02c40d7cbb46"
   name = "github.com/envoyproxy/go-control-plane"
   packages = [
     "envoy/api/v2",
@@ -242,7 +242,8 @@
     "envoy/type",
   ]
   pruneopts = "UT"
-  revision = "6bb1dbbfcb2b3192849c3f0e6d3a6a6f038ded8b"
+  revision = "0ad6fa1cf0b9b6ca8f3617a7188a568e81f40b87"
+  version = "v0.6.9"
 
 [[projects]]
   digest = "1:f1f2bd73c025d24c3b93abf6364bccb802cf2fdedaa44360804c67800e8fab8d"
@@ -624,6 +625,14 @@
   pruneopts = "UT"
   revision = "e21712a687889de1125e0a12a980420b1a4f72d3"
   version = "v0.10.4"
+
+[[projects]]
+  digest = "1:aa51de58a7e4f4b5c917353d9e41731cfe6e582fc631d4b8a93c6634f72e54dd"
+  name = "github.com/helm/helm"
+  packages = ["pkg/hooks"]
+  pruneopts = "UT"
+  revision = "05811b84a3f93603dd6c2fcfe57944dfa7ab7fd0"
+  version = "v2.14.0"
 
 [[projects]]
   branch = "master"
@@ -1032,7 +1041,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:afac92ed8b072133d8eb2c65875491b4f6a25727c4ff59575ad7a4b06489b040"
+  digest = "1:a8019ff2f27a9226ea0b45107ddce1e161e99f0fa88efea6239f188778b98545"
   name = "github.com/solo-io/gloo"
   packages = [
     "install/helm/gloo/generate",
@@ -1041,7 +1050,7 @@
     "pkg/utils/setuputils",
     "pkg/version",
     "projects/gateway/pkg/api/v1",
-    "projects/gloo/cli/pkg/constants",
+    "projects/gloo/cli/pkg/cmd/options",
     "projects/gloo/cli/pkg/helpers",
     "projects/gloo/cli/pkg/printers",
     "projects/gloo/pkg/api/converters/kube",
@@ -1052,6 +1061,8 @@
     "projects/gloo/pkg/api/v1/plugins/consul",
     "projects/gloo/pkg/api/v1/plugins/faultinjection",
     "projects/gloo/pkg/api/v1/plugins/grpc",
+    "projects/gloo/pkg/api/v1/plugins/grpc_web",
+    "projects/gloo/pkg/api/v1/plugins/hcm",
     "projects/gloo/pkg/api/v1/plugins/kubernetes",
     "projects/gloo/pkg/api/v1/plugins/rest",
     "projects/gloo/pkg/api/v1/plugins/retries",
@@ -1061,8 +1072,8 @@
     "projects/gloo/pkg/defaults",
   ]
   pruneopts = "UT"
-  revision = "a07620941be10029f13d6c00ddfa52bae141304a"
-  version = "v0.10.2"
+  revision = "b299683584939bd52f85279556037c6b67c19dab"
+  version = "v0.13.29"
 
 [[projects]]
   digest = "1:699918466a9758902a14923851a7fbd230500f93da6982dae7c79959afb0a664"
@@ -1073,31 +1084,36 @@
   version = "0.0.4"
 
 [[projects]]
-  digest = "1:1035eb593ed3483de0c7c0a1ec33e7f88157dfdf8c812dbc4585fecec403ae43"
+  digest = "1:256ae3fb9d3a837be5b5e2efe36cf0fd313a7a07f5f048a26c7302ab622d9d05"
   name = "github.com/solo-io/go-utils"
   packages = [
     "changelogutils",
+    "clicore/constants",
     "cliutils",
     "contextutils",
     "docsutils",
     "errors",
+    "errutils",
     "githubutils",
+    "hashutils",
     "kubeutils",
-    "logger",
+    "log",
     "pkgmgmtutils",
     "protoutils",
     "stats",
+    "stringutils",
     "versionutils",
   ]
   pruneopts = "UT"
-  revision = "a27432d89f419897df796a17456410e49a9727c3"
-  version = "v0.7.11"
+  revision = "d35e5e7e9ebfddfb16e949babab0d6365e44e275"
+  version = "v0.8.16"
 
 [[projects]]
-  digest = "1:b57738f0edd82fb89ffeabbd92550f87ed40863ff08e5c25475bb1ed1d00cd3d"
+  digest = "1:c886cb30b84598c711f6431ce44feb921ffa3534f6193dddc655835c983c0807"
   name = "github.com/solo-io/solo-kit"
   packages = [
     "pkg/api/v1/clients",
+    "pkg/api/v1/clients/common",
     "pkg/api/v1/clients/configmap",
     "pkg/api/v1/clients/consul",
     "pkg/api/v1/clients/factory",
@@ -1113,9 +1129,11 @@
     "pkg/api/v1/clients/kubesecret",
     "pkg/api/v1/clients/memory",
     "pkg/api/v1/clients/vault",
+    "pkg/api/v1/clients/wrapper",
     "pkg/api/v1/control-plane/cache",
     "pkg/api/v1/control-plane/log",
     "pkg/api/v1/control-plane/server",
+    "pkg/api/v1/eventloop",
     "pkg/api/v1/reconcile",
     "pkg/api/v1/reporter",
     "pkg/api/v1/resources",
@@ -1132,22 +1150,16 @@
     "pkg/code-generator/model",
     "pkg/code-generator/parser",
     "pkg/errors",
-    "pkg/utils/cliutils",
-    "pkg/utils/contextutils",
-    "pkg/utils/errutils",
     "pkg/utils/fileutils",
-    "pkg/utils/hashutils",
     "pkg/utils/kubeutils",
-    "pkg/utils/log",
     "pkg/utils/protoutils",
-    "pkg/utils/stringutils",
     "test/helpers",
     "test/setup",
     "test/tests/typed",
   ]
   pruneopts = "UT"
-  revision = "6dbbf377211f93ed8dbc6689bfc6cf5aa4a3f821"
-  version = "v0.3.1"
+  revision = "f40d30112db04fbd2cc4ba85f9df66af3607f344"
+  version = "v0.9.6"
 
 [[projects]]
   digest = "1:3e39bafd6c2f4bf3c76c3bfd16a2e09e016510ad5db90dc02b88e2f565d6d595"
@@ -1403,6 +1415,17 @@
   packages = ["rate"]
   pruneopts = "UT"
   revision = "fbb02b2291d28baffd63558aa44b4b56f178d650"
+
+[[projects]]
+  branch = "master"
+  digest = "1:c44a77760372a998be8d4656e8d3c865f68735ec4cad1743a245903a58f64249"
+  name = "golang.org/x/xerrors"
+  packages = [
+    ".",
+    "internal",
+  ]
+  pruneopts = "UT"
+  revision = "3ee3066db522c6628d440a3a91c4abdd7f5ef22f"
 
 [[projects]]
   digest = "1:d2a8db567a76203e3b41c1f632d86485ffd57f8e650a0d1b19d240671c2fddd7"
@@ -1739,10 +1762,11 @@
   revision = "4c1cca29720474bad8854aa44b1dcb03d8c4e2b4"
 
 [[projects]]
-  digest = "1:bc9597aec563452a0bab34430ae11d6d6bc881e08d8d7d300de81f3f1d1ba620"
+  digest = "1:634a73c2987a7401673732fecd1b093c680a74b8ae7f04c315f992bca2762d69"
   name = "k8s.io/client-go"
   packages = [
     "discovery",
+    "discovery/fake",
     "dynamic",
     "informers",
     "informers/admissionregistration",
@@ -1791,39 +1815,72 @@
     "informers/storage/v1alpha1",
     "informers/storage/v1beta1",
     "kubernetes",
+    "kubernetes/fake",
     "kubernetes/scheme",
     "kubernetes/typed/admissionregistration/v1alpha1",
+    "kubernetes/typed/admissionregistration/v1alpha1/fake",
     "kubernetes/typed/admissionregistration/v1beta1",
+    "kubernetes/typed/admissionregistration/v1beta1/fake",
     "kubernetes/typed/apps/v1",
+    "kubernetes/typed/apps/v1/fake",
     "kubernetes/typed/apps/v1beta1",
+    "kubernetes/typed/apps/v1beta1/fake",
     "kubernetes/typed/apps/v1beta2",
+    "kubernetes/typed/apps/v1beta2/fake",
     "kubernetes/typed/auditregistration/v1alpha1",
+    "kubernetes/typed/auditregistration/v1alpha1/fake",
     "kubernetes/typed/authentication/v1",
+    "kubernetes/typed/authentication/v1/fake",
     "kubernetes/typed/authentication/v1beta1",
+    "kubernetes/typed/authentication/v1beta1/fake",
     "kubernetes/typed/authorization/v1",
+    "kubernetes/typed/authorization/v1/fake",
     "kubernetes/typed/authorization/v1beta1",
+    "kubernetes/typed/authorization/v1beta1/fake",
     "kubernetes/typed/autoscaling/v1",
+    "kubernetes/typed/autoscaling/v1/fake",
     "kubernetes/typed/autoscaling/v2beta1",
+    "kubernetes/typed/autoscaling/v2beta1/fake",
     "kubernetes/typed/autoscaling/v2beta2",
+    "kubernetes/typed/autoscaling/v2beta2/fake",
     "kubernetes/typed/batch/v1",
+    "kubernetes/typed/batch/v1/fake",
     "kubernetes/typed/batch/v1beta1",
+    "kubernetes/typed/batch/v1beta1/fake",
     "kubernetes/typed/batch/v2alpha1",
+    "kubernetes/typed/batch/v2alpha1/fake",
     "kubernetes/typed/certificates/v1beta1",
+    "kubernetes/typed/certificates/v1beta1/fake",
     "kubernetes/typed/coordination/v1beta1",
+    "kubernetes/typed/coordination/v1beta1/fake",
     "kubernetes/typed/core/v1",
+    "kubernetes/typed/core/v1/fake",
     "kubernetes/typed/events/v1beta1",
+    "kubernetes/typed/events/v1beta1/fake",
     "kubernetes/typed/extensions/v1beta1",
+    "kubernetes/typed/extensions/v1beta1/fake",
     "kubernetes/typed/networking/v1",
+    "kubernetes/typed/networking/v1/fake",
     "kubernetes/typed/policy/v1beta1",
+    "kubernetes/typed/policy/v1beta1/fake",
     "kubernetes/typed/rbac/v1",
+    "kubernetes/typed/rbac/v1/fake",
     "kubernetes/typed/rbac/v1alpha1",
+    "kubernetes/typed/rbac/v1alpha1/fake",
     "kubernetes/typed/rbac/v1beta1",
+    "kubernetes/typed/rbac/v1beta1/fake",
     "kubernetes/typed/scheduling/v1alpha1",
+    "kubernetes/typed/scheduling/v1alpha1/fake",
     "kubernetes/typed/scheduling/v1beta1",
+    "kubernetes/typed/scheduling/v1beta1/fake",
     "kubernetes/typed/settings/v1alpha1",
+    "kubernetes/typed/settings/v1alpha1/fake",
     "kubernetes/typed/storage/v1",
+    "kubernetes/typed/storage/v1/fake",
     "kubernetes/typed/storage/v1alpha1",
+    "kubernetes/typed/storage/v1alpha1/fake",
     "kubernetes/typed/storage/v1beta1",
+    "kubernetes/typed/storage/v1beta1/fake",
     "listers/admissionregistration/v1alpha1",
     "listers/admissionregistration/v1beta1",
     "listers/apps/v1",
@@ -1873,6 +1930,7 @@
     "scale/scheme/autoscalingv1",
     "scale/scheme/extensionsint",
     "scale/scheme/extensionsv1beta1",
+    "testing",
     "third_party/forked/golang/template",
     "tools/auth",
     "tools/cache",
@@ -2115,10 +2173,13 @@
     "github.com/solo-io/gloo/projects/gloo/pkg/bootstrap",
     "github.com/solo-io/go-checkpoint",
     "github.com/solo-io/go-utils/cliutils",
+    "github.com/solo-io/go-utils/contextutils",
     "github.com/solo-io/go-utils/docsutils",
+    "github.com/solo-io/go-utils/errutils",
     "github.com/solo-io/go-utils/githubutils",
+    "github.com/solo-io/go-utils/hashutils",
     "github.com/solo-io/go-utils/kubeutils",
-    "github.com/solo-io/go-utils/logger",
+    "github.com/solo-io/go-utils/log",
     "github.com/solo-io/go-utils/pkgmgmtutils",
     "github.com/solo-io/go-utils/stats",
     "github.com/solo-io/go-utils/versionutils",
@@ -2127,6 +2188,7 @@
     "github.com/solo-io/solo-kit/pkg/api/v1/clients/kube",
     "github.com/solo-io/solo-kit/pkg/api/v1/clients/kube/crd",
     "github.com/solo-io/solo-kit/pkg/api/v1/clients/memory",
+    "github.com/solo-io/solo-kit/pkg/api/v1/eventloop",
     "github.com/solo-io/solo-kit/pkg/api/v1/reconcile",
     "github.com/solo-io/solo-kit/pkg/api/v1/reporter",
     "github.com/solo-io/solo-kit/pkg/api/v1/resources",
@@ -2134,13 +2196,8 @@
     "github.com/solo-io/solo-kit/pkg/code-generator/cmd",
     "github.com/solo-io/solo-kit/pkg/code-generator/docgen/options",
     "github.com/solo-io/solo-kit/pkg/errors",
-    "github.com/solo-io/solo-kit/pkg/utils/contextutils",
-    "github.com/solo-io/solo-kit/pkg/utils/errutils",
-    "github.com/solo-io/solo-kit/pkg/utils/hashutils",
     "github.com/solo-io/solo-kit/pkg/utils/kubeutils",
-    "github.com/solo-io/solo-kit/pkg/utils/log",
     "github.com/solo-io/solo-kit/test/helpers",
-    "github.com/solo-io/solo-kit/test/setup",
     "github.com/solo-io/solo-kit/test/tests/typed",
     "github.com/spf13/cobra",
     "github.com/spf13/cobra/doc",

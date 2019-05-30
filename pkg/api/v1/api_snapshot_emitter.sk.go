@@ -10,9 +10,9 @@ import (
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 
+	"github.com/solo-io/go-utils/errutils"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
 	"github.com/solo-io/solo-kit/pkg/errors"
-	"github.com/solo-io/solo-kit/pkg/utils/errutils"
 )
 
 var (
@@ -173,6 +173,8 @@ func (c *apiEmitter) Snapshots(watchNamespaces []string, opts clients.WatchOpts)
 			sentSnapshot := currentSnapshot.Clone()
 			snapshots <- &sentSnapshot
 		}
+		resolverMapsByNamespace := make(map[string]ResolverMapList)
+		schemasByNamespace := make(map[string]SchemaList)
 
 		for {
 			record := func() { stats.Record(ctx, mApiSnapshotIn.M(1)) }
@@ -192,16 +194,26 @@ func (c *apiEmitter) Snapshots(watchNamespaces []string, opts clients.WatchOpts)
 				record()
 
 				namespace := resolverMapNamespacedList.namespace
-				resolverMapList := resolverMapNamespacedList.list
 
-				currentSnapshot.ResolverMaps[namespace] = resolverMapList
+				// merge lists by namespace
+				resolverMapsByNamespace[namespace] = resolverMapNamespacedList.list
+				var resolverMapList ResolverMapList
+				for _, resolverMaps := range resolverMapsByNamespace {
+					resolverMapList = append(resolverMapList, resolverMaps...)
+				}
+				currentSnapshot.ResolverMaps = resolverMapList.Sort()
 			case schemaNamespacedList := <-schemaChan:
 				record()
 
 				namespace := schemaNamespacedList.namespace
-				schemaList := schemaNamespacedList.list
 
-				currentSnapshot.Schemas[namespace] = schemaList
+				// merge lists by namespace
+				schemasByNamespace[namespace] = schemaNamespacedList.list
+				var schemaList SchemaList
+				for _, schemas := range schemasByNamespace {
+					schemaList = append(schemaList, schemas...)
+				}
+				currentSnapshot.Schemas = schemaList.Sort()
 			}
 		}
 	}()

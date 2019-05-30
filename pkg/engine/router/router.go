@@ -10,7 +10,7 @@ import (
 	"html/template"
 
 	"github.com/gorilla/mux"
-	"github.com/solo-io/solo-kit/pkg/utils/log"
+	"github.com/solo-io/go-utils/log"
 	"github.com/vektah/gqlgen/graphql"
 	"github.com/vektah/gqlgen/handler"
 )

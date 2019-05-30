@@ -9,6 +9,11 @@ import (
 	"github.com/solo-io/solo-kit/pkg/errors"
 )
 
+type ResolverMapWatcher interface {
+	// watch namespace-scoped ResolverMaps
+	Watch(namespace string, opts clients.WatchOpts) (<-chan ResolverMapList, <-chan error, error)
+}
+
 type ResolverMapClient interface {
 	BaseClient() clients.ResourceClient
 	Register() error
@@ -16,7 +21,7 @@ type ResolverMapClient interface {
 	Write(resource *ResolverMap, opts clients.WriteOpts) (*ResolverMap, error)
 	Delete(namespace, name string, opts clients.DeleteOpts) error
 	List(namespace string, opts clients.ListOpts) (ResolverMapList, error)
-	Watch(namespace string, opts clients.WatchOpts) (<-chan ResolverMapList, <-chan error, error)
+	ResolverMapWatcher
 }
 
 type resolverMapClient struct {

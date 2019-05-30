@@ -5,32 +5,30 @@ package v1
 import (
 	"sort"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/solo-io/go-utils/hashutils"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients/kube/crd"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
 	"github.com/solo-io/solo-kit/pkg/errors"
-	"github.com/solo-io/solo-kit/pkg/utils/hashutils"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// TODO: modify as needed to populate additional fields
 func NewResolverMap(namespace, name string) *ResolverMap {
-	return &ResolverMap{
-		Metadata: core.Metadata{
-			Name:      name,
-			Namespace: namespace,
-		},
-	}
-}
-
-func (r *ResolverMap) SetStatus(status core.Status) {
-	r.Status = status
+	resolvermap := &ResolverMap{}
+	resolvermap.SetMetadata(core.Metadata{
+		Name:      name,
+		Namespace: namespace,
+	})
+	return resolvermap
 }
 
 func (r *ResolverMap) SetMetadata(meta core.Metadata) {
 	r.Metadata = meta
+}
+
+func (r *ResolverMap) SetStatus(status core.Status) {
+	r.Status = status
 }
 
 func (r *ResolverMap) Hash() uint64 {
@@ -43,13 +41,12 @@ func (r *ResolverMap) Hash() uint64 {
 }
 
 type ResolverMapList []*ResolverMap
-type ResolverMapsByNamespace map[string]ResolverMapList
 
 // namespace is optional, if left empty, names can collide if the list contains more than one with the same name
 func (list ResolverMapList) Find(namespace, name string) (*ResolverMap, error) {
 	for _, resolverMap := range list {
-		if resolverMap.Metadata.Name == name {
-			if namespace == "" || resolverMap.Metadata.Namespace == namespace {
+		if resolverMap.GetMetadata().Name == name {
+			if namespace == "" || resolverMap.GetMetadata().Namespace == namespace {
 				return resolverMap, nil
 			}
 		}
@@ -76,7 +73,7 @@ func (list ResolverMapList) AsInputResources() resources.InputResourceList {
 func (list ResolverMapList) Names() []string {
 	var names []string
 	for _, resolverMap := range list {
-		names = append(names, resolverMap.Metadata.Name)
+		names = append(names, resolverMap.GetMetadata().Name)
 	}
 	return names
 }
@@ -84,14 +81,14 @@ func (list ResolverMapList) Names() []string {
 func (list ResolverMapList) NamespacesDotNames() []string {
 	var names []string
 	for _, resolverMap := range list {
-		names = append(names, resolverMap.Metadata.Namespace+"."+resolverMap.Metadata.Name)
+		names = append(names, resolverMap.GetMetadata().Namespace+"."+resolverMap.GetMetadata().Name)
 	}
 	return names
 }
 
 func (list ResolverMapList) Sort() ResolverMapList {
 	sort.SliceStable(list, func(i, j int) bool {
-		return list[i].Metadata.Less(list[j].Metadata)
+		return list[i].GetMetadata().Less(list[j].GetMetadata())
 	})
 	return list
 }
@@ -99,12 +96,18 @@ func (list ResolverMapList) Sort() ResolverMapList {
 func (list ResolverMapList) Clone() ResolverMapList {
 	var resolverMapList ResolverMapList
 	for _, resolverMap := range list {
-		resolverMapList = append(resolverMapList, proto.Clone(resolverMap).(*ResolverMap))
+		resolverMapList = append(resolverMapList, resources.Clone(resolverMap).(*ResolverMap))
 	}
 	return resolverMapList
 }
 
 func (list ResolverMapList) Each(f func(element *ResolverMap)) {
+	for _, resolverMap := range list {
+		f(resolverMap)
+	}
+}
+
+func (list ResolverMapList) EachResource(f func(element resources.Resource)) {
 	for _, resolverMap := range list {
 		f(resolverMap)
 	}
@@ -116,32 +119,6 @@ func (list ResolverMapList) AsInterfaces() []interface{} {
 		asInterfaces = append(asInterfaces, element)
 	})
 	return asInterfaces
-}
-
-func (byNamespace ResolverMapsByNamespace) Add(resolverMap ...*ResolverMap) {
-	for _, item := range resolverMap {
-		byNamespace[item.Metadata.Namespace] = append(byNamespace[item.Metadata.Namespace], item)
-	}
-}
-
-func (byNamespace ResolverMapsByNamespace) Clear(namespace string) {
-	delete(byNamespace, namespace)
-}
-
-func (byNamespace ResolverMapsByNamespace) List() ResolverMapList {
-	var list ResolverMapList
-	for _, resolverMapList := range byNamespace {
-		list = append(list, resolverMapList...)
-	}
-	return list.Sort()
-}
-
-func (byNamespace ResolverMapsByNamespace) Clone() ResolverMapsByNamespace {
-	cloned := make(ResolverMapsByNamespace)
-	for ns, list := range byNamespace {
-		cloned[ns] = list.Clone()
-	}
-	return cloned
 }
 
 var _ resources.Resource = &ResolverMap{}
