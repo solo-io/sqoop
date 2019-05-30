@@ -1,3 +1,16 @@
 changelog:
-  - type: NON_USER_FACING
-    description: Added auto update of packagement management formulas as part of release process
+- type: DEPENDENCY_BUMP
+  dependencyOwner: solo-io
+  dependencyRepo: gloo
+  dependencyTag: v0.13.25
+  description: Update gloo to version v0.13.25.
+- type: DEPENDENCY_BUMP
+  dependencyOwner: solo-io
+  dependencyRepo: solo-kit
+  dependencyTag: v0.9.6
+  description: Update solo-kit to version v0.9.6.
+- type: DEPENDENCY_BUMP
+  dependencyOwner: solo-io
+  dependencyRepo: go-utils
+  dependencyTag: v0.8.16
+  description: Update gloo to version v0.8.16.
