@@ -74,8 +74,8 @@ func (s *GraphQLSyncer) Sync(ctx context.Context, snap *v1.ApiSnapshot) error {
 	var endpoints []*router.Endpoint
 	var resolverMapsToGenerate v1.ResolverMapList
 	var schemasToUpdate v1.SchemaList
-	for _, schema := range snap.Schemas.List() {
-		resolverMap, err := snap.ResolverMaps.List().Find(schema.Metadata.Ref().Strings())
+	for _, schema := range snap.Schemas {
+		resolverMap, err := snap.ResolverMaps.Find(schema.Metadata.Ref().Strings())
 		if err != nil {
 			newMeta := core.Metadata{
 				Name:        schema.Metadata.Name,
@@ -99,7 +99,7 @@ func (s *GraphQLSyncer) Sync(ctx context.Context, snap *v1.ApiSnapshot) error {
 		resourceErrs.Accept(schema)
 
 		// this time should succeed
-		resolverMap, err = snap.ResolverMaps.List().Find(schema.Metadata.Ref().Strings())
+		resolverMap, err = snap.ResolverMaps.Find(schema.Metadata.Ref().Strings())
 		if err != nil {
 			resourceErrs.AddError(schema, errors.Wrapf(err, "finding resolvermap for schema"))
 			continue
