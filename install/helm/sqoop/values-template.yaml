@@ -12,8 +12,8 @@ sqoop:
       repository: soloio/sqoop
       pullPolicy: Always
     proxy:
-      tag: 0.6.19
-      repository: soloio/gloo-envoy-wrapper
+      tag: 0.13.25
+      repository: quay.io/solo-io/gloo-envoy-wrapper
       pullPolicy: Always
   service:
     port: 9095
