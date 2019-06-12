@@ -1,0 +1,4 @@
+changelog:
+  - type: FIX
+    description: fix the version incompatibility issue between the updated version of gloo and sqoop's envoy sidecar
+    issueLink: https://github.com/solo-io/sqoop/issues/38
