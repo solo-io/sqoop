@@ -67,3 +67,7 @@
 [[override]]
   name = "github.com/solo-io/go-utils"
   version = "0.8.16"
+
+[[override]]
+  name = "golang.org/x/xerrors"
+  revision = "9bdfabe68543c54f90421aeb9a60ef8061b5b544"
