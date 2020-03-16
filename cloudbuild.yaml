@@ -7,24 +7,16 @@ steps:
     env:
       - 'LSCOMMAND=find * -path gopath -prune -o -print'
     id: 'check-spelling'
-  # Can create a dep cache by running 'gcloud builds submit . --config=cloudbuild-cache.yaml'
+
+  # Can create a go mod cache by running 'gcloud builds submit . --config=cloudbuild-cache.yaml'
   # These two steps should populate the cache
   - name: gcr.io/cloud-builders/gsutil
     entrypoint: 'bash'
-    args: ['-c', 'mkdir -p ./gopath/pkg/dep && gsutil cat gs://solo-public-cache/sqoop/sqoop-dep.tar.gz | tar -xzf -']
-    id: 'download-untar-dep-cache'
-    waitFor: ['-']
-
-  # Run dep to set up the project so it can be built and tested
-  # Dep modifies workspace so that the code is moved into the PROJECT_ROOT
-  # All steps after this must set GOPATH
-  - name: 'gcr.io/$PROJECT_ID/dep'
-    args: ['ensure']
-    env:
-      - 'PROJECT_ROOT=github.com/solo-io/sqoop'
-      - 'GIT_SSH_CONFIG=FALSE'
-    id: 'dep'
-    waitFor: ['download-untar-dep-cache']
+    args: ['-c', 'mkdir -p /go/pkg && cd /go/pkg && gsutil cat gs://solo-public-cache/sqoop/sqoop-mod.tar.gz | tar -xzf -']
+    volumes: &vol
+      - name: 'gopath'
+        path: '/workspace/gopath/pkg/mod'
+    id: 'untar-mod-cache'
 
   # Helm setup
   # 1) Create directory to sync helm data
@@ -32,8 +24,9 @@ steps:
     entrypoint: mkdir
     args: ['-p', './_output/helm']
     dir: './gopath/src/github.com/solo-io/sqoop'
-    waitFor: ['dep']
+    waitFor: ['untar-mod-cache']
     id: 'make-helm-dir'
+
   - name: gcr.io/cloud-builders/gsutil
     args:
       - rsync

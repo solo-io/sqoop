@@ -1,15 +1,30 @@
 steps:
-- name: 'gcr.io/$PROJECT_ID/dep'
-  args: ['ensure']
-  env:
-  - 'PROJECT_ROOT=github.com/solo-io/sqoop'
-
-- name: 'gcr.io/$PROJECT_ID/go-make'
+- name: gcr.io/cloud-builders/gsutil
   entrypoint: 'bash'
-  args: ['-c', 'tar -zvcf sqoop-dep.tar.gz ./gopath/pkg/dep']
+  args: ['-c', 'mkdir -p /go/pkg && cd /go/pkg && gsutil cat gs://solo-public-cache/sqoop/sqoop-mod.tar.gz | tar -xzf -']
   env:
-  - 'PROJECT_ROOT=github.com/solo-io/sqoop'
-  - 'GOPATH=/workspace/gopath'
+  volumes: &vol
+    - name: 'gopath'
+      path: '/go/pkg'
+  id: 'untar-mod-cache'
+
+- name: 'golang:1.13'
+  args: ['go', 'mod', 'download']
+  volumes: *vol
+  id: 'download'
+
+- name: 'golang:1.13'
+  args: ['go', 'mod', 'tidy']
+  volumes: *vol
+  id: 'tidy'
+
+- name: 'golang:1.13'
+  entrypoint: 'bash'
+  args: ['-c', ' cd /go/pkg && tar -zvcf sqoop-mod.tar.gz mod']
+  volumes: *vol
+  id: 'tar-cache'
 
 - name: gcr.io/cloud-builders/gsutil
-  args: ['cp', 'sqoop-dep.tar.gz', 'gs://solo-public-cache/sqoop/sqoop-dep.tar.gz']
+  args: ['cp', '/goo/pkg/sqoop-mod.tar.gz', 'gs://solo-public-cache/sqoop/sqoop-mod.tar.gz']
+  volumes: *vol
+  id: 'upload-cache'
