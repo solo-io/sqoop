@@ -1,8 +1,8 @@
 package testdata
 
 import (
-	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
-	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
+	gloov1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
+	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/options/rest"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
 	v1 "github.com/solo-io/sqoop/pkg/api/v1"
 	"github.com/solo-io/sqoop/pkg/engine/exec"
@@ -28,14 +28,14 @@ func StarWarsResolverMap() *v1.ResolverMap {
 	resolverMap.Types["Query"].Fields["hero"].Resolver = &v1.FieldResolver_GlooResolver{
 		GlooResolver: &v1.GlooResolver{
 			Action: &glooV1.RouteAction{
-				Destination: &glooV1.RouteAction_Single{
-					Single: &glooV1.Destination{
+				Destination: &gloov1.RouteAction_Single{
+					Single: &gloov1.Destination{
 						Upstream: core.ResourceRef{
 							Name: "starwars-rest",
 						},
-						DestinationSpec: &glooV1.DestinationSpec{
-							DestinationType: &glooV1.DestinationSpec_Rest{
-								Rest: &rest.DestinationSpec{
+						DestinationSpec: &gloov1.DestinationSpec{
+							DestinationType: &gloov1.DestinationSpec_Rest{
+								Rest: &gloov1.DestinationSpec{
 									FunctionName: "GetHero",
 								},
 							},
@@ -50,14 +50,14 @@ func StarWarsResolverMap() *v1.ResolverMap {
 			RequestTemplate: &v1.RequestTemplate{
 				Body: `{"id": {{ index .Args "id" }}}`,
 			},
-			Action: &glooV1.RouteAction{
-				Destination: &glooV1.RouteAction_Single{
-					Single: &glooV1.Destination{
+			Action: &gloov1.RouteAction{
+				Destination: &gloov1.RouteAction_Single{
+					Single: &gloov1.Destination{
 						Upstream: core.ResourceRef{
 							Name: "starwars-rest",
 						},
-						DestinationSpec: &glooV1.DestinationSpec{
-							DestinationType: &glooV1.DestinationSpec_Rest{
+						DestinationSpec: &gloov1.DestinationSpec{
+							DestinationType: &gloov1.DestinationSpec_Rest{
 								Rest: &rest.DestinationSpec{
 									FunctionName: "GetCharacter",
 								},

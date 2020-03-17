@@ -35,12 +35,18 @@ func (s ApiSyncers) Sync(ctx context.Context, snapshot *ApiSnapshot) error {
 type apiEventLoop struct {
 	emitter ApiEmitter
 	syncer  ApiSyncer
+	ready   chan struct{}
+}
+
+func (a *apiEventLoop) Ready() <-chan (struct{}) {
+	return a.ready
 }
 
 func NewApiEventLoop(emitter ApiEmitter, syncer ApiSyncer) eventloop.EventLoop {
 	return &apiEventLoop{
 		emitter: emitter,
 		syncer:  syncer,
+		ready:   make(chan struct{}),
 	}
 }
 

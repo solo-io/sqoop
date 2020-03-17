@@ -2,6 +2,7 @@ package translator
 
 import (
 	gloov1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
+	matchers "github.com/solo-io/gloo/projects/gloo/pkg/api/v1/core/matchers"
 	"github.com/solo-io/solo-kit/pkg/api/v1/reporter"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
 	v1 "github.com/solo-io/sqoop/pkg/api/v1"
@@ -17,11 +18,13 @@ func Translate(writeNamespace string, snap *v1.ApiSnapshot, resourceErrs reporte
 
 	for _, r := range ourRoutes {
 		routes = append(routes, &gloov1.Route{
-			Matcher: &gloov1.Matcher{
-				PathSpecifier: &gloov1.Matcher_Exact{
-					Exact: r.path,
+			Matchers: []*matchers.Matcher{
+				{
+					PathSpecifier: &matchers.Matcher_Exact{
+						Exact: r.path,
+					},
+					Methods: []string{"POST"},
 				},
-				Methods: []string{"POST"},
 			},
 			Action: &gloov1.Route_RouteAction{RouteAction: r.action},
 		})

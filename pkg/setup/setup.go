@@ -15,8 +15,8 @@ func Main() error {
 	start := time.Now()
 	check.CallCheck("sqoop", version.Version, start)
 	return setuputils.Main(setuputils.SetupOpts{
-		SetupFunc:     syncer.Setup,
-		ExitOnError:   true,
-		LoggingPrefix: "sqoop",
+		SetupFunc:         syncer.Setup,
+		ExitOnError:       true,
+		LoggingPrefixVals: []interface{}{"sqoop"},
 	})
 }

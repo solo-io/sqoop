@@ -34,38 +34,38 @@ type Opts struct {
 	SidecarAddr     string
 }
 
-func Setup(ctx context.Context, kubeCache kube.SharedCache, cache memory.InMemoryResourceCache, settings *gloov1.Settings) error {
+func Setup(ctx context.Context, kubeCache kube.SharedCache, inMemoryCache memory.InMemoryResourceCache, settings *gloov1.Settings) error {
 	var (
 		cfg *rest.Config
 	)
-	proxyFactory, err := bootstrap.ConfigFactoryForSettings(
+
+	params := bootstrap.NewConfigFactoryParams(
 		settings,
-		cache,
+		inMemoryCache,
 		kubeCache,
-		gloov1.ProxyCrd,
 		&cfg,
+		nil,
+	)
+
+	proxyFactory, err := bootstrap.ConfigFactoryForSettings(
+		params,
+		gloov1.ProxyCrd,
 	)
 	if err != nil {
 		return err
 	}
 
 	schemaFactory, err := bootstrap.ConfigFactoryForSettings(
-		settings,
-		cache,
-		kubeCache,
+		params,
 		v1.SchemaCrd,
-		&cfg,
 	)
 	if err != nil {
 		return err
 	}
 
 	resolverMapFactory, err := bootstrap.ConfigFactoryForSettings(
-		settings,
-		cache,
-		kubeCache,
+		params,
 		v1.ResolverMapCrd,
-		&cfg,
 	)
 	if err != nil {
 		return err

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
-	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
 	"github.com/solo-io/go-utils/cliutils"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
@@ -78,7 +77,7 @@ func registerResolver(opts *options.Options) error {
 							},
 							DestinationSpec: &glooV1.DestinationSpec{
 								DestinationType: &glooV1.DestinationSpec_Rest{
-									Rest: &rest.DestinationSpec{
+									Rest: &gloov1.DestinationSpec{
 										FunctionName: opts.ResolverMap.Function,
 									},
 								},
