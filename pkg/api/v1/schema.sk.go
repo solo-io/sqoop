@@ -134,7 +134,7 @@ func (o *Schema) DeepCopyObject() runtime.Object {
 	return resources.Clone(o).(*Schema)
 }
 
-var SchemaCrd = crd.NewCrd("sqoop.solo.io",
+var SchemaCrd = crd.NewCrd(
 	"schemas",
 	"sqoop.solo.io",
 	"v1",

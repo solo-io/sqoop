@@ -3,18 +3,11 @@ module github.com/solo-io/sqoop
 go 1.13
 
 require (
-	cloud.google.com/go v0.40.0 // indirect
-	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
 	github.com/Azure/go-autorest v11.1.1+incompatible // indirect
-	github.com/Sirupsen/logrus v1.3.0 // indirect; indirect
-	github.com/coreos/bbolt v1.3.3 // indirect
-	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/elazarl/goproxy v0.0.0-20200315184450-1f3cb6622dad // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.3.0 // indirect
 	github.com/evanphx/json-patch v4.5.0+incompatible // indirect
-	github.com/fatih/camelcase v1.0.0 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-openapi/jsonreference v0.19.3 // indirect
@@ -28,7 +21,6 @@ require (
 	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/gophercloud/gophercloud v0.0.0-20190115030418-a9f90060ebd9 // indirect
 	github.com/gorilla/mux v1.7.0
-	github.com/gorilla/websocket v1.3.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.14.3 // indirect
 	github.com/hashicorp/consul v1.4.1-0.20181116231704-eba25a143821 // indirect
@@ -45,7 +37,6 @@ require (
 	github.com/ilackarms/protoc-gen-doc v1.0.0 // indirect
 	github.com/ilackarms/protokit v0.1.1-0.20181231193355-ee2393f3bbf0 // indirect
 	github.com/imdario/mergo v0.3.8 // indirect
-	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/lyft/protoc-gen-validate v0.0.6 // indirect
 	github.com/mailru/easyjson v0.7.0 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
@@ -57,20 +48,16 @@ require (
 	github.com/prometheus/client_golang v1.2.1 // indirect
 	github.com/pseudomuto/protoc-gen-doc v1.0.0 // indirect
 	github.com/radovskyb/watcher v1.0.2 // indirect
-	github.com/soheilhy/cmux v0.1.4 // indirect
-	github.com/solo-io/gloo v0.14.3
+	github.com/solo-io/gloo v0.16.0
 	github.com/solo-io/go-checkpoint v0.0.0-20181217204546-b798a7563f83
-	github.com/solo-io/go-utils v0.8.18
-	github.com/solo-io/solo-kit v0.9.9
+	github.com/solo-io/go-utils v0.9.1
+	github.com/solo-io/solo-kit v0.10.2
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.5
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20200122045848-3419fae592fc // indirect
 	github.com/vektah/gqlgen v0.0.0-20180516091824-6b3b338d5f9c
 	github.com/xanzy/ssh-agent v0.2.1 // indirect
-	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
-	github.com/xlab/handysort v0.0.0-20150421192137-fb3537ed64a1 // indirect
-	go.etcd.io/bbolt v1.3.3 // indirect
-	go.opencensus.io v0.21.0
+	go.opencensus.io v0.22.0
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4 // indirect
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
@@ -101,8 +88,8 @@ replace (
 	github.com/Sirupsen/logrus => github.com/sirupsen/logrus v1.3.0
 	github.com/codegangsta/cli => github.com/urfave/cli v1.22.3
 	github.com/envoyproxy/go-control-plane => github.com/envoyproxy/go-control-plane v0.6.9
-	github.com/solo-io/go-utils => github.com/solo-io/go-utils v0.8.18
-	go.opencensus.io => go.opencensus.io v0.16.0
+	github.com/solo-io/go-utils => github.com/solo-io/go-utils v0.9.1
+	go.opencensus.io => go.opencensus.io v0.22.0
 	k8s.io/api => k8s.io/api v0.0.0-20181204000039-89a74a8d264d
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20181204003920-20c909e7c8c3
 	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20181127025237-2b1284ed4c93

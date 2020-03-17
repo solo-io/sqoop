@@ -134,7 +134,7 @@ func (o *ResolverMap) DeepCopyObject() runtime.Object {
 	return resources.Clone(o).(*ResolverMap)
 }
 
-var ResolverMapCrd = crd.NewCrd("sqoop.solo.io",
+var ResolverMapCrd = crd.NewCrd(
 	"resolvermaps",
 	"sqoop.solo.io",
 	"v1",
