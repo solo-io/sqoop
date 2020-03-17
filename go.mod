@@ -58,10 +58,10 @@ require (
 	github.com/pseudomuto/protoc-gen-doc v1.0.0 // indirect
 	github.com/radovskyb/watcher v1.0.2 // indirect
 	github.com/soheilhy/cmux v0.1.4 // indirect
-	github.com/solo-io/gloo v0.13.25
+	github.com/solo-io/gloo v0.14.3
 	github.com/solo-io/go-checkpoint v0.0.0-20181217204546-b798a7563f83
-	github.com/solo-io/go-utils v0.8.16
-	github.com/solo-io/solo-kit v0.9.6
+	github.com/solo-io/go-utils v0.8.18
+	github.com/solo-io/solo-kit v0.9.9
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.5
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20200122045848-3419fae592fc // indirect
@@ -101,7 +101,7 @@ replace (
 	github.com/Sirupsen/logrus => github.com/sirupsen/logrus v1.3.0
 	github.com/codegangsta/cli => github.com/urfave/cli v1.22.3
 	github.com/envoyproxy/go-control-plane => github.com/envoyproxy/go-control-plane v0.6.9
-	github.com/solo-io/go-utils => github.com/solo-io/go-utils v0.8.16
+	github.com/solo-io/go-utils => github.com/solo-io/go-utils v0.8.18
 	go.opencensus.io => go.opencensus.io v0.16.0
 	k8s.io/api => k8s.io/api v0.0.0-20181204000039-89a74a8d264d
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20181204003920-20c909e7c8c3
