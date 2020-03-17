@@ -53,7 +53,7 @@ func Translate(writeNamespace string, snap *v1.ApiSnapshot, resourceErrs reporte
 					},
 				},
 				// TODO(ilackarms / yuval-k): decide if we need ssl for connecting to sidecar
-				SslConfiguations: nil,
+				SslConfigurations: nil,
 			},
 		},
 	}

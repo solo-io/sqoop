@@ -1,7 +1,7 @@
 package testdata
 
 import (
-	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
+	gloov1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
 	"github.com/solo-io/solo-kit/pkg/api/v1/resources/core"
 	v1 "github.com/solo-io/sqoop/pkg/api/v1"
@@ -27,14 +27,16 @@ func StarWarsResolverMap() *v1.ResolverMap {
 	resolverMap := translator.GenerateResolverMapSkeleton(resolverMetadata, StarWarsSchema)
 	resolverMap.Types["Query"].Fields["hero"].Resolver = &v1.FieldResolver_GlooResolver{
 		GlooResolver: &v1.GlooResolver{
-			Action: &glooV1.RouteAction{
-				Destination: &glooV1.RouteAction_Single{
-					Single: &glooV1.Destination{
-						Upstream: core.ResourceRef{
-							Name: "starwars-rest",
+			Action: &gloov1.RouteAction{
+				Destination: &gloov1.RouteAction_Single{
+					Single: &gloov1.Destination{
+						DestinationType: &gloov1.Destination_Upstream{
+							Upstream: &core.ResourceRef{
+								Name: "starwars-rest",
+							},
 						},
-						DestinationSpec: &glooV1.DestinationSpec{
-							DestinationType: &glooV1.DestinationSpec_Rest{
+						DestinationSpec: &gloov1.DestinationSpec{
+							DestinationType: &gloov1.DestinationSpec_Rest{
 								Rest: &rest.DestinationSpec{
 									FunctionName: "GetHero",
 								},
@@ -50,14 +52,16 @@ func StarWarsResolverMap() *v1.ResolverMap {
 			RequestTemplate: &v1.RequestTemplate{
 				Body: `{"id": {{ index .Args "id" }}}`,
 			},
-			Action: &glooV1.RouteAction{
-				Destination: &glooV1.RouteAction_Single{
-					Single: &glooV1.Destination{
-						Upstream: core.ResourceRef{
-							Name: "starwars-rest",
+			Action: &gloov1.RouteAction{
+				Destination: &gloov1.RouteAction_Single{
+					Single: &gloov1.Destination{
+						DestinationType: &gloov1.Destination_Upstream{
+							Upstream: &core.ResourceRef{
+								Name: "starwars-rest",
+							},
 						},
-						DestinationSpec: &glooV1.DestinationSpec{
-							DestinationType: &glooV1.DestinationSpec_Rest{
+						DestinationSpec: &gloov1.DestinationSpec{
+							DestinationType: &gloov1.DestinationSpec_Rest{
 								Rest: &rest.DestinationSpec{
 									FunctionName: "GetCharacter",
 								},
@@ -73,14 +77,16 @@ func StarWarsResolverMap() *v1.ResolverMap {
 			RequestTemplate: &v1.RequestTemplate{
 				Body: `{"id": {{ index .Args "id" }}}`,
 			},
-			Action: &glooV1.RouteAction{
-				Destination: &glooV1.RouteAction_Single{
-					Single: &glooV1.Destination{
-						Upstream: core.ResourceRef{
-							Name: "starwars-rest",
+			Action: &gloov1.RouteAction{
+				Destination: &gloov1.RouteAction_Single{
+					Single: &gloov1.Destination{
+						DestinationType: &gloov1.Destination_Upstream{
+							Upstream: &core.ResourceRef{
+								Name: "starwars-rest",
+							},
 						},
-						DestinationSpec: &glooV1.DestinationSpec{
-							DestinationType: &glooV1.DestinationSpec_Rest{
+						DestinationSpec: &gloov1.DestinationSpec{
+							DestinationType: &gloov1.DestinationSpec_Rest{
 								Rest: &rest.DestinationSpec{
 									FunctionName: "GetCharacter",
 								},
@@ -96,14 +102,16 @@ func StarWarsResolverMap() *v1.ResolverMap {
 			RequestTemplate: &v1.RequestTemplate{
 				Body: `{{ marshal (index .Parent "friend_ids") }}`,
 			},
-			Action: &glooV1.RouteAction{
-				Destination: &glooV1.RouteAction_Single{
-					Single: &glooV1.Destination{
-						Upstream: core.ResourceRef{
-							Name: "starwars-rest",
+			Action: &gloov1.RouteAction{
+				Destination: &gloov1.RouteAction_Single{
+					Single: &gloov1.Destination{
+						DestinationType: &gloov1.Destination_Upstream{
+							Upstream: &core.ResourceRef{
+								Name: "starwars-rest",
+							},
 						},
-						DestinationSpec: &glooV1.DestinationSpec{
-							DestinationType: &glooV1.DestinationSpec_Rest{
+						DestinationSpec: &gloov1.DestinationSpec{
+							DestinationType: &gloov1.DestinationSpec_Rest{
 								Rest: &rest.DestinationSpec{
 									FunctionName: "GetCharacters",
 								},

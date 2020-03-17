@@ -3,7 +3,7 @@ package resolvermap
 import (
 	"fmt"
 
-	glooV1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
+	gloov1 "github.com/solo-io/gloo/projects/gloo/pkg/api/v1"
 	"github.com/solo-io/gloo/projects/gloo/pkg/api/v1/plugins/rest"
 	"github.com/solo-io/go-utils/cliutils"
 	"github.com/solo-io/solo-kit/pkg/api/v1/clients"
@@ -69,15 +69,17 @@ func registerResolver(opts *options.Options) error {
 			GlooResolver: &v1.GlooResolver{
 				ResponseTemplate: responseTemplate,
 				RequestTemplate:  requestTemplate,
-				Action: &glooV1.RouteAction{
-					Destination: &glooV1.RouteAction_Single{
-						Single: &glooV1.Destination{
-							Upstream: core.ResourceRef{
-								Name:      opts.ResolverMap.Upstream,
-								Namespace: opts.Metadata.Namespace,
+				Action: &gloov1.RouteAction{
+					Destination: &gloov1.RouteAction_Single{
+						Single: &gloov1.Destination{
+							DestinationType: &gloov1.Destination_Upstream{
+								Upstream: &core.ResourceRef{
+									Name:      opts.ResolverMap.Upstream,
+									Namespace: opts.Metadata.Namespace,
+								},
 							},
-							DestinationSpec: &glooV1.DestinationSpec{
-								DestinationType: &glooV1.DestinationSpec_Rest{
+							DestinationSpec: &gloov1.DestinationSpec{
+								DestinationType: &gloov1.DestinationSpec_Rest{
 									Rest: &rest.DestinationSpec{
 										FunctionName: opts.ResolverMap.Function,
 									},

@@ -125,17 +125,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7310ec5042e3a0dd73ed9f23f812e73ce0ae88d08039e4473472ebba20bf2996"
-  name = "github.com/bxcodec/faker"
-  packages = [
-    ".",
-    "support/slice",
-  ]
-  pruneopts = "UT"
-  revision = "bf89c38ff1742f295e15df0bd5e8b3e81da95855"
-
-[[projects]]
-  branch = "master"
   digest = "1:95e08278c876d185ba67533f045e9e63b3c9d02cbd60beb0f4dbaa2344a13ac2"
   name = "github.com/chai2010/gettext-go"
   packages = [
@@ -228,7 +217,7 @@
   version = "v1.12.0"
 
 [[projects]]
-  digest = "1:47d2eab2d709f99ed4eb0c4994c7d8cdf4e0dc1627cbced538de02c40d7cbb46"
+  digest = "1:e2d9a059a120aa2d731b81d92a6f7c460d6577324a1036c46d7e9e28f532615c"
   name = "github.com/envoyproxy/go-control-plane"
   packages = [
     "envoy/api/v2",
@@ -242,8 +231,16 @@
     "envoy/type",
   ]
   pruneopts = "UT"
-  revision = "0ad6fa1cf0b9b6ca8f3617a7188a568e81f40b87"
-  version = "v0.6.9"
+  revision = "c7e2a120463a2209c6a0871d778f4eab96457e6b"
+  version = "v0.8.1"
+
+[[projects]]
+  digest = "1:743f8008a7fed04ef0d52261aef346766bbd5b3e360b90296d85289f8ef5c2e2"
+  name = "github.com/envoyproxy/protoc-gen-validate"
+  packages = ["validate"]
+  pruneopts = "UT"
+  revision = "9eff07ddfcb4001aa1aab280648153f46e1a8ddc"
+  version = "v0.1.0"
 
 [[projects]]
   digest = "1:f1f2bd73c025d24c3b93abf6364bccb802cf2fdedaa44360804c67800e8fab8d"
@@ -744,14 +741,6 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:dfe5159383dfcd370555c35374ac99022906f987b55cc65a830fb9ced970b4b1"
-  name = "github.com/lyft/protoc-gen-validate"
-  packages = ["validate"]
-  pruneopts = "UT"
-  revision = "930a67cf7ba41b9d9436ad7a1be70a5d5ff6e1fc"
-  version = "v0.0.6"
-
-[[projects]]
   branch = "master"
   digest = "1:84a5a2b67486d5d67060ac393aa255d05d24ed5ee41daecd5635ec22657b6492"
   name = "github.com/mailru/easyjson"
@@ -1041,7 +1030,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:a8019ff2f27a9226ea0b45107ddce1e161e99f0fa88efea6239f188778b98545"
+  digest = "1:8f24c086ff5e1d982486bf14b4e8a6ca9cf36d3b751ed202dd865290755a5882"
   name = "github.com/solo-io/gloo"
   packages = [
     "install/helm/gloo/generate",
@@ -1067,13 +1056,14 @@
     "projects/gloo/pkg/api/v1/plugins/rest",
     "projects/gloo/pkg/api/v1/plugins/retries",
     "projects/gloo/pkg/api/v1/plugins/static",
+    "projects/gloo/pkg/api/v1/plugins/stats",
     "projects/gloo/pkg/api/v1/plugins/transformation",
     "projects/gloo/pkg/bootstrap",
     "projects/gloo/pkg/defaults",
   ]
   pruneopts = "UT"
-  revision = "b299683584939bd52f85279556037c6b67c19dab"
-  version = "v0.13.29"
+  revision = "c1794e77ca6473990aaf3394ca0a41fa6f6fe94e"
+  version = "v0.14.2"
 
 [[projects]]
   digest = "1:699918466a9758902a14923851a7fbd230500f93da6982dae7c79959afb0a664"
@@ -1109,9 +1099,16 @@
   version = "v0.8.16"
 
 [[projects]]
-  digest = "1:c886cb30b84598c711f6431ce44feb921ffa3534f6193dddc655835c983c0807"
+  digest = "1:e31ff9161d32979778477e5b08aba2618465c533d44f715387df26afa25b9e6c"
   name = "github.com/solo-io/solo-kit"
   packages = [
+    "api/external/kubernetes/configmap",
+    "api/external/kubernetes/customresourcedefinition",
+    "api/external/kubernetes/deployment",
+    "api/external/kubernetes/namespace",
+    "api/external/kubernetes/pod",
+    "api/external/kubernetes/service",
+    "pkg/api/external/kubernetes/service",
     "pkg/api/v1/clients",
     "pkg/api/v1/clients/common",
     "pkg/api/v1/clients/configmap",
@@ -1137,6 +1134,7 @@
     "pkg/api/v1/reconcile",
     "pkg/api/v1/reporter",
     "pkg/api/v1/resources",
+    "pkg/api/v1/resources/common/kubernetes",
     "pkg/api/v1/resources/core",
     "pkg/code-generator",
     "pkg/code-generator/cmd",
@@ -1158,8 +1156,8 @@
     "test/tests/typed",
   ]
   pruneopts = "UT"
-  revision = "f40d30112db04fbd2cc4ba85f9df66af3607f344"
-  version = "v0.9.6"
+  revision = "d0edbeb14aaaaa8066db72d95911782a9c51b3ba"
+  version = "v0.9.13"
 
 [[projects]]
   digest = "1:3e39bafd6c2f4bf3c76c3bfd16a2e09e016510ad5db90dc02b88e2f565d6d595"
@@ -2196,7 +2194,6 @@
     "github.com/solo-io/solo-kit/pkg/code-generator/cmd",
     "github.com/solo-io/solo-kit/pkg/code-generator/docgen/options",
     "github.com/solo-io/solo-kit/pkg/errors",
-    "github.com/solo-io/solo-kit/pkg/utils/kubeutils",
     "github.com/solo-io/solo-kit/test/helpers",
     "github.com/solo-io/solo-kit/test/tests/typed",
     "github.com/spf13/cobra",
